@@ -1,7 +1,7 @@
 const PIXI = require('pixi.js');
 const { SharedTweenManager, PUXI } = require('./tween');
 
-export default class Player extends PIXI.Sprite {
+export default class Player extends PIXI.projection.Sprite2d {
   constructor(map, start_node_idx) {
     const text_render = new PIXI.Text('옷');
     text_render.cacheAsBitmap = true;
@@ -9,6 +9,7 @@ export default class Player extends PIXI.Sprite {
 
     super(text_render.texture);
     this.anchor.set(0.5, 1);
+    this.proj.affine = PIXI.projection.AFFINE.AXIS_X;
 
     /** @member {Map} */
     this.map = map;

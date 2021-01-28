@@ -3,6 +3,8 @@ const clamp = require('lodash/clamp');
 const random = require('lodash/random');
 const Player = require('./player').default;
 
+const TileSize = 50;
+
 /** @class */
 export default class Map extends PIXI.Container {
     constructor(data) {
@@ -12,12 +14,14 @@ export default class Map extends PIXI.Container {
         this.drag_pos = null;
 
         this.interactive = true;
-        this.hitArea = new PIXI.Rectangle(0, 0, data.width, data.height);
         this
             .on('pointerdown', (e) => this.onDragStart(e))
             .on('pointerup', (e) => this.onDragEnd(e))
             .on('pointerupoutside', (e) => this.onDragEnd(e))
             .on('pointermove', (e) => this.onDragMove(e));;
+
+        this.initIsometryTile(data.width, data.height);
+        this.hitArea = new PIXI.Rectangle(0, 0, this.virtual_size.x * 2, this.virtual_size.y * 2);
 
         this.edges = data.edges.map(([node1, node2, time]) => {
             const edge = new PIXI.Graphics();
@@ -27,9 +31,9 @@ export default class Map extends PIXI.Container {
             const width = end_node.x - begin_node.x;
             const height = end_node.y - begin_node.y;
             edge.moveTo(0, 0);
-            edge.lineTo(width, height);
-            edge.position.set(begin_node.x, begin_node.y);
-            this.addChild(edge);
+            edge.lineTo(width * TileSize, height * TileSize);
+            edge.position.set((begin_node.x + 0.5) * TileSize, (begin_node.y + 0.5) * TileSize);
+            this.root.addChild(edge);
         });
 
         /** @member {PIXI.Graphics[]} */
@@ -37,15 +41,16 @@ export default class Map extends PIXI.Container {
             const node = new PIXI.Graphics();
             node.lineStyle(5, 0x000000, 1);
             node.beginFill(0xffffff, 1);
-            node.drawCircle(-10, -10, 20);
-            node.position.set(node_info.x, node_info.y);
-            this.addChild(node);
+            node.drawRect(-TileSize * 0.5, -TileSize * 0.5, TileSize, TileSize);
+            node.position.set((node_info.x + 0.5) * TileSize, (node_info.y + 0.5) * TileSize);
+            this.root.addChild(node);
             if (node_info.name) {
-                const label = new PIXI.Text(node_info.name);
+                const label = new PIXI.projection.Text2d(node_info.name);
+                label.proj.affine = PIXI.projection.AFFINE.AXIS_X;
                 node.addChild(label);
                 label.cacheAsBitmap = true;
                 label.anchor.set(0.5, 1);
-                label.position.y = -30;
+                label.position.y = -TileSize * 0.6;
             }
 
             node.on('pointertap', () => {
@@ -61,8 +66,37 @@ export default class Map extends PIXI.Container {
           this.addConnection(node2, node1, distance);
         }
 
-        this.player = new Player(this, random(0, this.nodes.length, false));
-        this.addChild(this.player);
+        this.player = new Player(this, random(0, this.nodes.length - 1, false));
+        this.root.addChild(this.player);
+    }
+
+    /**
+     *
+     * @param {number} width
+     * @param {number} height
+     */
+    initIsometryTile(width, height) {
+      this.wrap = new PIXI.Container();
+      this.wrap.scale.y = 0.5; // isometry can be achieved by setting scaleY 0.5 or tan(30 degrees)
+      this.addChild(this.wrap);
+
+      this.virtual_size = new PIXI.Point(width * TileSize * Math.cos(Math.PI / 4), height * TileSize * Math.sin(Math.PI / 4) * 0.5);
+      this.wrap.position.set(0, this.virtual_size.y);
+
+      const isometryPlane = new PIXI.Graphics();
+      isometryPlane.rotation = -Math.PI / 4;
+      this.root = isometryPlane;
+      this.wrap.addChild(isometryPlane);
+
+      isometryPlane.lineStyle(2, 0xffffff);
+      for (let i = 0; i <= height; i++) {
+        isometryPlane.moveTo(0, i * TileSize);
+        isometryPlane.lineTo(width * TileSize, i * TileSize);
+      }
+      for (let i = 0; i <= width; i++) {
+        isometryPlane.moveTo(i * TileSize, 0);
+        isometryPlane.lineTo(i * TileSize, height * TileSize);
+      }
     }
 
     addConnection(node1, node2, distance) {
@@ -92,11 +126,13 @@ export default class Map extends PIXI.Container {
     onDragMove(event) {
         if (this.dragging) {
             const newPosition = event.data.getLocalPosition(this.parent);
-            const new_x = newPosition.x - this.drag_pos.x + this.x;
-            const new_y = newPosition.y - this.drag_pos.y + this.y;
+            const new_x = newPosition.x - this.drag_pos.x + this.wrap.x;
+            const new_y = newPosition.y - this.drag_pos.y + this.wrap.y;
             this.drag_pos = newPosition;
-            this.x = clamp(new_x, -this.data.width, 0);
-            this.y = clamp(new_y, -this.data.height, 0);
+            this.wrap.position.set(
+              clamp(new_x, -this.virtual_size.x * 0.5, 0),
+              clamp(new_y, -this.virtual_size.y * 0.5, 0) + this.virtual_size.y
+            );
         }
     }
 
