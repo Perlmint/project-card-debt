@@ -9,7 +9,6 @@ export default class Map extends PIXI.Container {
         this.drag_pos = null;
 
         this.interactive = true;
-        this.buttonMode = true;
         this.hitArea = new PIXI.Rectangle(0, 0, data.width, data.height);
         this
             .on('pointerdown', (e) => this.onDragStart(e))
@@ -75,8 +74,8 @@ export default class Map extends PIXI.Container {
             const new_x = newPosition.x - this.drag_pos.x + this.x;
             const new_y = newPosition.y - this.drag_pos.y + this.y;
             this.drag_pos = newPosition;
-            this.x = clamp(new_x, 0, this.data.width);
-            this.y = clamp(new_y, 0, this.data.height);
+            this.x = clamp(new_x, -this.data.width, 0);
+            this.y = clamp(new_y, -this.data.height, 0);
         }
     }
 }
