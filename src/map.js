@@ -2,6 +2,7 @@ const PIXI = require('pixi.js');
 const clamp = require('lodash/clamp');
 const random = require('lodash/random');
 const Player = require('./player').default;
+const Dialog = require('./dialog').default;
 
 const TileSize = 50;
 
@@ -55,14 +56,6 @@ export default class Map extends PIXI.Container {
             node.drawRect(-TileSize * 0.5, -TileSize * 0.5, TileSize, TileSize);
             node.position.set((node_info.x + 0.5) * TileSize, (node_info.y + 0.5) * TileSize);
             this.root.addChild(node);
-            if (node_info.name) {
-                const label = new PIXI.projection.Text2d(node_info.name);
-                label.proj.affine = PIXI.projection.AFFINE.AXIS_X;
-                node.addChild(label);
-                label.cacheAsBitmap = true;
-                label.anchor.set(0.5, 1);
-                label.position.y = -TileSize * 0.6;
-            }
 
             node.on('pointertap', () => {
                 this.onNodeClick(idx);
@@ -77,6 +70,10 @@ export default class Map extends PIXI.Container {
           this.addConnection(node2, node1, distance);
         }
 
+        /** @member */
+        this.dialog = new Dialog();
+
+        /** @member */
         this.player = new Player(this, random(0, this.nodes.length - 1, false));
         this.root.addChild(this.player);
     }
@@ -153,6 +150,15 @@ export default class Map extends PIXI.Container {
         node.interactive = true;
         node.buttonMode = true;
       }
+
+      const node = this.data.nodes[node_idx];
+      const actions = node.actions;
+      if (actions) {
+        this.dialog.init(node.name, actions);
+        const node_pos = this.nodes[node_idx].position;
+        this.dialog.position.set(node_pos.x * Math.cos(Math.PI / 4), node_pos.y * Math.sin(Math.PI / 4) * 0.5);
+        this.wrap.addChild(this.dialog);
+      }
     }
 
     onPlayerDepature(node_idx) {
@@ -161,5 +167,7 @@ export default class Map extends PIXI.Container {
         node.interactive = false;
         node.buttonMode = false;
       }
+
+      this.dialog.removeChild();
     }
 }
