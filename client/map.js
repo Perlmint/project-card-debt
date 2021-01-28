@@ -168,6 +168,6 @@ export default class Map extends PIXI.Container {
         node.buttonMode = false;
       }
 
-      this.dialog.removeChild();
+      this.wrap.removeChild(this.dialog);
     }
 }

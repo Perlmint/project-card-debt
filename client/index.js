@@ -23,11 +23,22 @@ app.stage.addChild(container);
 
 const phone = new Phone();
 
-const map = new Map(require('./map.json'));
-map.position.x = phone.width;
-container.addChild(map);
 
 container.addChild(phone);
+
+const url = location.search;
+const ws = new WebSocket(`ws://${location.host}/ws/${location.search.substr(4)}`);
+ws.addEventListener('message', (message) => {
+  const data = JSON.parse(message.data);
+  switch (data.type) {
+    case 'map': {
+      const map = new Map(data.map);
+      map.position.x = phone.width;
+      container.addChild(map);
+      break;
+    }
+  }
+});
 
 app.ticker.add((delta) => {
 });

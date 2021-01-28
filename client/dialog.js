@@ -40,9 +40,11 @@ export default class Dialog extends PIXI.Container {
       width = Math.max(action_label.width, width);
     }
 
+    this.frame.clear();
     this.frame.beginFill(0x0000cc, 1);
     this.frame.drawRoundedRect(0, 0, width + 30, height + 70, 10);
 
+    this.do_button.clear();
     this.do_button.beginFill(0x330000, 1);
     this.do_button.drawRoundedRect(10, 10, width + 10, 50, 10);
     this.do_button.position.set(0, height - 20);
