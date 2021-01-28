@@ -36,6 +36,17 @@ export default class Map extends PIXI.Container {
             this.root.addChild(edge);
         });
 
+        this.buildings = data.buildings.map((build_info) => {
+          const building = new PIXI.Graphics();
+          building.beginFill(build_info.color, 1);
+          building.moveTo(-TileSize * 0.5, -TileSize * 0.5);
+          building.lineTo(-TileSize * 0.5, TileSize * 0.5);
+          building.lineTo(TileSize * 0.5, TileSize * 0.5);
+          building.position.set((build_info.x + 0.5) * TileSize, (build_info.y + 0.5) * TileSize);
+
+          this.root.addChild(building);
+        });
+
         /** @member {PIXI.Graphics[]} */
         this.nodes = data.nodes.map((node_info, idx) => {
             const node = new PIXI.Graphics();
