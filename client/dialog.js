@@ -1,4 +1,4 @@
-export default class Dialog extends PIXI.Container {
+export default class Dialog extends PIXI.projection.Container2d {
   constructor() {
     super();
     /** @memeber */
@@ -16,6 +16,9 @@ export default class Dialog extends PIXI.Container {
     this.do_button.interactive = true;
     this.do_button.buttonMode = true;
     this.addChild(this.do_button);
+
+    this.proj.affine = PIXI.projection.AFFINE.AXIS_X;
+    this.rotation = Math.PI / 4;
   }
 
   /**
@@ -48,5 +51,6 @@ export default class Dialog extends PIXI.Container {
     this.do_button.beginFill(0x330000, 1);
     this.do_button.drawRoundedRect(10, 10, width + 10, 50, 10);
     this.do_button.position.set(0, height - 20);
+    this.pivot.set(-40, height + 90);
   }
 }

@@ -156,8 +156,8 @@ export default class Map extends PIXI.Container {
       if (actions) {
         this.dialog.init(node.name, actions);
         const node_pos = this.nodes[node_idx].position;
-        this.dialog.position.set(node_pos.x * Math.cos(Math.PI / 4), node_pos.y * Math.sin(Math.PI / 4) * 0.5);
-        this.wrap.addChild(this.dialog);
+        this.dialog.position.set(node_pos.x, node_pos.y);
+        this.root.addChild(this.dialog);
       }
     }
 
@@ -168,6 +168,6 @@ export default class Map extends PIXI.Container {
         node.buttonMode = false;
       }
 
-      this.wrap.removeChild(this.dialog);
+      this.root.removeChild(this.dialog);
     }
 }
