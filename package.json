@@ -1,0 +1,17 @@
+{
+  "name": "web-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel src/index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.20",
+    "parcel-bundler": "^1.12.4",
+    "pixi.js": "^5.3.7",
+    "rollup": "^2.38.0"
+  }
+}
