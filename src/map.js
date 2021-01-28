@@ -1,6 +1,9 @@
 const PIXI = require('pixi.js');
 const clamp = require('lodash/clamp');
+const random = require('lodash/random');
+const Player = require('./player').default;
 
+/** @class */
 export default class Map extends PIXI.Container {
     constructor(data) {
         super();
@@ -29,6 +32,7 @@ export default class Map extends PIXI.Container {
             this.addChild(edge);
         });
 
+        /** @member {PIXI.Graphics[]} */
         this.nodes = data.nodes.map((node_info, idx) => {
             const node = new PIXI.Graphics();
             node.lineStyle(5, 0x000000, 1);
@@ -44,18 +48,35 @@ export default class Map extends PIXI.Container {
                 label.position.y = -30;
             }
 
-            node.interactive = true;
-            node.buttonMode = true;
             node.on('pointertap', () => {
                 this.onNodeClick(idx);
             });
 
             return node;
         });
+
+        this.connection = new window.Map();
+        for (const [node1, node2, distance] of data.edges) {
+          this.addConnection(node1, node2, distance);
+          this.addConnection(node2, node1, distance);
+        }
+
+        this.player = new Player(this, random(0, this.nodes.length, false));
+        this.addChild(this.player);
+    }
+
+    addConnection(node1, node2, distance) {
+      let connection = this.connection.get(node1);
+      if (!connection) {
+        connection = new window.Map();
+        this.connection.set(node1, connection);
+      }
+
+      connection.set(node2, distance);
     }
 
     onNodeClick(node_idx) {
-        console.log(node_idx);
+        this.player.moveTo(node_idx);
     }
 
     onDragStart(event) {
@@ -77,5 +98,21 @@ export default class Map extends PIXI.Container {
             this.x = clamp(new_x, -this.data.width, 0);
             this.y = clamp(new_y, -this.data.height, 0);
         }
+    }
+
+    onPlayerArrival(node_idx) {
+      for (const [connected_idx,] of this.connection.get(node_idx)) {
+        const node = this.nodes[connected_idx];
+        node.interactive = true;
+        node.buttonMode = true;
+      }
+    }
+
+    onPlayerDepature(node_idx) {
+      for (const [connected_idx,] of this.connection.get(node_idx)) {
+        const node = this.nodes[connected_idx];
+        node.interactive = false;
+        node.buttonMode = false;
+      }
     }
 }
