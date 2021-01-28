@@ -68,6 +68,11 @@ export default class Player extends PIXI.projection.Container2d {
     const distance = this.map.connection.get(this.current_node).get(new_idx);
     const target_node = this.map.nodes[new_idx];
     this.map.onPlayerDepature(this.current_node);
+    if (this.x > target_node.x || this.y > target_node.y) {
+      this.scale.x = Math.abs(this.scale.x);
+    } else {
+      this.scale.x = -Math.abs(this.scale.x);
+    }
     SharedTweenManager.tween(
       new PIXI.Point(this.x, this.y),
       new PIXI.Point(target_node.x, target_node.y),
