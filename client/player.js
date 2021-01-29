@@ -48,7 +48,7 @@ export default class Player extends PIXI.projection.Container2d {
     // left: 0;
     // top: 261.31px;
     this.wrap.addChild(this.hair);
-    this.pivot.set(89.64, 351.69);
+    this.pivot.set(89.64, 351.69 - 80);
     this.scale.set(0.2);
 
     this.proj.affine = PIXI.projection.AFFINE.AXIS_X;

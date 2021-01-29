@@ -4,22 +4,32 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server/main.js"
+    "start": "nodemon server/main.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@puxi/core": "^1.0.2",
     "@puxi/tween": "^1.0.2",
+    "eventemitter3": "^3.1.2",
     "express": "^4.17.1",
-    "express-ws": "^4.0.0",
     "lodash": "^4.17.20",
-    "parcel-bundler": "^1.12.4",
     "pixi-layers": "^0.3.1",
     "pixi-projection": "^0.3.15",
     "pixi.js": "^5",
+    "ws": "^5.2.2",
     "xkcd-password": "^2.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "@types/express-ws": "^3.0.0",
+    "@types/ws": "^7.4.0",
+    "nodemon": "^2.0.7",
+    "parcel-bundler": "^1.12.4"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "client/**/*",
+      "dist/**/*"
+    ]
   }
 }

@@ -10,7 +10,6 @@ const app = new PIXI.Application({
   width: window.innerWidth,
   height: window.innerHeight,
   backgroundColor: 0x1099bb,
-  resolution: window.devicePixelRatio || 1,
 });
 document.body.appendChild(app.view);
 window.addEventListener('resize', (e) => {
@@ -21,20 +20,38 @@ const container = new PIXI.Container();
 
 app.stage.addChild(container);
 
+const ui_layer = PIXI.display.Layer();
+
 const phone = new Phone();
-
-
 container.addChild(phone);
 
-const url = location.search;
-const ws = new WebSocket(`ws://${location.host}/ws/${location.search.substr(4)}`);
+const ws = new WebSocket(`ws://${location.host}/game${location.search}&user=${document.cookie.session}`);
+ws.addEventListener('close', (event) => {
+  if (event.reason === 'not_found') {
+    location.href = '/';
+  }
+});
 ws.addEventListener('message', (message) => {
   const data = JSON.parse(message.data);
   switch (data.type) {
-    case 'map': {
-      const map = new Map(data.map);
-      map.position.x = phone.width;
-      container.addChild(map);
+    case 'init': {
+      const map = new Map(data.map, data.pos);
+      map.ui_root.position.x = phone.width;
+      container.addChild(map.ui_root);
+      map.on('player_arrival', (pos) => {
+        ws.send(JSON.stringify({
+          type: 'arrival',
+          pos,
+        }));
+      });
+      map.on('player_depature', () => {
+        ws.send(JSON.stringify({
+          type: 'depature',
+        }));
+      });
+      break;
+    }
+    case 'tick': {
       break;
     }
   }
