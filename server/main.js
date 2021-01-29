@@ -15,27 +15,41 @@ const pass_options = {
 
 const games = new Map();
 
-const wss = new WebSocket.Server({ server, path: '/game' });
+const lobby_wss = new WebSocket.Server({ server, path: '/lobby' });
+
+const game_wss = new WebSocket.Server({ server, path: '/game' });
 
 app.get('/', async (req, res, next) => {
   if (!req.query.id) {
-    const game_id = (await xkcdp.generate(pass_options)).join('-');
-    if (!req.cookies?.['session']) {
-      res.cookie('session', (await xkcdp.generate(pass_options)).join('-'));
-    }
-    res.redirect(`/?id=${game_id}`);
-    games.set(game_id, new Map());
-    res.end();
+    req.url = '/lobby.html';
+    next('route');
+    // const game_id = (await xkcdp.generate(pass_options)).join('-');
+    // if (!req.cookies?.['session']) {
+    //   res.cookie('session', (await xkcdp.generate(pass_options)).join('-'));
+    // }
+    // res.redirect(`/?id=${game_id}`);
+    // games.set(game_id, new Map());
+    // res.end();
   } else {
-    req.url = '/index.html';
+    req.url = '/game.html';
     next('route');
   }
 });
 
+lobby_wss.on('connection', (ws, req) => {
+  const req_url = url.parse(req.url, true);
+  let { game_id, user_name } = req_url.query;
+
+  if (!game_id) {
+    game_id = (await xkcdp.generate(pass_options)).join('-');
+    games.set(game_id, [[user_name, null], [null, null]]);
+  }
+})
+
 const fs = require('fs');
 const map_data = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'map.json')));
 
-wss.on('connection', (ws, req) => {
+game_wss.on('connection', (ws, req) => {
   const req_url = url.parse(req.url, true);
   const { id: game_id, user } = req_url.query;
   /** @var {Map} */
@@ -80,7 +94,7 @@ wss.on('connection', (ws, req) => {
 if (process.env.NODE_ENV !== 'production') {
   const parcel = require('parcel-bundler');
   const bundler = new parcel(
-    path.join(process.cwd(), 'client/index.html'),
+    ['client/lobby.html', 'client/game.html'].map(p => path.join(process.cwd(), p)),
   );
   app.use(bundler.middleware());
 } else {
