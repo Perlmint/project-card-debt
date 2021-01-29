@@ -85,7 +85,7 @@ export default class Map extends PIXI.Container {
      */
     initIsometryTile(width, height) {
       this.wrap = new PIXI.Container();
-      this.wrap.scale.y = 0.5; // isometry can be achieved by setting scaleY 0.5 or tan(30 degrees)
+      this.wrap.scale.y = 0.58; // isometry can be achieved by setting scaleY 0.5 or tan(30 degrees)
       this.addChild(this.wrap);
 
       this.virtual_size = new PIXI.Point(width * TileSize * Math.cos(Math.PI / 4), height * TileSize * Math.sin(Math.PI / 4) * 0.5);
