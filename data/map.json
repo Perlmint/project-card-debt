@@ -2,91 +2,91 @@
 	"nodes": [
 		{
 			"building_id": 11, 
-			"position": [ 10.0, 25.0 ]
+			"position": [ 1.0, 2.0 ]
 		},
 		{
 			"building_id": 12, 
-			"position": [ 9.0, 15.0 ]
+			"position": [ 0.0, 1.0 ]
 		},
 		{
 			"building_id": 13, 
-			"position": [ 7.0, 7.0 ]
+			"position": [ 0.0, 0.0 ]
 		},
 		{
 			"building_id": 14, 
-			"position": [ 18.0, 13.0 ]
+			"position": [ 1.0, 1.0 ]
 		},
 		{
 			"building_id": 15, 
-			"position": [ 16.0, 5.0 ]
+			"position": [ 1.0, 0.0 ]
 		},
 		{
 			"building_id": 21, 
-			"position": [ 153.0, 5.0 ]
+			"position": [ 15.0, 0.0 ]
 		},
 		{
 			"building_id": 22, 
-			"position": [ 163.0, 6.0 ]
+			"position": [ 16.0, 0.0 ]
 		},
 		{
 			"building_id": 23, 
-			"position": [ 151.0, 20.0 ]
+			"position": [ 15.0,2.0 ]
 		},
 		{
 			"building_id": 24, 
-			"position": [ 149.0, 11.0 ]
+			"position": [ 14.0, 1.0 ]
 		},
 		{
 			"building_id": 25, 
-			"position": [ 158.0, 12.0 ]
+			"position": [ 15.0, 1.0 ]
 		},
 		{
 			"building_id": 26, 
-			"position": [ 158.0, 20.0 ]
+			"position": [ 15.0, 2.0 ]
 		},
 		{
 			"building_id": 31, 
-			"position": [ 17.0, 130.0 ]
+			"position": [ 1.0, 13.0 ]
 		},
 		{
 			"building_id": 32, 
-			"position": [ 28.0, 132.0 ]
+			"position": [ 2.0, 13.0 ]
 		},
 		{
 			"building_id": 33, 
-			"position": [ 20.0, 135.0 ]
+			"position": [ 2.0, 13.0 ]
 		},
 		{
 			"building_id": 35, 
-			"position": [ 22.0, 129.0 ]
+			"position": [ 2.0, 12.0 ]
 		},
 		{
 			"building_id": 43, 
-			"position": [ 61.0, 57.0 ]
+			"position": [ 6.0, 5.0 ]
 		},
 		{
 			"building_id": 45, 
-			"position": [ 67.0, 60.0 ]
+			"position": [ 7.0, 6.0 ]
 		},
 		{
 			"building_id": 47, 
-			"position": [ 60.0, 63.0 ]
+			"position": [ 6.0, 6.0 ]
 		},
 		{
 			"building_id": 54, 
-			"position": [ 78.0, 122.0 ]
+			"position": [ 7.0, 12.0 ]
 		},
 		{
 			"building_id": 56, 
-			"position": [ 85.0, 125.0 ]
+			"position": [ 0.0, 1.0 ]
 		},
 		{
 			"building_id": 62, 
-			"position": [ 77.0, 5.0 ]
+			"position": [ 7.0, 0.0 ]
 		},
 		{
 			"building_id": 63, 
-			"position": [ 152.0, 123.0 ]
+			"position": [ 15.0, 12.0 ]
 		}
 	]
 }
