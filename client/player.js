@@ -2,10 +2,10 @@ const PIXI = require('pixi.js');
 const sample = require('lodash/sample');
 const random = require('lodash/random');
 const { SharedTweenManager, PUXI } = require('./tween');
-const head = PIXI.Texture.from(require('./res/head.png'));
-const body = [PIXI.Texture.from(require('./res/body1.png'))];
-const hair = [PIXI.Texture.from(require('./res/hair1.png'))];
-const leg = PIXI.Texture.from(require('./res/leg.png'));
+const head = PIXI.Texture.from(require('./res/player/head.png'));
+const body = [PIXI.Texture.from(require('./res/player/body1.png'))];
+const hair = [PIXI.Texture.from(require('./res/player/hair1.png'))];
+const leg = PIXI.Texture.from(require('./res/player/leg.png'));
 
 function randomColor() {
   return random(0, 255, false) * 0x10000 + random(0, 255, false) * 0x100 + random(0, 255, false);

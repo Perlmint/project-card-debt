@@ -4,8 +4,6 @@ const random = require('lodash/random');
 const Player = require('./player').default;
 const Dialog = require('./dialog').default;
 const eventemitter = require('eventemitter3');
-const b5 = PIXI.Texture.from(require('./res/b5.png'));
-const b6 = PIXI.Texture.from(require('./res/b6.png'));
 
 const TileSize = 100;
 
@@ -81,22 +79,6 @@ export default class Map extends eventemitter {
 
     /** @member */
     this.dialog = new Dialog();
-
-    const bd6 = new PIXI.projection.Sprite2d(b6);
-    bd6.proj.affine = PIXI.projection.AFFINE.AXIS_X;
-    bd6.anchor.set(0.5, 1);
-    bd6.position.set(TileSize * 2, TileSize * 1);
-    bd6.rotation = Math.PI / 4;
-    bd6.scale.set(0.188 * 1, 0.188 * 1);
-    this.root.addChild(bd6);
-
-    const bd5 = new PIXI.projection.Sprite2d(b5);
-    bd5.proj.affine = PIXI.projection.AFFINE.AXIS_X;
-    bd5.anchor.set(0.5, 1);
-    bd5.position.set(0, TileSize * 1);
-    bd5.rotation = Math.PI / 4;
-    bd5.scale.set(0.188 * 1, 0.188 * 1);
-    this.root.addChild(bd5);
 
     /** @member */
     this.player = new Player(this, initial_pos);
