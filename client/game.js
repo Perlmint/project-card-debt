@@ -2,9 +2,11 @@ const PIXI = require('pixi.js');
 window.PIXI = PIXI;
 require('pixi-projection');
 require('pixi-layers');
+const PUXI = require('@puxi/core');
 const Phone = require('./phone').default;
 const Map = require('./map').default;
 const CountDownTimer = require('./countdown').default;
+const target_data = require('./target.json');
 
 // TODO: fill window
 const app = new PIXI.Application({
@@ -19,16 +21,21 @@ const container = new PIXI.Container();
 app.stage = new PIXI.display.Stage();
 app.stage.addChild(container);
 
-const phone = new Phone();
-container.addChild(phone);
+const ui_container = new PIXI.Container();
+ui_container.interactive = false;
+ui_container.interactiveChildren = true;
+container.addChild(ui_container);
 
-const timer = new CountDownTimer();
-timer.root.position.set(window.innerWidth, 0);
-container.addChild(timer.root);
+const phone = new Phone();
+ui_container.addChild(phone);
+
+// const timer = new CountDownTimer();
+// timer.root.position.set(window.innerWidth, 0);
+// container.addChild(timer.root);
 
 window.addEventListener('resize', (e) => {
   app.resizeTo = window;
-  timer.root.position.set(window.innerWidth, 0);
+  ui_container.resize(window.innerWidth, window.innerHeight);
 });
 
 const ws = new WebSocket(`ws://${location.host}/game${location.search}`);
@@ -68,7 +75,9 @@ ws.addEventListener('message', (message) => {
       break;
     }
     case 'target_noti':
-      console.log(data.targets);
+      for (const target of data.targets) {
+        phone.addNews(target_data[target].target_name);
+      }
       break;
     case 'capture':
       alert('capture!');

@@ -1,29 +1,36 @@
-const PIXI = require('pixi.js');
+const PUXI = require('@puxi/core');
+const background = PIXI.Texture.from(require('./res/phone.png'));
+const news_background = PIXI.Texture.from(require('./res/alarm.png'));
+const ScrollContainer = require('./scroll_container').default;
+const last = require('lodash/last');
 
-const PhoneWidth = 300;
-const PhoneMargin = 10;
+class Alarm extends PIXI.Sprite {
+  constructor(title) {
+    super(news_background);
 
-export default class Phone extends PIXI.Container {
-  constructor() {
-    super();
-
-    /** @member */
-    this.frame = new PIXI.Graphics();
-    this.addChild(this.frame);
-    window.addEventListener('resize', (e) => {
-      this.drawFrame(window.innerHeight);
+    this.tint = 0xffffff;
+    this.title = new PIXI.Text(title, {
+      fontWeight: '500',
+      fontSize: 20,
     });
-    this.drawFrame(window.innerHeight);
+    this.title.position.set(27, 32);
+    this.addChild(this.title);
+  }
+}
+
+export default class Phone extends PIXI.Sprite {
+  constructor() {
+    super(background);
+
+    this.interactive = true;
+    this.alarms = [];
+
+    this.innerView = new ScrollContainer(52, 308, 440, 702, 218);
+    this.addChild(this.innerView.po);
   }
 
-  /**
-   *
-   * @param {number} height
-   */
-  drawFrame(height) {
-    this.frame.beginFill(0x333333, 1);
-    this.frame.drawRoundedRect(PhoneMargin, 300 + PhoneMargin, PhoneWidth - PhoneMargin * 2, height - 300 - PhoneMargin * 2, 10);
-    this.frame.beginFill(0xFFFFFF, 1);
-    this.frame.drawRect(PhoneMargin * 2, 300 + PhoneMargin * 2, PhoneWidth - PhoneMargin * 4, height - 300 - PhoneMargin * 4);
+  addNews(title_text) {
+    const alarm = new Alarm(title_text);
+    this.innerView.addItem(alarm);
   }
 }
