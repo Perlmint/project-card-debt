@@ -2,7 +2,7 @@ const PIXI = require('pixi.js');
 const clamp = require('lodash/clamp');
 const mapValues = require('lodash/mapValues');
 const Player = require('./player').default;
-const Dialog = require('./dialog').default;
+const MoveDialog = require('./move_dialog').default;
 const pick = require('lodash/pick');
 const values = require('lodash/values');
 const eventemitter = require('eventemitter3');
@@ -83,7 +83,10 @@ export default class Map extends eventemitter {
     // }
 
     /** @member */
-    this.dialog = new Dialog();
+    this.move_dialog = new MoveDialog();
+    this.move_dialog.on('click', (idx) => {
+      this.player.moveTo(idx);
+    });
 
     /** @member */
     this.player = new Player(this, initial_pos);
@@ -97,7 +100,8 @@ export default class Map extends eventemitter {
    */
   initIsometryTile(width, height) {
     this.wrap = new PIXI.Container();
-    this.wrap.scale.y = 0.58; // isometry can be achieved by setting scaleY 0.5 or tan(30 degrees)
+    this.wrap.sortableChildren = true;
+    this.wrap.scale.y = 0.58;
     this.ui_root.addChild(this.wrap);
 
     this.virtual_size = new PIXI.Point(width * TileSize * Math.cos(Math.PI / 4), height * TileSize * Math.sin(Math.PI / 4) * 0.58);
@@ -129,8 +133,21 @@ export default class Map extends eventemitter {
     connection.set(node2, distance);
   }
 
+  calcDistance(node1, node2) {
+    node1 = this.data.nodes[node1];
+    node2 = this.data.nodes[node2];
+    return Math.sqrt(Math.pow(node1.position[0] - node2.position[0]) + Math.pow(node1.position[1] - node2.position[1]));
+  }
+
   onNodeClick(node_idx) {
-    this.player.moveTo(node_idx);
+    const node = this.data.nodes[node_idx];
+    const building = building_data[node.building_id];
+    const actions = values(pick(action_data, building.actions));
+
+    this.move_dialog.init(building.name, actions, node_idx, this.calcDistance(this.player.current_node, node_idx));
+    const node_pos = this.nodes[node_idx].position;
+    this.move_dialog.root.position.set(node_pos.x, node_pos.y);
+    this.root.addChild(this.move_dialog.root);
   }
 
   onDragStart(event) {
@@ -166,13 +183,6 @@ export default class Map extends eventemitter {
       node.buttonMode = node.interactive = true;
     }
 
-    const node = this.data.nodes[node_idx];
-    const building = building_data[node.building_id];
-    const actions = values(pick(action_data, building.actions));
-    this.dialog.init(building.name, actions);
-    const node_pos = this.nodes[node_idx].position;
-    this.dialog.position.set(node_pos.x, node_pos.y);
-    this.root.addChild(this.dialog);
     this.emit('player_arrival', node_idx);
   }
 
@@ -186,7 +196,7 @@ export default class Map extends eventemitter {
       node.buttonMode = node.interactive = false;
     }
 
-    this.root.removeChild(this.dialog);
+    this.root.removeChild(this.move_dialog);
     this.emit('player_depature');
   }
 }

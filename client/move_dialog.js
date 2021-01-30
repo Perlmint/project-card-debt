@@ -1,24 +1,33 @@
-export default class Dialog extends PIXI.projection.Container2d {
+const EventEmitter = require('eventemitter3');
+export default class MoveDialog extends EventEmitter {
   constructor() {
     super();
+    this.root = new PIXI.projection.Container2d();
+    this.root.on('pointertap', () => {
+      this.root.parent.removeChild(this.root);
+    });
     /** @memeber */
     this.frame = new PIXI.Graphics();
-    this.addChild(this.frame);
+    this.root.addChild(this.frame);
     /** @member */
     this.name_label = new PIXI.Text("", {
       fontSize: 30,
     });
     this.name_label.position.set(10, 10);
-    this.addChild(this.name_label);
+    this.root.addChild(this.name_label);
     /** @member {PIXI.Text[]}*/
     this.action_labels = [];
     this.do_button = new PIXI.Graphics();
     this.do_button.interactive = true;
     this.do_button.buttonMode = true;
-    this.addChild(this.do_button);
+    this.do_button.on('pointertap', () => {
+      this.emit('click', this.node_idx);
+      this.root.parent.removeChild(this.root);
+    })
+    this.root.addChild(this.do_button);
 
-    this.proj.affine = PIXI.projection.AFFINE.AXIS_X;
-    this.rotation = Math.PI / 4;
+    this.root.proj.affine = PIXI.projection.AFFINE.AXIS_X;
+    this.root.rotation = Math.PI / 4;
   }
 
   /**
@@ -26,13 +35,14 @@ export default class Dialog extends PIXI.projection.Container2d {
    * @param {string} name
    * @param {any[]} actions
    */
-  init(name, actions) {
+  init(name, actions, node_idx, distance) {
+    this.node_idx = node_idx;
     let height = 0;
     this.name_label.text = name;
     this.name_label.updateText();
     height += this.name_label.height + 10;
     for (const label of this.action_labels) {
-      this.removeChild(label);
+      this.root.removeChild(label);
     }
     let width = this.name_label.width;
     for (let i = 0; i < actions.length; i++) {
@@ -47,7 +57,7 @@ export default class Dialog extends PIXI.projection.Container2d {
       }
       action_label.updateText();
       action_label.position.set(20, height);
-      this.addChild(action_label);
+      this.root.addChild(action_label);
       height += this.name_label.height + 10;
       width = Math.max(action_label.width, width);
     }
@@ -60,6 +70,6 @@ export default class Dialog extends PIXI.projection.Container2d {
     this.do_button.beginFill(0x330000, 1);
     this.do_button.drawRoundedRect(10, 10, width + 10, 50, 10);
     this.do_button.position.set(0, height - 20);
-    this.pivot.set(-40, height + 90);
+    this.root.pivot.set(-40, height + 90);
   }
 }
