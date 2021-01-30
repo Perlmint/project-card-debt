@@ -2,7 +2,7 @@ const EventEmitter = require('eventemitter3');
 export default class MoveDialog extends EventEmitter {
   constructor() {
     super();
-    this.root = new PIXI.projection.Container2d();
+    this.root = new PIXI.Container();
     this.root.on('pointertap', () => {
       this.root.parent.removeChild(this.root);
     });
@@ -25,9 +25,6 @@ export default class MoveDialog extends EventEmitter {
       this.root.parent.removeChild(this.root);
     })
     this.root.addChild(this.do_button);
-
-    this.root.proj.affine = PIXI.projection.AFFINE.AXIS_X;
-    this.root.rotation = Math.PI / 4;
   }
 
   /**

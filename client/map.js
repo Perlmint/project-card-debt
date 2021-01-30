@@ -18,6 +18,7 @@ const action_data = require('./action.json');
 const target = require('./target.json');
 
 const TileSize = 100;
+const YScale = 0.58;
 const MapMargin = TileSize * 2;
 
 /** @class */
@@ -112,13 +113,13 @@ export default class Map extends eventemitter {
   initIsometryTile(width, height) {
     this.wrap = new PIXI.Container();
     this.wrap.sortableChildren = true;
-    this.wrap.scale.y = 0.58;
+    this.wrap.scale.y = YScale;
     this.ui_root.addChild(this.wrap);
 
     this.base_y = width * Math.sin(Math.PI / 4) * TileSize * this.wrap.scale.y + MapMargin;
     this.virtual_size = new PIXI.Point(
       (width * Math.cos(Math.PI / 4) + height * Math.cos(Math.PI / 4)) * TileSize + MapMargin * 2,
-      (width * Math.sin(Math.PI / 4) + height * Math.sin(Math.PI / 4)) * TileSize * this.wrap.scale.y + MapMargin * 2,
+      ((width * Math.sin(Math.PI / 4) + height * Math.sin(Math.PI / 4)) * TileSize + MapMargin * 2) * YScale,
     );
     this.wrap.y = this.base_y;
     console.log(this.virtual_size);
@@ -161,9 +162,10 @@ export default class Map extends eventemitter {
     const actions = values(pick(action_data, building.actions));
 
     this.move_dialog.init(building.name, actions, node_idx, this.calcDistance(this.player.current_node, node_idx));
-    const node_pos = this.nodes[node_idx].position;
-    this.move_dialog.root.position.set(node_pos.x, node_pos.y);
-    this.root.addChild(this.move_dialog.root);
+    const node_pos = this.data.nodes[node_idx].position;
+    this.move_dialog.root.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
+    // this.move_dialog.root.position.set(node_pos.x, node_pos.y);
+    this.wrap.addChild(this.move_dialog.root);
   }
 
   onDoAction(action_id) {
@@ -197,14 +199,38 @@ export default class Map extends eventemitter {
   onDragMove(event) {
     if (this.dragging) {
       const newPosition = event.data.getLocalPosition(this.ui_root.parent);
-      const new_x = newPosition.x - this.drag_pos.x + this.wrap.x;
-      const new_y = newPosition.y - this.drag_pos.y + this.wrap.y;
+      let new_x = newPosition.x - this.drag_pos.x + this.wrap.x;
+      let new_y = newPosition.y - this.drag_pos.y + this.wrap.y;
+      new_x = clamp(new_x, -(this.virtual_size.x - window.innerWidth), 0);
+      new_y = clamp(new_y, -(this.virtual_size.y - window.innerHeight) + this.base_y, this.base_y);
       this.drag_pos = newPosition;
-      this.wrap.position.set(
-        clamp(new_x, -(this.virtual_size.x - window.innerWidth), 0),
-        clamp(new_y, -(this.virtual_size.y - window.innerHeight) + this.base_y, this.base_y),
-      );
+      this.emit('scroll', {
+        x: new_x - this.wrap.x,
+        y: new_y - this.wrap.y,
+      });
+      this.wrap.position.set(new_x, new_y,);
     }
+  }
+
+  calcCellInternalPosition(x, y) {
+    return new PIXI.Point(
+       x * TileSize * Math.cos(Math.PI / 4) +
+      (y + 1) * TileSize * Math.cos(Math.PI / 4),
+
+      (
+        (this.data.width - x + 1) * TileSize * Math.sin(Math.PI / 4) +
+        (y + 2) * TileSize * Math.sin(Math.PI / 4)
+        -this.base_y / YScale + MapMargin
+      ),
+    );
+  }
+
+  calcCellGlobalPosition(x, y) {
+    const ret = this.calcCellInternalPosition(x, y);
+    ret.x += this.wrap.x;
+    ret.y += this.wrap.y;
+
+    return ret;
   }
 
   onPlayerArrival(node_idx) {
@@ -222,9 +248,9 @@ export default class Map extends eventemitter {
     const actions = values(pick(action_data, building.actions));
 
     this.action_dialog.init(building.name, actions);
-    const node_pos = this.nodes[node_idx].position;
-    this.action_dialog.root.position.set(node_pos.x, node_pos.y);
-    this.root.addChild(this.action_dialog.root);
+    const node_pos = this.data.nodes[node_idx].position;
+    this.action_dialog.root.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
+    this.wrap.addChild(this.action_dialog.root);
     this.emit('player_arrival', node_idx);
   }
 
