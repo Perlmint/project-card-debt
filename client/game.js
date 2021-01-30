@@ -55,12 +55,21 @@ ws.addEventListener('message', (message) => {
           type: 'depature',
         }));
       });
+      map.on('target_noti', (targets) => {
+        ws.send(JSON.stringify({
+          type: 'target_noti',
+          targets,
+        }));
+      })
       timer.once('end', () => ws.send(JSON.stringify({
         type: 'end',
       })));
       timer.start();
       break;
     }
+    case 'target_noti':
+      console.log(data.targets);
+      break;
     case 'tick': {
       break;
     }

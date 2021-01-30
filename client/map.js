@@ -3,6 +3,7 @@ const clamp = require('lodash/clamp');
 const mapValues = require('lodash/mapValues');
 const Player = require('./player').default;
 const MoveDialog = require('./move_dialog').default;
+const ActionDialog = require('./action_dialog').default;
 const pick = require('lodash/pick');
 const values = require('lodash/values');
 const eventemitter = require('eventemitter3');
@@ -14,6 +15,7 @@ const buildings = mapValues(
 const building_ui_data = require('./res/building/id.json');
 const building_data = require('./building.json');
 const action_data = require('./action.json');
+const target = require('./target.json');
 
 const TileSize = 100;
 
@@ -54,6 +56,10 @@ export default class Map extends eventemitter {
     //   this.root.addChild(edge);
     // });
 
+    const building_layer = new PIXI.display.Layer();
+    building_layer.sortableChildren = true;
+    this.wrap.addChild(building_layer);
+
     /** @member {PIXI.Graphics[]} */
     this.nodes = data.nodes.map((node_info, idx) => {
       const data = building_ui_data[node_info.building_id];
@@ -62,6 +68,8 @@ export default class Map extends eventemitter {
       node.rotation = Math.PI / 4;
       node.anchor.set(0.5, 1);
       node.position.set(node_info.position[0] * TileSize, (node_info.position[1] + 1) * TileSize);
+      node.parentLayer = building_layer;
+      node.zOrder = this.data.width - node_info.position[0] + node_info.position[1];
       this.root.addChild(node);
       // node.lineStyle(5, 0x000000, 1);
       // node.beginFill(0xffffff, 1);
@@ -87,6 +95,8 @@ export default class Map extends eventemitter {
     this.move_dialog.on('click', (idx) => {
       this.player.moveTo(idx);
     });
+    this.action_dialog = new ActionDialog();
+    this.action_dialog.on('do', (id) => this.onDoAction(id));
 
     /** @member */
     this.player = new Player(this, initial_pos);
@@ -150,6 +160,24 @@ export default class Map extends eventemitter {
     this.root.addChild(this.move_dialog.root);
   }
 
+  onDoAction(action_id) {
+    const action = action_data[action_id];
+
+    for (const node of this.nodes) {
+      node.buttonMode = node.interactive = false;
+    }
+    this.root.removeChild(this.action_dialog.root);
+
+    setTimeout(() => {
+      this.emit('target_noti', action.targets);
+    }, action.deplay_pre * 1000);
+    setTimeout(() => {
+      for (const node of this.nodes) {
+        node.buttonMode = node.interactive = true;
+      }
+    }, (action.deplay_pre + action.delay_post) * 1000);
+  }
+
   onDragStart(event) {
     this.drag_pos = event.data.getLocalPosition(this.ui_root.parent);
     this.dragging = true;
@@ -183,6 +211,14 @@ export default class Map extends eventemitter {
       node.buttonMode = node.interactive = true;
     }
 
+    const node = this.data.nodes[node_idx];
+    const building = building_data[node.building_id];
+    const actions = values(pick(action_data, building.actions));
+
+    this.action_dialog.init(building.name, actions);
+    const node_pos = this.nodes[node_idx].position;
+    this.action_dialog.root.position.set(node_pos.x, node_pos.y);
+    this.root.addChild(this.action_dialog.root);
     this.emit('player_arrival', node_idx);
   }
 
@@ -196,7 +232,7 @@ export default class Map extends eventemitter {
       node.buttonMode = node.interactive = false;
     }
 
-    this.root.removeChild(this.move_dialog);
+    this.root.removeChild(this.move_dialog, this.action);
     this.emit('player_depature');
   }
 }

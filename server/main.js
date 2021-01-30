@@ -164,20 +164,30 @@ game_wss.on('connection', (ws, req) => {
     return ws.close(4000, "not_found");
   }
 
-  const user_data = game.find((d) => d.user_name === user_name);
+  let user_data, other_user;
+  if (game[0].user_name === user_name) {
+    user_data = game[0];
+    other_user = game[1];
+  } else {
+    user_data = game[1];
+    other_user = game[0];
+  }
   user_data.ws = ws;
 
   // ws.on('close', () => {
   //   other.close(4001, 'counterpart_close');
   // });
   ws.on('message', (data) => {
-    data = JSON.parse(data);
-    switch (data.type) {
+    parse_data = JSON.parse(data);
+    switch (parse_data.type) {
       case 'arrival':
-        user_data.data.pos = data.pos;
+        user_data.data.pos = parse_data.pos;
         break;
       case 'depature':
         user_data.data.pos = null;
+        break;
+      case 'target_noti':
+        other_user.ws.send(data);
         break;
     }
   });
