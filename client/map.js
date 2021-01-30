@@ -10,7 +10,7 @@ const eventemitter = require('eventemitter3');
 const { textures: building_textures, ui_data: building_ui_data, data: building_data } = require('./building');
 
 const action_data = require('./action.json');
-const target = require('./target.json');
+const constant = require('./const.json');
 
 const TileSize = 100;
 const YScale = 0.58;
@@ -89,9 +89,10 @@ export default class Map extends eventemitter {
 
     /** @member */
     this.move_dialog = new MoveDialog();
-    this.move_dialog.on('click', (idx) => {
+    this.move_dialog.on('go', (idx) => {
       this.player.moveTo(idx);
     });
+    this.move_dialog.scale.y = 1 / YScale;
     if (role === 'lost') {
       this.action_dialog = new LostActionDialog();
       this.action_dialog.on('do', () => this.emit('montage', this.player.current_node));
@@ -99,6 +100,7 @@ export default class Map extends eventemitter {
       this.action_dialog = new FoundActionDialog();
       this.action_dialog.on('do', (id) => this.onDoAction(id));
     }
+    // this.action_dialog.scale.y = 1 / YScale;
 
     /** @member */
     this.player = new Player(this, initial_pos, montage);
@@ -153,7 +155,7 @@ export default class Map extends eventemitter {
   calcDistance(node1, node2) {
     node1 = this.data.nodes[node1];
     node2 = this.data.nodes[node2];
-    return Math.sqrt(Math.pow(node1.position[0] - node2.position[0]) + Math.pow(node1.position[1] - node2.position[1]));
+    return Math.sqrt(Math.pow(node1.position[0] - node2.position[0], 2) + Math.pow(node1.position[1] - node2.position[1], 2)) * constant.MAP_DIST_SCALE;
   }
 
   onNodeClick(node_idx) {
@@ -163,9 +165,9 @@ export default class Map extends eventemitter {
 
     this.move_dialog.init(building.name, actions, node_idx, this.calcDistance(this.player.current_node, node_idx));
     const node_pos = this.data.nodes[node_idx].position;
-    this.move_dialog.root.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
+    this.move_dialog.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
     // this.move_dialog.root.position.set(node_pos.x, node_pos.y);
-    this.wrap.addChild(this.move_dialog.root);
+    this.wrap.addChild(this.move_dialog);
   }
 
   onDoAction(action_id) {

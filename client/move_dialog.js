@@ -1,30 +1,59 @@
-const EventEmitter = require('eventemitter3');
-export default class MoveDialog extends EventEmitter {
+const PIXI = require('pixi.js');
+const background = PIXI.Texture.from(require('./res/move_background.png'));
+const by_car_button = PIXI.Texture.from(require('./res/by_car_button.png'));
+const by_walk_button = PIXI.Texture.from(require('./res/by_walk_button.png'));
+const constant = require('./const.json');
+
+export default class MoveDialog extends PIXI.NineSlicePlane {
   constructor() {
-    super();
-    this.root = new PIXI.Container();
-    this.root.on('pointertap', () => {
-      this.root.parent.removeChild(this.root);
-    });
-    /** @memeber */
-    this.frame = new PIXI.Graphics();
-    this.root.addChild(this.frame);
+    super(background, 32, 32, 32, 32);
     /** @member */
     this.name_label = new PIXI.Text("", {
-      fontSize: 30,
+      fontWeight: 700,
+      fontSize: 20,
     });
-    this.name_label.position.set(10, 10);
-    this.root.addChild(this.name_label);
+    this.name_label.position.set(32, 27);
+    this.addChild(this.name_label);
+
     /** @member {PIXI.Text[]}*/
     this.action_labels = [];
-    this.do_button = new PIXI.Graphics();
-    this.do_button.interactive = true;
-    this.do_button.buttonMode = true;
-    this.do_button.on('pointertap', () => {
-      this.emit('click', this.node_idx);
-      this.root.parent.removeChild(this.root);
-    })
-    this.root.addChild(this.do_button);
+
+    this.by_car_button = new PIXI.Sprite(by_car_button);
+    this.by_car_button.interactive = true;
+    this.by_car_button.buttonMode = true;
+    this.by_car_button.x = 32;
+    this.by_car_button.on('pointertap', () => {
+      this.emit('go', this.node_idx, true);
+      this.parent.removeChild(this);
+    });
+
+    this.by_car_label = new PIXI.Text('', {
+      fontSize: 14,
+      fontWeight: 400
+    });
+    this.by_car_label.alpha = 0.5413;
+    this.by_car_label.position.set(45, 13);
+    this.by_car_button.addChild(this.by_car_label);
+
+    this.by_walk_button = new PIXI.Sprite(by_walk_button);
+    this.by_walk_button.interactive = true;
+    this.by_walk_button.buttonMode = true;
+    this.by_walk_button.x = 175;
+    this.by_walk_button.on('pointertap', () => {
+      this.emit('go', this.node_idx, false);
+      this.parent.removeChild(this);
+    });
+    this.addChild(this.by_walk_button);
+
+    this.by_walk_label = new PIXI.Text('', {
+      fontSize: 14,
+      fontWeight: 400
+    });
+    this.by_walk_label.alpha = 0.5413;
+    this.by_walk_label.position.set(45, 13);
+    this.by_walk_button.addChild(this.by_walk_label);
+
+    this.width = 324;
   }
 
   /**
@@ -37,36 +66,40 @@ export default class MoveDialog extends EventEmitter {
     let height = 0;
     this.name_label.text = name;
     this.name_label.updateText();
-    height += this.name_label.height + 10;
+    height += this.name_label.height + 16 + this.name_label.y;
     for (const label of this.action_labels) {
-      this.root.removeChild(label);
+      this.removeChild(label);
     }
     let width = this.name_label.width;
     for (let i = 0; i < actions.length; i++) {
       const action = actions[i];
       let action_label;
+      const label_text = `• ${action.action_name}`;
       if (this.action_labels[i]) {
         action_label = this.action_labels[i];
-        action_label.text = action.action_name;
+        action_label.text = label_text;
       } else {
-        action_label = new PIXI.Text(action.action_name);
+        action_label = new PIXI.Text(label_text, {
+          fontSize: 14,
+          fontWeight: 500,
+        });
+        action_label.x = 36;
         this.action_labels.push(action_label);
       }
       action_label.updateText();
-      action_label.position.set(20, height);
-      this.root.addChild(action_label);
-      height += this.name_label.height + 10;
+      action_label.y = height;
+      this.addChild(action_label);
+
+      height += action_label.height + 2.41;
       width = Math.max(action_label.width, width);
     }
 
-    this.frame.clear();
-    this.frame.beginFill(0x0000cc, 1);
-    this.frame.drawRoundedRect(0, 0, width + 30, height + 70, 10);
+    console.log(distance, constant.WALK_SPEED);
+    this.by_walk_label.text = `${Math.round(distance / constant.WALK_SPEED)} 분`;
 
-    this.do_button.clear();
-    this.do_button.beginFill(0x330000, 1);
-    this.do_button.drawRoundedRect(10, 10, width + 10, 50, 10);
-    this.do_button.position.set(0, height - 20);
-    this.root.pivot.set(-40, height + 90);
+    this.by_walk_button.y = this.by_car_button.y = height + 16;
+
+    // this.width = width;
+    this.height = height + this.by_walk_button.height + 37;
   }
 }

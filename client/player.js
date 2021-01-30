@@ -19,16 +19,12 @@ const constants = require('./const.json');
 
 export function createHead(montage) {
   const wrap = new PIXI.Container();
-  head = PIXI.Sprite.from(head);
-  head.position.set(23.76, 45.02);
-  // left: 16.06px;
-  // top: 297px
-  wrap.addChild(head);
-  hair = PIXI.Sprite.from(hair[montage.hair_type]);
-  hair.tint = montage.hair_color;
-  // left: 0;
-  // top: 261.31px;
-  wrap.addChild(hair);
+  const head_ = PIXI.Sprite.from(head);
+  head_.position.set(23.76, 45.02);
+  wrap.addChild(head_);
+  const hair_ = PIXI.Sprite.from(hair[montage.hair_type]);
+  hair_.tint = montage.hair_color;
+  wrap.addChild(hair_);
 
   return wrap;
 }
