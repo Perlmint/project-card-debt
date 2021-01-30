@@ -1,0 +1,114 @@
+{
+	"buildings": [
+		{
+			"building_id": 11, 
+			"building_name": "A 아지트", 
+			"actions": [ 1, 11 ]
+		},
+		{
+			"building_id": 12, 
+			"building_name": "B 아지트", 
+			"actions": [ 2, 12, 112 ]
+		},
+		{
+			"building_id": 13, 
+			"building_name": "C 아지트", 
+			"actions": [ 3, 13 ]
+		},
+		{
+			"building_id": 14, 
+			"building_name": "D 아지트", 
+			"actions": [ 4 ]
+		},
+		{
+			"building_id": 15, 
+			"building_name": "구청", 
+			"actions": [ 15 ]
+		},
+		{
+			"building_id": 21, 
+			"building_name": "A 호텔", 
+			"actions": [ 1 ]
+		},
+		{
+			"building_id": 22, 
+			"building_name": "B 오피스 빌딩", 
+			"actions": [ 2, 112 ]
+		},
+		{
+			"building_id": 23, 
+			"building_name": "C 오피스 빌딩", 
+			"actions": [ 3, 113 ]
+		},
+		{
+			"building_id": 24, 
+			"building_name": "D 나이트클럽", 
+			"actions": [ 4, 104 ]
+		},
+		{
+			"building_id": 25, 
+			"building_name": "관광진흥청", 
+			"actions": [ 15 ]
+		},
+		{
+			"building_id": 26, 
+			"building_name": "민간 호텔", 
+			"actions": [ 16 ]
+		},
+		{
+			"building_id": 31, 
+			"building_name": "A 항만 아지트", 
+			"actions": [ 111 ]
+		},
+		{
+			"building_id": 32, 
+			"building_name": "B 항만 아지트", 
+			"actions": [ 2, 12 ]
+		},
+		{
+			"building_id": 33, 
+			"building_name": "C 항만 아지트", 
+			"actions": [ 3 ]
+		},
+		{
+			"building_id": 35, 
+			"building_name": "항만 관리청", 
+			"actions": [ 15, 125 ]
+		},
+		{
+			"building_id": 43, 
+			"building_name": "C 도심 아지트", 
+			"actions": [ 13, 113 ]
+		},
+		{
+			"building_id": 45, 
+			"building_name": "시청", 
+			"actions": [ 125 ]
+		},
+		{
+			"building_id": 47, 
+			"building_name": "시장 관사", 
+			"actions": [ 105 ]
+		},
+		{
+			"building_id": 54, 
+			"building_name": "D 인력사무소", 
+			"actions": [ 4 ]
+		},
+		{
+			"building_id": 56, 
+			"building_name": "공장", 
+			"actions": [ 16, 126 ]
+		},
+		{
+			"building_id": 62, 
+			"building_name": "B 보스 저택", 
+			"actions": [ 102, 112 ]
+		},
+		{
+			"building_id": 63, 
+			"building_name": "C 보스 요트", 
+			"actions": [ 13, 103 ]
+		}
+	]
+}

@@ -1,0 +1,175 @@
+{
+	"actions": [
+		{
+			"action_id": 1,
+			"action_name": "A 이권 빼앗기",
+			"delay_pre": 0.0,
+			"delay_post": 30.0,
+			"montage_part_init": 3,
+			"montage_part_decay": 40.0,
+			"targets": [ 1 ]
+		}, 
+		{
+			"action_id": 2,
+			"action_name": "B 이권 빼앗기",
+			"delay_pre": 0.0,
+			"delay_post": 30.0,
+			"montage_part_init": 3,
+			"montage_part_decay": 40.0,
+			"targets": [ 2 ]
+		}, 
+		{
+			"action_id": 3,
+			"action_name": "C 이권 빼앗기",
+			"delay_pre": 0.0,
+			"delay_post": 30.0,
+			"montage_part_init": 4,
+			"montage_part_decay": 30.0,
+			"targets": [ 3 ]
+		},
+		{
+			"action_id": 4,
+			"action_name": "D 이권 빼앗기",
+			"delay_pre": 0.0,
+			"delay_post": 20.0,
+			"montage_part_init": 4,
+			"montage_part_decay": 40.0,
+			"targets": [ 4 ]
+		},
+		{
+			"action_id": 11,
+			"action_name": "A 물건 강탈",
+			"delay_pre": 0.0,
+			"delay_post": 15.0,
+			"montage_part_init": 2,
+			"montage_part_decay": 50.0,
+			"targets": [ 11 ]
+		},
+		{
+			"action_id": 12,
+			"action_name": "B 물건 강탈",
+			"delay_pre": 0.0,
+			"delay_post": 15.0,
+			"montage_part_init": 2,
+			"montage_part_decay": 50.0,
+			"targets": [ 12 ]
+		},
+		{
+			"action_id": 13,
+			"action_name": "C 물건 강탈",
+			"delay_pre": 0.0,
+			"delay_post": 15.0,
+			"montage_part_init": 3,
+			"montage_part_decay": 60.0,
+			"targets": [ 13 ]
+		},
+		{
+			"action_id": 15,
+			"action_name": "정부 물건 강탈",
+			"delay_pre": 0.0,
+			"delay_post": 20.0,
+			"montage_part_init": 3,
+			"montage_part_decay": 60.0,
+			"targets": [ 15 ]
+		},
+		{
+			"action_id": 16,
+			"action_name": "민간 물건 강탈",
+			"delay_pre": 0.0,
+			"delay_post": 10.0,
+			"montage_part_init": 3,
+			"montage_part_decay": 80.0,
+			"targets": [ 16 ]
+		},
+		{
+			"action_id": 101,
+			"action_name": "A 대장 암살",
+			"delay_pre": 60.0,
+			"delay_post": 0.0,
+			"montage_part_init": 2,
+			"montage_part_decay": 60.0,
+			"targets": [ 101 ]
+		},
+		{
+			"action_id": 102,
+			"action_name": "B 대장 암살",
+			"delay_pre": 60.0,
+			"delay_post": 0.0,
+			"montage_part_init": 2,
+			"montage_part_decay": 60.0,
+			"targets": [ 102 ]
+		},
+		{
+			"action_id": 103,
+			"action_name": "C 대장 암살",
+			"delay_pre": 50.0,
+			"delay_post": 0.0,
+			"montage_part_init": 2,
+			"montage_part_decay": 60.0,
+			"targets": [ 103 ]
+		},
+		{
+			"action_id": 104,
+			"action_name": "D 대장 암살",
+			"delay_pre": 40.0,
+			"delay_post": 0.0,
+			"montage_part_init": 2,
+			"montage_part_decay": 60.0,
+			"targets": [ 104 ]
+		},
+		{
+			"action_id": 105,
+			"action_name": "시장 암살",
+			"delay_pre": 90.0,
+			"delay_post": 0.0,
+			"montage_part_init": 2,
+			"montage_part_decay": 90.0,
+			"targets": [ 105 ]
+		},
+		{
+			"action_id": 111,
+			"action_name": "A 서류 빼돌리기",
+			"delay_pre": 90.0,
+			"delay_post": 0.0,
+			"montage_part_init": 1,
+			"montage_part_decay": 40.0,
+			"targets": [ 111 ]
+		},
+		{
+			"action_id": 112,
+			"action_name": "B 서류 빼돌리기",
+			"delay_pre": 90.0,
+			"delay_post": 0.0,
+			"montage_part_init": 1,
+			"montage_part_decay": 40.0,
+			"targets": [ 112 ]
+		},
+		{
+			"action_id": 113,
+			"action_name": "C 서류 빼돌리기",
+			"delay_pre": 80.0,
+			"delay_post": 0.0,
+			"montage_part_init": 1,
+			"montage_part_decay": 40.0,
+			"targets": [ 113 ]
+		},
+		{
+			"action_id": 125,
+			"action_name": "정부 시설물 파괴",
+			"delay_pre": 80.0,
+			"delay_post": 0.0,
+			"montage_part_init": 3,
+			"montage_part_decay": 60.0,
+			"targets": [ 125 ]
+		},
+		{
+			"action_id": 126,
+			"action_name": "민간 공장 시설물 파괴",
+			"delay_pre": 60.0,
+			"delay_post": 0.0,
+			"montage_part_init": 3,
+			"montage_part_decay": 60.0,
+			"targets": [ 126 ]
+		}
+	]
+}

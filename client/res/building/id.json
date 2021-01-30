@@ -1,0 +1,112 @@
+{
+    "21": {
+        "name": "A_hotel.png",
+        "w": 2,
+        "h": 2
+    },
+    "11": {
+        "name": "A_safehouse.png",
+        "w": 1,
+        "h": 1
+    },
+    "31": {
+        "name": "A_safehouse_harbor.png",
+        "w": 1,
+        "h": 1
+    },
+    "15": {
+        "name": "borough_office.png",
+        "w": 1,
+        "h": 1
+    },
+    "62": {
+        "name": "B_boss_house.png",
+        "w": 2,
+        "h": 2
+    },
+    "22": {
+        "name": "B_office.png",
+        "w": 1,
+        "h": 1
+    },
+    "12": {
+        "name": "B_safehouse.png",
+        "w": 1,
+        "h": 1
+    },
+    "32": {
+        "name": "B_safehouse_harbor.png",
+        "w": 2,
+        "h": 2
+    },
+    "45": {
+        "name": "cityhall.png",
+        "w": 1,
+        "h": 1
+    },
+    "23": {
+        "name": "C_office.png",
+        "w": 2,
+        "h": 2
+    },
+    "13": {
+        "name": "C_safehouse.png",
+        "w": 1,
+        "h": 1
+    },
+    "43": {
+        "name": "C_safehouse_city.png",
+        "w": 1,
+        "h": 1
+    },
+    "33": {
+        "name": "C_safehouse_harbor.png",
+        "w": 1,
+        "h": 1
+    },
+    "63": {
+        "name": "C_yacht.png",
+        "w": 1,
+        "h": 1
+    },
+    "24": {
+        "name": "D_club.png",
+        "w": 1,
+        "h": 1
+    },
+    "14": {
+        "name": "D_office.png",
+        "w": 1,
+        "h": 1
+    },
+    "54": {
+        "name": "employment_agency.png",
+        "w": 1,
+        "h": 1
+    },
+    "56": {
+        "name": "factory.png",
+        "w": 1,
+        "h": 1
+    },
+    "35": {
+        "name": "harbor_management_office.png",
+        "w": 1,
+        "h": 1
+    },
+    "26": {
+        "name": "hotel.png",
+        "w": 1,
+        "h": 1
+    },
+    "47": {
+        "name": "mayors_mansion.png",
+        "w": 1,
+        "h": 1
+    },
+    "25": {
+        "name": "tourism_management_office.png",
+        "w": 1,
+        "h": 2
+    }
+}
