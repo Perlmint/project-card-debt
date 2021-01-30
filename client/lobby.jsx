@@ -5,10 +5,7 @@ function UserInfo({data, username}) {
     console.log(data);
     return <div>
         <div>
-            {data?.user_name === username ? 'YOU' : ''}
-        </div>
-        <div>
-            {data?.user_name}
+            {data?.user_name} {data?.user_name === username ? '(YOU)' : ''}
         </div>
     </div>
 }
@@ -117,14 +114,21 @@ function Lobby() {
             }
             console.log(found_user, lost_user);
             return <div className="pure-g">
+                <div className="pure-u-1-1" style={{ textAlign: "center", paddingBottom: '2em' }}>
+                    <h1>역할 선택</h1>
+                </div>
                 <div className="pure-u-1-5"></div>
                 <div className="pure-u-1-5">
-                    Lost
+                    <font color="blue">Lost man - 총 잃어버린 사람</font> <br/> <br/>
+                    당신이 잃어버린 총을 누군가가 사용하고 있습니다! <br/>
+                    <font color="blue">범죄현장에 남겨진 정보를 쫓아, 잃어버린 총을 되찾으세요.</font> <br/><br/>
                     <UserInfo data={lost_user} username={nickname} />
                 </div>
                 <div className="pure-u-1-5"></div>
                 <div className="pure-u-1-5">
-                    Found
+                    <font color="blue">Found man - 총 주운 사람</font> <br/><br/>
+                    당신은 총을 습득했지만, 여전히 할 일은 많고 시간은 촉박하군요! <br/>
+                    <font color="blue">총 주인의 추적을 피해, 총의 도움이 필요한 목표 리스트를 모두 달성하세요.</font> <br/><br/>
                     <UserInfo data={found_user} username={nickname} />
                 </div>
                 <div className="pure-u-1-5"></div>
@@ -148,7 +152,14 @@ function Lobby() {
                             게임 이름: {gamename}
                         </div>
                     </>
-                    : <div />
+                    :<>
+                        <div className="pure-u-1-5"></div> 
+                        <div className="pure-u-1-5"></div> 
+                        <div className="pure-u-1-5"> 
+                            방장이 게임을 시작하기를 기다리는 중.. 
+                        </div>
+                    </>
+                    
                 }
             </div>;
         }
