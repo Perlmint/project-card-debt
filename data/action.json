@@ -2,7 +2,7 @@
 	"actions": [
 		{
 			"action_id": 1,
-			"action_name": "A 이권 빼앗기",
+			"action_name": "냉동파 행동대원 정리",
 			"delay_pre": 0.0,
 			"delay_post": 30.0,
 			"montage_part_init": 3,
@@ -11,7 +11,7 @@
 		}, 
 		{
 			"action_id": 2,
-			"action_name": "B 이권 빼앗기",
+			"action_name": "볶음파 조직원 정리",
 			"delay_pre": 0.0,
 			"delay_post": 30.0,
 			"montage_part_init": 3,
@@ -20,7 +20,7 @@
 		}, 
 		{
 			"action_id": 3,
-			"action_name": "C 이권 빼앗기",
+			"action_name": "구내식당파 투입직원 정리",
 			"delay_pre": 0.0,
 			"delay_post": 30.0,
 			"montage_part_init": 4,
@@ -29,7 +29,7 @@
 		},
 		{
 			"action_id": 4,
-			"action_name": "D 이권 빼앗기",
+			"action_name": "스팸파 현장직원 정리",
 			"delay_pre": 0.0,
 			"delay_post": 20.0,
 			"montage_part_init": 4,
@@ -38,7 +38,7 @@
 		},
 		{
 			"action_id": 11,
-			"action_name": "A 물건 강탈",
+			"action_name": "냉동파 사무실 헤집기",
 			"delay_pre": 0.0,
 			"delay_post": 15.0,
 			"montage_part_init": 2,
@@ -47,7 +47,7 @@
 		},
 		{
 			"action_id": 12,
-			"action_name": "B 물건 강탈",
+			"action_name": "볶음파 사무실 헤집기",
 			"delay_pre": 0.0,
 			"delay_post": 15.0,
 			"montage_part_init": 2,
@@ -56,7 +56,7 @@
 		},
 		{
 			"action_id": 13,
-			"action_name": "C 물건 강탈",
+			"action_name": "구내식당파 사무실 헤집기",
 			"delay_pre": 0.0,
 			"delay_post": 15.0,
 			"montage_part_init": 3,
@@ -65,7 +65,7 @@
 		},
 		{
 			"action_id": 15,
-			"action_name": "정부 물건 강탈",
+			"action_name": "공무원 비품 강탈",
 			"delay_pre": 0.0,
 			"delay_post": 20.0,
 			"montage_part_init": 3,
@@ -74,7 +74,7 @@
 		},
 		{
 			"action_id": 16,
-			"action_name": "민간 물건 강탈",
+			"action_name": "자릿세 상납 받기",
 			"delay_pre": 0.0,
 			"delay_post": 10.0,
 			"montage_part_init": 3,
@@ -83,7 +83,7 @@
 		},
 		{
 			"action_id": 101,
-			"action_name": "A 대장 암살",
+			"action_name": "냉동파 보스 암살",
 			"delay_pre": 60.0,
 			"delay_post": 0.0,
 			"montage_part_init": 2,
@@ -92,7 +92,7 @@
 		},
 		{
 			"action_id": 102,
-			"action_name": "B 대장 암살",
+			"action_name": "볶음파 보스 암살",
 			"delay_pre": 60.0,
 			"delay_post": 0.0,
 			"montage_part_init": 2,
@@ -101,7 +101,7 @@
 		},
 		{
 			"action_id": 103,
-			"action_name": "C 대장 암살",
+			"action_name": "구내식당파 보스 암살",
 			"delay_pre": 50.0,
 			"delay_post": 0.0,
 			"montage_part_init": 2,
@@ -110,7 +110,7 @@
 		},
 		{
 			"action_id": 104,
-			"action_name": "D 대장 암살",
+			"action_name": "스팸파 대장 암살",
 			"delay_pre": 40.0,
 			"delay_post": 0.0,
 			"montage_part_init": 2,
@@ -128,7 +128,7 @@
 		},
 		{
 			"action_id": 111,
-			"action_name": "A 서류 빼돌리기",
+			"action_name": "냉동파 보고서 훔치기",
 			"delay_pre": 90.0,
 			"delay_post": 0.0,
 			"montage_part_init": 1,
@@ -137,7 +137,7 @@
 		},
 		{
 			"action_id": 112,
-			"action_name": "B 서류 빼돌리기",
+			"action_name": "볶음파 보고서 훔치기",
 			"delay_pre": 90.0,
 			"delay_post": 0.0,
 			"montage_part_init": 1,
@@ -146,7 +146,7 @@
 		},
 		{
 			"action_id": 113,
-			"action_name": "C 서류 빼돌리기",
+			"action_name": "구내식당파 서류 훔치기",
 			"delay_pre": 80.0,
 			"delay_post": 0.0,
 			"montage_part_init": 1,
@@ -155,7 +155,7 @@
 		},
 		{
 			"action_id": 125,
-			"action_name": "정부 시설물 파괴",
+			"action_name": "시설물 파괴하기",
 			"delay_pre": 80.0,
 			"delay_post": 0.0,
 			"montage_part_init": 3,
@@ -164,7 +164,7 @@
 		},
 		{
 			"action_id": 126,
-			"action_name": "민간 공장 시설물 파괴",
+			"action_name": "공장 시설 파괴하기",
 			"delay_pre": 60.0,
 			"delay_post": 0.0,
 			"montage_part_init": 3,

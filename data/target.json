@@ -2,55 +2,55 @@
 	"targets": [
 		{
 			"target_id": 1, 
-			"target_name": "A 이권 빼앗기"
+			"target_name": "냉동파 행동대원 정리"
 		},
 		{
 			"target_id": 2, 
-			"target_name": "B 이권 빼앗기"
+			"target_name": "볶음파 조직원 정리"
 		},
 		{
 			"target_id": 3, 
-			"target_name": "C 이권 빼앗기"
+			"target_name": "구내식당파 투입직원 정리"
 		},
 		{
 			"target_id": 4, 
-			"target_name": "D 이권 빼앗기"
+			"target_name": "스팸파 현장직원 정리"
 		},
 		{
 			"target_id": 11, 
-			"target_name": "A 물건 강탈"
+			"target_name": "냉동파 사무실 헤집기"
 		},
 		{
 			"target_id": 12, 
-			"target_name": "B 물건 강탈"
+			"target_name": "볶음파 사무실 헤집기"
 		},
 		{
 			"target_id": 13, 
-			"target_name": "C 물건 강탈"
+			"target_name": "구내식당파 사무실 헤집기"
 		},
 		{
 			"target_id": 15, 
-			"target_name": "정부 물건 강탈"
+			"target_name": "공무원 비품 강탈"
 		},
 		{
 			"target_id": 16, 
-			"target_name": "민간 물건 강탈"
+			"target_name": "자릿세 상납 받기"
 		},
 		{
 			"target_id": 101, 
-			"target_name": "A 대장 암살"
+			"target_name": "냉동파 보스 암살"
 		},
 		{
 			"target_id": 102, 
-			"target_name": "B 대장 암살"
+			"target_name": "볶음파 보스 암살"
 		},
 		{
 			"target_id": 103, 
-			"target_name": "C 대장 암살"
+			"target_name": "구내식당파 보스 암살"
 		},
 		{
 			"target_id": 104, 
-			"target_name": "D 대장 암살"
+			"target_name": "스팸파 대장 암살"
 		},
 		{
 			"target_id": 105, 
@@ -58,23 +58,23 @@
 		},
 		{
 			"target_id": 111, 
-			"target_name": "A 서류 빼돌리기"
+			"target_name": "냉동파 보고서 훔치기"
 		},
 		{
 			"target_id": 112, 
-			"target_name": "B 서류 빼돌리기"
+			"target_name": "볶음파 보고서 훔치기"
 		},
 		{
 			"target_id": 113, 
-			"target_name": "C 서류 빼돌리기"
+			"target_name": "구내식당파 서류 훔치기"
 		},
 		{
 			"target_id": 125, 
-			"target_name": "정부 시설물 파괴"
+			"target_name": "시설물 파괴하기"
 		},
 		{
 			"target_id": 126, 
-			"target_name": "민간 공장 시설물 파괴"
+			"target_name": "공장 시설 파괴하기"
 		}
 	]
 }

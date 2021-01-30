@@ -2,112 +2,112 @@
 	"buildings": [
 		{
 			"building_id": 11, 
-			"building_name": "A 아지트", 
+			"building_name": "냉동파 아지트", 
 			"actions": [ 1, 11 ]
 		},
 		{
 			"building_id": 12, 
-			"building_name": "B 아지트", 
+			"building_name": "볶음파 아지트", 
 			"actions": [ 2, 12, 112 ]
 		},
 		{
 			"building_id": 13, 
-			"building_name": "C 아지트", 
+			"building_name": "구내식당파 아지트", 
 			"actions": [ 3, 13 ]
 		},
 		{
 			"building_id": 14, 
-			"building_name": "D 아지트", 
+			"building_name": "스팸파 아지트", 
 			"actions": [ 4 ]
 		},
 		{
 			"building_id": 15, 
-			"building_name": "구청", 
+			"building_name": "공일구청", 
 			"actions": [ 15 ]
 		},
 		{
 			"building_id": 21, 
-			"building_name": "A 호텔", 
+			"building_name": "제이 메리엇 호텔 부울", 
 			"actions": [ 1, 101 ]
 		},
 		{
 			"building_id": 22, 
-			"building_name": "B 오피스 빌딩", 
+			"building_name": "K-C 빌딩", 
 			"actions": [ 2, 112 ]
 		},
 		{
 			"building_id": 23, 
-			"building_name": "C 오피스 빌딩", 
+			"building_name": "베라포트 오피스 타워", 
 			"actions": [ 3, 113 ]
 		},
 		{
 			"building_id": 24, 
-			"building_name": "D 나이트클럽", 
+			"building_name": "솔티 나이트 클럽", 
 			"actions": [ 4, 104 ]
 		},
 		{
 			"building_id": 25, 
-			"building_name": "관광진흥청", 
+			"building_name": "부울 관광진흥청사", 
 			"actions": [ 15 ]
 		},
 		{
 			"building_id": 26, 
-			"building_name": "민간 호텔", 
+			"building_name": "마린보이 레지던스 호텔", 
 			"actions": [ 16 ]
 		},
 		{
 			"building_id": 31, 
-			"building_name": "A 항만 아지트", 
+			"building_name": "냉동파 항만 아지트", 
 			"actions": [ 111 ]
 		},
 		{
 			"building_id": 32, 
-			"building_name": "B 항만 아지트", 
+			"building_name": "볶음파 항만 아지트", 
 			"actions": [ 2, 12 ]
 		},
 		{
 			"building_id": 33, 
-			"building_name": "C 항만 아지트", 
+			"building_name": "구내식당파 항만 아지트", 
 			"actions": [ 3 ]
 		},
 		{
 			"building_id": 35, 
-			"building_name": "항만 관리청", 
+			"building_name": "부울 항만관리청사", 
 			"actions": [ 15, 125 ]
 		},
 		{
 			"building_id": 43, 
-			"building_name": "C 도심 아지트", 
+			"building_name": "구내식당파 중심 아지트", 
 			"actions": [ 13, 113 ]
 		},
 		{
 			"building_id": 45, 
-			"building_name": "시청", 
+			"building_name": "부울시청", 
 			"actions": [ 125 ]
 		},
 		{
 			"building_id": 47, 
-			"building_name": "시장 관사", 
+			"building_name": "부울시장 관사", 
 			"actions": [ 105 ]
 		},
 		{
 			"building_id": 54, 
-			"building_name": "D 인력사무소", 
+			"building_name": "스팸파 인력사무소", 
 			"actions": [ 4 ]
 		},
 		{
 			"building_id": 56, 
-			"building_name": "공장", 
+			"building_name": "부울공단 제2공장", 
 			"actions": [ 16, 126 ]
 		},
 		{
 			"building_id": 62, 
-			"building_name": "B 보스 저택", 
+			"building_name": "볶음파 보스 저택", 
 			"actions": [ 102, 112 ]
 		},
 		{
 			"building_id": 63, 
-			"building_name": "C 보스 요트", 
+			"building_name": "구내식당파 보스 요트", 
 			"actions": [ 13, 103 ]
 		}
 	]
