@@ -98,9 +98,15 @@ ws.addEventListener('message', (message) => {
     case 'capture':
       alert('capture!');
       break;
-    case 'tick': {
+    case 'tick_req':
+      ws.send(JSON.stringify({
+        type: 'tick_resp',
+        time: timer.remain,
+      }));
       break;
-    }
+    case 'tick_resp':
+      timer.remain = data.time;
+      break;
   }
 });
 

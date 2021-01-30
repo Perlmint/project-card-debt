@@ -258,6 +258,11 @@ game_wss.on('connection', (ws, req) => {
         other_user.ws.send(data);
         checkCapture();
         break;
+      case 'tick_resp':
+        other_user.ws.send(JSON.stringify({
+          type: 'tick_resp',
+          time: parse_data.time,
+        }));
     }
   });
 
@@ -272,6 +277,18 @@ game_wss.on('connection', (ws, req) => {
   game[2].on('start', init);
   if (game[2].join()) {
     init();
+    if (user_data.data.role === 'lost') {
+      for (const target of game[2].targets) {
+        ws.send(JSON.stringify(target));
+      }
+      ws.send(JSON.stringify({
+        type: 'montage',
+        montage: game[2].montage,
+      }));
+    }
+    other_user.ws.send(JSON.stringify({
+      type: 'tick_req',
+    }))
   }
 });
 
