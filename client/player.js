@@ -69,7 +69,7 @@ export default class Player extends PIXI.projection.Container2d {
   moveTo(new_idx) {
     // const distance = this.map.connection.get(this.current_node).get(new_idx);
     const target_node = this.map.nodes[new_idx];
-    const distance = Math.sqrt(Math.pow(target_node.position.x - this.position.x, 2), Math.pow(target_node.position.y - this.position.y, 2));
+    const distance = Math.sqrt(Math.pow(target_node.position.x - this.position.x, 2) + Math.pow(target_node.position.y - this.position.y, 2));
     this.map.onPlayerDepature(this.current_node);
     if (this.x > target_node.x || this.y > target_node.y) {
       this.scale.x = Math.abs(this.scale.x);
