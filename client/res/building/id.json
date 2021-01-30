@@ -1,111 +1,111 @@
 {
     "21": {
-        "name": "A_hotel.png",
+        "name": "A_hotel",
         "w": 2,
         "h": 2
     },
     "11": {
-        "name": "A_safehouse.png",
+        "name": "A_safehouse",
         "w": 1,
         "h": 1
     },
     "31": {
-        "name": "A_safehouse_harbor.png",
+        "name": "A_safehouse_harbor",
         "w": 1,
         "h": 1
     },
     "15": {
-        "name": "borough_office.png",
+        "name": "borough_office",
         "w": 1,
         "h": 1
     },
     "62": {
-        "name": "B_boss_house.png",
+        "name": "B_boss_house",
         "w": 2,
         "h": 2
     },
     "22": {
-        "name": "B_office.png",
+        "name": "B_office",
         "w": 1,
         "h": 1
     },
     "12": {
-        "name": "B_safehouse.png",
+        "name": "B_safehouse",
         "w": 1,
         "h": 1
     },
     "32": {
-        "name": "B_safehouse_harbor.png",
+        "name": "B_safehouse_harbor",
         "w": 2,
         "h": 2
     },
     "45": {
-        "name": "cityhall.png",
+        "name": "cityhall",
         "w": 1,
         "h": 1
     },
     "23": {
-        "name": "C_office.png",
+        "name": "C_office",
         "w": 2,
         "h": 2
     },
     "13": {
-        "name": "C_safehouse.png",
+        "name": "C_safehouse",
         "w": 1,
         "h": 1
     },
     "43": {
-        "name": "C_safehouse_city.png",
+        "name": "C_safehouse_city",
         "w": 1,
         "h": 1
     },
     "33": {
-        "name": "C_safehouse_harbor.png",
+        "name": "C_safehouse_harbor",
         "w": 1,
         "h": 1
     },
     "63": {
-        "name": "C_yacht.png",
+        "name": "C_yacht",
         "w": 1,
         "h": 1
     },
     "24": {
-        "name": "D_club.png",
+        "name": "D_club",
         "w": 1,
         "h": 1
     },
     "14": {
-        "name": "D_office.png",
+        "name": "D_office",
         "w": 1,
         "h": 1
     },
     "54": {
-        "name": "employment_agency.png",
+        "name": "employment_agency",
         "w": 1,
         "h": 1
     },
     "56": {
-        "name": "factory.png",
+        "name": "factory",
         "w": 1,
         "h": 1
     },
     "35": {
-        "name": "harbor_management_office.png",
+        "name": "harbor_management_office",
         "w": 1,
         "h": 1
     },
     "26": {
-        "name": "hotel.png",
+        "name": "hotel",
         "w": 1,
         "h": 1
     },
     "47": {
-        "name": "mayors_mansion.png",
+        "name": "mayors_mansion",
         "w": 1,
         "h": 1
     },
     "25": {
-        "name": "tourism_management_office.png",
+        "name": "tourism_management_office",
         "w": 1,
         "h": 2
     }

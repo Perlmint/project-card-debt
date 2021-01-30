@@ -25,7 +25,7 @@ const ui_layer = PIXI.display.Layer();
 const phone = new Phone();
 container.addChild(phone);
 
-const ws = new WebSocket(`ws://${location.host}/game${location.search}&user=${document.cookie.session}`);
+const ws = new WebSocket(`ws://${location.host}/game${location.search}`);
 ws.addEventListener('close', (event) => {
   if (event.reason === 'not_found') {
     location.href = '/';
@@ -35,7 +35,7 @@ ws.addEventListener('message', (message) => {
   const data = JSON.parse(message.data);
   switch (data.type) {
     case 'init': {
-      const map = new Map(data.map, data.pos);
+      const map = new Map(data.map, data.user_data.pos);
       map.ui_root.position.x = phone.width;
       container.addChild(map.ui_root);
       map.on('player_arrival', (pos) => {

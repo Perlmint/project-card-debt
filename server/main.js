@@ -6,6 +6,8 @@ const xkcdp = new require('xkcd-password')();
 const WebSocket = require('ws');
 const url = require('url');
 const random = require('lodash/random');
+const pick = require('lodash/pick');
+const EventEmitter3 = require('eventemitter3');
 
 const pass_options = {
   numWords: 3,
@@ -15,81 +17,200 @@ const pass_options = {
 
 const games = new Map();
 
-const lobby_wss = new WebSocket.Server({ server, path: '/lobby' });
-
-const game_wss = new WebSocket.Server({ server, path: '/game' });
+const lobby_wss = new WebSocket.Server({ noServer: true });
+const game_wss = new WebSocket.Server({ noServer: true });
 
 app.get('/', async (req, res, next) => {
-  if (!req.query.id) {
+  if (!req.query.game_id) {
     req.url = '/lobby.html';
     next('route');
-    // const game_id = (await xkcdp.generate(pass_options)).join('-');
-    // if (!req.cookies?.['session']) {
-    //   res.cookie('session', (await xkcdp.generate(pass_options)).join('-'));
-    // }
-    // res.redirect(`/?id=${game_id}`);
-    // games.set(game_id, new Map());
-    // res.end();
   } else {
     req.url = '/game.html';
     next('route');
   }
 });
 
-lobby_wss.on('connection', (ws, req) => {
+class Common extends EventEmitter3 {
+  constructor() {
+    super();
+    this.counter = 0;
+  }
+
+  join() {
+    this.counter++;
+    if (this.counter == 2) {
+      this.emit('start');
+    } else if (this.counter > 2) {
+      return true;
+    }
+    return false;
+  }
+}
+
+lobby_wss.on('connection', async (ws, req) => {
   const req_url = url.parse(req.url, true);
   let { game_id, user_name } = req_url.query;
-
+  let game_data;
   if (!game_id) {
-    game_id = (await xkcdp.generate(pass_options)).join('-');
-    games.set(game_id, [[user_name, null], [null, null]]);
+    game_id = 'aaa'; // TODO: (await xkcdp.generate(pass_options)).join('-');
+    games.set(game_id, [{
+      user_name,
+      ws,
+      role: 'lost',
+    }, {
+      user_name: null,
+      ws: null,
+      role: 'found',
+    }]);
+
+    ws.send(JSON.stringify({
+      type: "game_id",
+      game_id,
+    }));
+    game_data = games.get(game_id);
+    ws.on('close', () => {
+      let other_ws = game_data[0].ws;
+      if (other_ws) {
+        other_ws.close(4000, 'host_out');
+      }
+      if (!game_data[2]) {
+        games.delete(game_id);
+      }
+    });
+  } else {
+    game_data = games.get(game_id);
+    if (!game_data) {
+      return ws.close(4002, 'game_not_found');
+    }
+    if (game_data[0].user_name === user_name) {
+      return ws.close(4001, 'duplicated_name');
+    }
+    game_data[1].user_name = user_name;
+    game_data[1].ws = ws;
+    ws.on('close', () => {
+      if (!game_data[2]) {
+        game_data[1].data = game_data[1].ws = game_data[1].user_name = null;
+        update();
+      }
+    });
   }
+
+  const users = [game_data[0], game_data[1]];
+
+  function update() {
+    for (const user of users) {
+      if (user.ws) {
+        user.ws.send(JSON.stringify({
+          type: 'update',
+          data: users.map(o => pick(o, 'user_name', 'role'))
+        }));
+      }
+    }
+  }
+
+  update();
+
+  ws.on('message', (data) => {
+    data = JSON.parse(data);
+    switch (data.type) {
+      case 'swap_role': {
+        const r = game_data[0].role;
+        game_data[0].role = game_data[1].role;
+        game_data[1].role = r;
+        update();
+        break;
+      }
+      case 'start': {
+        const [ws1, ws2] = [game_data[0].ws, game_data[1].ws];
+        game_data[0].ws = game_data[1].ws = null;
+        const map = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'data/map.json')));
+        const common = new Common();
+        common.map = map;
+        game_data.push(common);
+        const pos1 = random(0, map.nodes.length - 1, false);
+        let pos2 = pos1;
+        while (pos2 == pos1) {
+          pos2 = random(0, map.nodes.length - 1, false);
+        }
+        game_data[0].data = {
+          pos: pos1
+        };
+        game_data[1].data = {
+          pos: pos2
+        };
+        const todo = sample(JSON.parse(fs.readFileSync(path.join(process.cwd(), 'data/todo.json'))));
+        if (game_data[0].role === 'found') {
+          game_data[0].data.todo = todo;
+        } else {
+          game_data[1].data.todo = todo;
+        }
+
+        ws1.close(4100, game_id);
+        ws2.close(4100, game_id);
+        break;
+      }
+    }
+  });
 })
 
 const fs = require('fs');
-const map_data = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'map.json')));
+const { sample } = require('lodash');
 
 game_wss.on('connection', (ws, req) => {
-  const req_url = url.parse(req.url, true);
-  const { id: game_id, user } = req_url.query;
+  const { game_id, user_name } = url.parse(req.url, true).query;
   /** @var {Map} */
   const game = games.get(game_id);
   if (!game) {
     return ws.close(4000, "not_found");
   }
-  if (!user) {
-    return ws.close(4002, "session_not_found");
-  }
 
-  const initial_pos = random(0, map_data.length - 1, false);
-  game.set(user, [ws, initial_pos]);
-  const user_data = game.get(user);
+  const user_data = game.find((d) => d.user_name === user_name);
+  user_data.ws = ws;
 
-  ws.on('close', () => {
-    game.delete(user);
-    for (const [other,] of game) {
-      other.close(4001, 'counterpart_close');
-    }
-  });
+  // ws.on('close', () => {
+  //   other.close(4001, 'counterpart_close');
+  // });
   ws.on('message', (data) => {
     data = JSON.parse(data);
     switch (data.type) {
       case 'arrival':
-        user_data[1] = data.pos;
+        user_data.data.pos = data.pos;
         break;
       case 'depature':
-        user_data[1] = null;
+        user_data.data.pos = null;
         break;
     }
   });
 
-  ws.send(JSON.stringify({
-    type: 'init',
-    map: map_data,
-    pos: initial_pos,
-  }));
+  function init() {
+    ws.send(JSON.stringify({
+      type: 'init',
+      map: game[2].map,
+      user_data: user_data.data,
+    }));
+  }
+
+  game[2].on('start', init);
+  if (game[2].join()) {
+    init();
+  }
 });
 
+server.on('upgrade', (req, socket, head) => {
+  const pathname = url.parse(req.url).pathname;
+
+  if (pathname === '/game') {
+    game_wss.handleUpgrade(req, socket, head, function done(ws) {
+      game_wss.emit('connection', ws, req);
+    });
+  } else if (pathname === '/lobby') {
+    lobby_wss.handleUpgrade(req, socket, head, function done(ws) {
+      lobby_wss.emit('connection', ws, req);
+    });
+  } else {
+    socket.destroy();
+  }
+});
 
 if (process.env.NODE_ENV !== 'production') {
   const parcel = require('parcel-bundler');
@@ -100,5 +221,7 @@ if (process.env.NODE_ENV !== 'production') {
 } else {
   app.use(express.static('./dist'));
 }
+
+app.use('/data', express.static('./data'));
 
 server.listen(1234, '0.0.0.0');

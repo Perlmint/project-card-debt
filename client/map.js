@@ -1,9 +1,16 @@
 const PIXI = require('pixi.js');
 const clamp = require('lodash/clamp');
 const random = require('lodash/random');
+const mapValues = require('lodash/mapValues');
 const Player = require('./player').default;
 const Dialog = require('./dialog').default;
 const eventemitter = require('eventemitter3');
+
+const buildings = mapValues(
+  require('./res/building/*.png'),
+  (v) => PIXI.Texture.from(v)
+);
+const building_data = require('./res/building/id.json');
 
 const TileSize = 100;
 
@@ -31,51 +38,45 @@ export default class Map extends eventemitter {
     this.initIsometryTile(data.width, data.height);
     this.ui_root.hitArea = new PIXI.Rectangle(0, 0, this.virtual_size.x * 2, this.virtual_size.y * 2);
 
-    this.edges = data.edges.map(([node1, node2, time]) => {
-      const edge = new PIXI.Graphics();
-      edge.lineStyle(6, 0x000000, 1);
-      const begin_node = data.nodes[node1];
-      const end_node = data.nodes[node2];
-      const width = end_node.x - begin_node.x;
-      const height = end_node.y - begin_node.y;
-      edge.moveTo(0, 0);
-      edge.lineTo(width * TileSize, height * TileSize);
-      edge.position.set((begin_node.x + 0.5) * TileSize, (begin_node.y + 0.5) * TileSize);
-      this.root.addChild(edge);
-    });
-
-    this.buildings = data.buildings.map((build_info) => {
-      const building = new PIXI.Graphics();
-      building.beginFill(build_info.color, 1);
-      building.moveTo(-TileSize * 0.5, -TileSize * 0.5);
-      building.lineTo(-TileSize * 0.5, TileSize * 0.5);
-      building.lineTo(TileSize * 0.5, TileSize * 0.5);
-      building.position.set((build_info.x + 0.5) * TileSize, (build_info.y + 0.5) * TileSize);
-
-      this.root.addChild(building);
-    });
+    // this.edges = data.edges.map(([node1, node2, time]) => {
+    //   const edge = new PIXI.Graphics();
+    //   edge.lineStyle(6, 0x000000, 1);
+    //   const begin_node = data.nodes[node1];
+    //   const end_node = data.nodes[node2];
+    //   const width = end_node.x - begin_node.x;
+    //   const height = end_node.y - begin_node.y;
+    //   edge.moveTo(0, 0);
+    //   edge.lineTo(width * TileSize, height * TileSize);
+    //   edge.position.set((begin_node.x + 0.5) * TileSize, (begin_node.y + 0.5) * TileSize);
+    //   this.root.addChild(edge);
+    // });
 
     /** @member {PIXI.Graphics[]} */
     this.nodes = data.nodes.map((node_info, idx) => {
-      const node = new PIXI.Graphics();
-      node.lineStyle(5, 0x000000, 1);
-      node.beginFill(0xffffff, 1);
-      node.drawRect(-TileSize * 0.5, -TileSize * 0.5, TileSize, TileSize);
-      node.position.set((node_info.x + 0.5) * TileSize, (node_info.y + 0.5) * TileSize);
+      const data = building_data[node_info.building_id];
+      const node = new PIXI.projection.Sprite2d(buildings[data.name]);
+      node.proj.affine = PIXI.projection.AFFINE.AXIS_X;
+      node.rotation = Math.PI / 4;
+      node.position.set(node_info.position[0] * TileSize, node_info.position[1] * TileSize);
       this.root.addChild(node);
+      // node.lineStyle(5, 0x000000, 1);
+      // node.beginFill(0xffffff, 1);
+      // node.drawRect(-TileSize * 0.5, -TileSize * 0.5, TileSize, TileSize);
+      // node.position.set((node_info.x + 0.5) * TileSize, (node_info.y + 0.5) * TileSize);
+      // this.root.addChild(node);
 
-      node.on('pointertap', () => {
-        this.onNodeClick(idx);
-      });
+      // node.on('pointertap', () => {
+      //   this.onNodeClick(idx);
+      // });
 
       return node;
     });
 
-    this.connection = new window.Map();
-    for (const [node1, node2, distance] of data.edges) {
-      this.addConnection(node1, node2, distance);
-      this.addConnection(node2, node1, distance);
-    }
+    // this.connection = new window.Map();
+    // for (const [node1, node2, distance] of data.edges) {
+    //   this.addConnection(node1, node2, distance);
+    //   this.addConnection(node2, node1, distance);
+    // }
 
     /** @member */
     this.dialog = new Dialog();
@@ -152,11 +153,11 @@ export default class Map extends eventemitter {
   }
 
   onPlayerArrival(node_idx) {
-    for (const [connected_idx,] of this.connection.get(node_idx)) {
-      const node = this.nodes[connected_idx];
-      node.interactive = true;
-      node.buttonMode = true;
-    }
+    // for (const [connected_idx,] of this.connection.get(node_idx)) {
+    //   const node = this.nodes[connected_idx];
+    //   node.interactive = true;
+    //   node.buttonMode = true;
+    // }
 
     const node = this.data.nodes[node_idx];
     const actions = node.actions;
@@ -170,11 +171,11 @@ export default class Map extends eventemitter {
   }
 
   onPlayerDepature(node_idx) {
-    for (const [connected_idx,] of this.connection.get(node_idx)) {
-      const node = this.nodes[connected_idx];
-      node.interactive = false;
-      node.buttonMode = false;
-    }
+    // for (const [connected_idx,] of this.connection.get(node_idx)) {
+    //   const node = this.nodes[connected_idx];
+    //   node.interactive = false;
+    //   node.buttonMode = false;
+    // }
 
     this.root.removeChild(this.dialog);
     this.emit('player_depature');

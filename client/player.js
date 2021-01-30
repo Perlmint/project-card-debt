@@ -57,6 +57,7 @@ export default class Player extends PIXI.projection.Container2d {
     /** @member {Map} */
     this.map = map;
 
+    console.log(start_node_idx);
     this.current_node = start_node_idx;
     const start_node = map.nodes[start_node_idx];
 
