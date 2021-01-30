@@ -46,7 +46,6 @@ export default class ActionDialog extends EventEmitter {
       if (this.action_labels[i]) {
         action_label = this.action_labels[i];
         action_label.text = action.action_name;
-        action_label.removeAllListeners();
       } else {
         action_label = new PIXI.Text(action.action_name);
         action_label.interactive = true;
