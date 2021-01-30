@@ -23,7 +23,7 @@ export default class Map extends eventemitter {
    * @param {*} data
    * @param {number} initial_pos
    */
-  constructor(data, { montage, pos: initial_pos, role }) {
+  constructor(data, { montage, pos: initial_pos, role, todo }) {
     super();
     this.data = data;
     this.ui_root = new PIXI.Container();
@@ -95,12 +95,15 @@ export default class Map extends eventemitter {
     this.move_dialog.scale.y = 1 / YScale;
     if (role === 'lost') {
       this.action_dialog = new LostActionDialog();
-      this.action_dialog.on('do', () => this.emit('montage', this.player.current_node));
+      this.action_dialog.on('do', () => {
+        this.emit('montage', this.player.current_node);
+        this.wrap.removeChild(this.action_dialog);
+      });
     } else {
-      this.action_dialog = new FoundActionDialog();
+      this.action_dialog = new FoundActionDialog(todo.targets);
       this.action_dialog.on('do', (id) => this.onDoAction(id));
     }
-    // this.action_dialog.scale.y = 1 / YScale;
+    this.action_dialog.scale.y = 1 / YScale;
 
     /** @member */
     this.player = new Player(this, initial_pos, montage);
@@ -176,7 +179,7 @@ export default class Map extends eventemitter {
     for (const node of this.nodes) {
       node.buttonMode = node.interactive = false;
     }
-    this.wrap.removeChild(this.action_dialog.root);
+    this.wrap.removeChild(this.action_dialog);
 
     setTimeout(() => {
       this.emit('target_noti', action.targets, this.player.current_node, action.montage_part_init, action.montage_part_decay * 1000, action.delay_post * 1000);
@@ -251,8 +254,8 @@ export default class Map extends eventemitter {
 
     this.action_dialog.init(building.name, actions);
     const node_pos = this.data.nodes[node_idx].position;
-    this.action_dialog.root.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
-    this.wrap.addChild(this.action_dialog.root);
+    this.action_dialog.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
+    this.wrap.addChild(this.action_dialog);
     this.emit('player_arrival', node_idx);
   }
 

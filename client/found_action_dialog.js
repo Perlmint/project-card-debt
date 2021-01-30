@@ -1,29 +1,74 @@
-const EventEmitter = require('eventemitter3');
-export default class ActionDialog extends EventEmitter {
+const PIXI = require('pixi.js');
+const action_background = PIXI.Texture.from(require('./res/alarm.png'));
+const background = PIXI.Texture.from(require('./res/move_background.png'));
+const mission_box = PIXI.Texture.from(require('./res/mission_box.png'));
+
+class ActionItem extends PIXI.NineSlicePlane {
   constructor() {
-    super();
-    this.root = new PIXI.Container();
-    this.root.on('pointertap', () => {
-      this.root.parent.removeChild(this.root);
+    super(action_background, 32, 32, 32, 32);
+
+    this.width = 266 + 12 * 2;
+    this.height = 87 + 7 + 17;
+
+    this.title = new PIXI.Text('', {
+      fontSize: 16,
+      fontWeight: 500
     });
-    /** @memeber */
-    this.frame = new PIXI.Graphics();
-    this.root.addChild(this.frame);
+    this.title.alpha = 0.87;
+    this.title.position.set(20 + 12, 20 + 7);
+    this.addChild(this.title);
+
+    this.detail = new PIXI.Text('', {
+      fontSize: 14,
+      fontWeight: 400
+    });
+    this.detail.alpha = 0.5413;
+    this.detail.position.set(20 + 12, 53 + 7);
+    this.addChild(this.detail);
+
+    this.mission = new PIXI.Sprite(mission_box);
+    this.mission.position.set(206 + 12, 20 + 7);
+  }
+
+  init(action, targets) {
+    this.title.text = action.action_name;
+    if (action.delay_pre != 0) {
+      this.detail.text = `조용함,  ${action.delay_pre}분`;
+    } else {
+      this.detail.text = `시끄러움,  ${action.delay_post}분`;
+    }
+
+    this.removeChild(this.mission);
+    for (const target of targets) {
+      if (action.targets.indexOf(target) !== -1) {
+        this.addChild(this.mission);
+      }
+    }
+  }
+}
+
+export class ActionProgressDialog extends PIXI.NineSlicePlane {
+
+}
+
+export default class ActionDialog extends PIXI.NineSlicePlane {
+  constructor(targets) {
+    super(background, 32, 32, 32, 32);
+
+    this.targets = targets;
+    this.width = 330 + 12 * 2;
+
     /** @member */
     this.name_label = new PIXI.Text("", {
-      fontSize: 30,
+      fontWeight: 700,
+      fontSize: 20,
     });
-    this.name_label.position.set(10, 10);
-    this.root.addChild(this.name_label);
-    /** @member {PIXI.Text[]}*/
-    this.action_labels = [];
-    this.do_button = new PIXI.Graphics();
-    this.do_button.interactive = true;
-    this.do_button.buttonMode = true;
-    this.do_button.on('pointertap', () => {
-      this.root.parent.removeChild(this.root);
-    })
-    this.root.addChild(this.do_button);
+    this.name_label.position.set(165 + 12, 27 + 7);
+    this.name_label.anchor.x = 0.5;
+    this.addChild(this.name_label);
+
+    /** @member {ActionItem[]}*/
+    this.action_buttons = [];
   }
 
   /**
@@ -35,43 +80,34 @@ export default class ActionDialog extends EventEmitter {
     let height = 0;
     this.name_label.text = name;
     this.name_label.updateText();
-    height += this.name_label.height + 10;
-    for (const label of this.action_labels) {
-      this.root.removeChild(label);
+    height += this.name_label.height + 20 + this.name_label.y;
+    for (const label of this.action_buttons) {
+      this.removeChild(label);
     }
     let width = this.name_label.width;
     for (let i = 0; i < actions.length; i++) {
       const action = actions[i];
-      let action_label;
-      if (this.action_labels[i]) {
-        action_label = this.action_labels[i];
-        action_label.text = action.action_name;
-        action_label.removeAllListeners();
+      let action_item;
+      if (this.action_buttons[i]) {
+        action_item = this.action_buttons[i];
       } else {
-        action_label = new PIXI.Text(action.action_name);
-        action_label.interactive = true;
-        action_label.buttonMode = true;
-        this.action_labels.push(action_label);
+        action_item = new ActionItem();
+        action_item.x = 32;
+        action_item.buttonMode = action_item.interactive = true;
+        this.action_buttons.push(action_item);
       }
-      const action_id = action.action_id;
-      action_label.on('pointertap', () => {
-        this.emit('do', action_id);
+      action_item.on('pointertap', () => {
+        this.emit('do', action.action_id);
       });
-      action_label.updateText();
-      action_label.position.set(20, height);
-      this.root.addChild(action_label);
-      height += this.name_label.height + 10;
-      width = Math.max(action_label.width, width);
+      action_item.init(action, this.targets);
+      action_item.y = height;
+      this.addChild(action_item);
+
+      height += action_item.height;
+      width = Math.max(action_item.width, width);
     }
 
-    this.frame.clear();
-    this.frame.beginFill(0xcc0000, 1);
-    this.frame.drawRoundedRect(0, 0, width + 30, height + 70, 10);
-
-    this.do_button.clear();
-    this.do_button.beginFill(0x003300, 1);
-    this.do_button.drawRoundedRect(10, 10, width + 10, 50, 10);
-    this.do_button.position.set(0, height - 20);
-    this.root.pivot.set(-40, height + 90);
+    this.height = height + 37;
+    this.pivot.set(-40, height + 90);
   }
 }

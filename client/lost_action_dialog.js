@@ -1,29 +1,25 @@
 const EventEmitter = require('eventemitter3');
-export default class ActionDialog extends EventEmitter {
+export default class ActionDialog extends PIXI.Container {
   constructor() {
     super();
-    this.root = new PIXI.Container();
-    this.root.on('pointertap', () => {
-      this.root.parent.removeChild(this.root);
-    });
     /** @memeber */
     this.frame = new PIXI.Graphics();
-    this.root.addChild(this.frame);
+    this.addChild(this.frame);
     /** @member */
     this.name_label = new PIXI.Text("", {
       fontSize: 30,
     });
     this.name_label.position.set(10, 10);
-    this.root.addChild(this.name_label);
+    this.addChild(this.name_label);
     /** @member {PIXI.Text[]}*/
     this.action_labels = [];
     this.do_button = new PIXI.Graphics();
     this.do_button.interactive = true;
     this.do_button.buttonMode = true;
     this.do_button.on('pointertap', () => {
-      this.root.parent.removeChild(this.root);
+      this.parent.removeChild(this.root);
     })
-    this.root.addChild(this.do_button);
+    this.addChild(this.do_button);
   }
 
   /**
@@ -40,7 +36,7 @@ export default class ActionDialog extends EventEmitter {
     this.name_label.updateText();
     height += this.name_label.height + 10;
     for (const label of this.action_labels) {
-      this.root.removeChild(label);
+      this.removeChild(label);
     }
     let width = this.name_label.width;
     for (let i = 0; i < actions.length; i++) {
@@ -57,12 +53,12 @@ export default class ActionDialog extends EventEmitter {
         const action_id = action.action_id;
         action_label.on('pointertap', () => {
           this.emit('do');
-          this.root.parent.removeChild(this.root);
+          this.parent.removeChild(this.root);
         });
       }
       action_label.updateText();
       action_label.position.set(20, height);
-      this.root.addChild(action_label);
+      this.addChild(action_label);
       height += this.name_label.height + 10;
       width = Math.max(action_label.width, width);
     }
@@ -75,6 +71,6 @@ export default class ActionDialog extends EventEmitter {
     this.do_button.beginFill(0x003300, 1);
     this.do_button.drawRoundedRect(10, 10, width + 10, 50, 10);
     this.do_button.position.set(0, height - 20);
-    this.root.pivot.set(-40, height + 90);
+    this.pivot.set(-40, height + 90);
   }
 }
