@@ -1,4 +1,3 @@
-const PUXI = require('@puxi/core');
 const background = PIXI.Texture.from(require('./res/phone.png'));
 const news_background = PIXI.Texture.from(require('./res/alarm.png'));
 const target_item = PIXI.Texture.from(require('./res/target_item.png'));
