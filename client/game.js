@@ -6,7 +6,6 @@ const PUXI = require('@puxi/core');
 const Phone = require('./phone').default;
 const Map = require('./map').default;
 const CountDownTimer = require('./countdown').default;
-const target_data = require('./target.json');
 
 // TODO: fill window
 const app = new PIXI.Application({
@@ -85,11 +84,13 @@ ws.addEventListener('message', (message) => {
       });
       if (data.user_data.todo) {
         phone.initTodo(data.user_data.todo);
-      }
-      if (data.user_data.completed_targets) {
-        for (const target of data.user_data.completed_targets) {
-          phone.completeTarget(target);
+        if (data.user_data.completed_targets) {
+          for (const target of data.user_data.completed_targets) {
+            phone.completeTarget(target);
+          }
         }
+      } else {
+        phone.initForLost();
       }
       timer.once('end', () => ws.send(JSON.stringify({
         type: 'end',
@@ -99,7 +100,7 @@ ws.addEventListener('message', (message) => {
     }
     case 'target_noti':
       for (const target of data.targets) {
-        phone.addNews(target_data[target].target_name);
+        phone.addNews(target, data.time);
       }
       break;
     case 'montage':

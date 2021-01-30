@@ -4,23 +4,86 @@ const target_item = PIXI.Texture.from(require('./res/target_item.png'));
 const target_item_highlight = PIXI.Texture.from(require('./res/target_item_highlight.png'));
 const ScrollContainer = require('./scroll_container').default;
 const ProgressBar = require('./progress_bar').default;
+const each = require('lodash/each');
 const map = require('lodash/map');
 const filter = require('lodash/filter');
 const includes = require('lodash/includes');
 const target_data = require('./target.json');
 const action_data = require('./action.json');
+const constants = require('./const.json');
+const sprintf = require('sprintf-js').sprintf;
 const { data: building_data, textures: building_textures, ui_data: building_ui_data } = require('./building');
 
-class Alarm extends PIXI.Sprite {
-  constructor(title) {
-    super(news_background);
+function createBuildingIcon(building_id) {
+  const cont = new PIXI.Container();
+  const bg = new PIXI.Graphics();
+  bg.beginFill(0xECECEC, 1);
+  bg.drawRect(0, 0, 50, 50);
+  cont.addChild(bg);
+  const sprt = new PIXI.Sprite(building_textures[building_ui_data[building_id].name]);
+  sprt.anchor.set(0.5, 0.5);
+  sprt.position.set(25, 25);
+  const scale = 48 / Math.max(sprt.width, sprt.height);
+  sprt.scale.set(scale, scale);
+  cont.addChild(sprt);
+  cont.cacheAsBitmap = true;
 
-    this.title = new PIXI.Text(title, {
-      fontWeight: '500',
+  return cont;
+}
+
+function collectBuildingIdsFromTarget(id) {
+  const actions = map(filter(action_data, (o) => includes(o.targets, id)), o => o.action_id);
+  const buildings = filter(building_data, o => {
+    for (const action of actions) {
+      if (includes(o.actions, action)) {
+        return true;
+      }
+    }
+
+    return false;
+  }).map(b => b.building_id);
+
+  buildings.sort();
+
+  return buildings;
+}
+
+class Alarm extends PIXI.NineSlicePlane {
+  constructor(time, id, is_target) {
+    super(news_background, 32, 32, 32, 32);
+
+    time = constants.TOTAL_TIME - time / 1000;
+
+    this.title = new PIXI.Text(sprintf('%02d:%02d', time / 60, time % 60), {
+      fontWeight: 500,
       fontSize: 20,
     });
+    this.width = 424;
     this.title.position.set(27, 32);
     this.addChild(this.title);
+
+    let content_text;
+    let buildings;
+    if (is_target) {
+      const target = target_data[id];
+      content_text = `[${target.target_name}] 사건 발생`;
+      buildings = collectBuildingIdsFromTarget(id);
+    }
+    this.content = new PIXI.Text(content_text, {
+      fontWeight: 400,
+      fontSize: 16,
+    });
+    this.content.alpha = 0.5413;
+    this.content.position.set(32, 67);
+    this.addChild(this.content);
+
+    each(buildings, (id, idx) => {
+      const item = createBuildingIcon(id);
+      item.position.set(32 + idx * (16 + 50), this.content.height + 67 + 16);
+      this.addChild(item);
+    });
+
+    this.height = this.content.height + 67 + 103;
   }
 }
 
@@ -37,33 +100,10 @@ class TargetItem extends PIXI.Sprite {
     this.title.position.set(95, 27);
     this.addChild(this.title);
 
-    const actions = map(filter(action_data, (o) => includes(o.targets, id)), o => o.action_id);
-    const buildings = filter(building_data, o => {
-      for (const action of actions) {
-        if (includes(o.actions, action)) {
-          return true;
-        }
-      }
-
-      return false;
-    });
-    buildings.sort();
-    map(buildings, (building, idx) => {
-      const cont = new PIXI.Container();
-      const bg = new PIXI.Graphics();
-      bg.beginFill(0xECECEC, 1);
-      bg.drawRect(0, 0, 50, 50);
-      cont.addChild(bg);
-      const sprt = new PIXI.Sprite(building_textures[building_ui_data[building.building_id].name]);
-      sprt.anchor.set(0.5, 0.5);
-      sprt.position.set(25, 25);
-      console.log(sprt.height);
-      const scale = 48 / Math.max(sprt.width, sprt.height);
-      sprt.scale.set(scale, scale);
-      cont.addChild(sprt);
-      cont.cacheAsBitmap = true;
-      cont.position.set(95 + idx * (16 + 50), 67);
-      this.addChild(cont);
+    each(collectBuildingIdsFromTarget(id), (id, idx) => {
+      const item = createBuildingIcon(id);
+      item.position.set(95 + idx * (16 + 50), 67);
+      this.addChild(item);
     });
   }
 
@@ -93,7 +133,6 @@ export default class Phone extends PIXI.Sprite {
       fontSize: 20,
       align: 'center',
     });
-    this.title.position.set(240, 95);
     this.title.anchor.set(0.5, 0);
     this.addChild(this.title);
 
@@ -101,10 +140,24 @@ export default class Phone extends PIXI.Sprite {
     this.addChild(this.innerView.po);
   }
 
-  addNews(title_text) {
-    const alarm = new Alarm(title_text);
+  initForLost() {
+    this.title.text = "WANTED";
+    this.title.position.set(240, 67);
+
+    const montage_bg = new PIXI.Graphics();
+    montage_bg.beginFill(0x7E7E7E, 1);
+    montage_bg.drawCircle(50, 50, 50);
+    montage_bg.drawCircle(82 + 50, 50, 50);
+    montage_bg.drawCircle(158 + 50, 50, 50);
+    montage_bg.endFill();
+    montage_bg.cacheAsBitmap = true;
+    montage_bg.position.set(111, 120);
+    this.addChild(montage_bg);
+  }
+
+  addNews(target_id, time) {
+    const alarm = new Alarm(time, target_id, true);
     this.innerView.addItem(alarm);
-    console.log(title_text);
   }
 
   addMontage(montage) {
@@ -116,6 +169,7 @@ export default class Phone extends PIXI.Sprite {
     this.innerView.itemHeight = 154;
     this.targets = new Map();
     this.title.text = `${todo.todo_name} 임무 수행 가이드`;
+    this.title.position.set(240, 95);
     this.percentage = new PIXI.Text('0%', {
       fontWeight: 700,
       fontSize: 60,
