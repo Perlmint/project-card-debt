@@ -56,7 +56,7 @@ function Lobby() {
         case 0:
             return <div className="pure-g">
                 <div className="pure-u-1-1" style={{ textAlign: "center", paddingBottom: '2em' }}>
-                    <h1>car de beat</h1>
+                    <h1>이만 총총.. =3=3</h1>
                 </div>
 
                 <div className="pure-u-1-5"></div>
