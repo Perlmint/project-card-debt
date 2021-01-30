@@ -1,5 +1,6 @@
 {
 	"1": {
+		"action_id": 1,
 		"action_name": "냉동파 행동대원 정리",
 		"delay_pre": 0.0,
 		"delay_post": 30.0,
@@ -8,6 +9,7 @@
 		"targets": [ 1 ]
 	}, 
 	"2": {
+		"action_id": 2,
 		"action_name": "볶음파 조직원 정리",
 		"delay_pre": 0.0,
 		"delay_post": 30.0,
@@ -16,6 +18,7 @@
 		"targets": [ 2 ]
 	}, 
 	"3": {
+		"action_id": 3,
 		"action_name": "구내식당파 투입직원 정리",
 		"delay_pre": 0.0,
 		"delay_post": 30.0,
@@ -24,6 +27,7 @@
 		"targets": [ 3 ]
 	},
 	"4": {
+		"action_id": 4,
 		"action_name": "스팸파 현장직원 정리",
 		"delay_pre": 0.0,
 		"delay_post": 20.0,
@@ -32,6 +36,7 @@
 		"targets": [ 4 ]
 	},
 	"11": {
+		"action_id": 11,
 		"action_name": "냉동파 사무실 헤집기",
 		"delay_pre": 0.0,
 		"delay_post": 15.0,
@@ -40,6 +45,7 @@
 		"targets": [ 11 ]
 	},
 	"12": {
+		"action_id": 12,
 		"action_name": "볶음파 사무실 헤집기",
 		"delay_pre": 0.0,
 		"delay_post": 15.0,
@@ -48,6 +54,7 @@
 		"targets": [ 12 ]
 	},
 	"13": {
+		"action_id": 13,
 		"action_name": "구내식당파 사무실 헤집기",
 		"delay_pre": 0.0,
 		"delay_post": 15.0,
@@ -56,6 +63,7 @@
 		"targets": [ 13 ]
 	},
 	"15": {
+		"action_id": 15,
 		"action_name": "공무원 비품 강탈",
 		"delay_pre": 0.0,
 		"delay_post": 20.0,
@@ -64,6 +72,7 @@
 		"targets": [ 15 ]
 	},
 	"16": {
+		"action_id": 16,
 		"action_name": "자릿세 상납 받기",
 		"delay_pre": 0.0,
 		"delay_post": 10.0,
@@ -72,6 +81,7 @@
 		"targets": [ 16 ]
 	},
 	"101": {
+		"action_id": 101,
 		"action_name": "냉동파 보스 암살",
 		"delay_pre": 60.0,
 		"delay_post": 0.0,
@@ -80,6 +90,7 @@
 		"targets": [ 101 ]
 	},
 	"102": {
+		"action_id": 102,
 		"action_name": "볶음파 보스 암살",
 		"delay_pre": 60.0,
 		"delay_post": 0.0,
@@ -88,6 +99,7 @@
 		"targets": [ 102 ]
 	},
 	"103": {
+		"action_id": 103,
 		"action_name": "구내식당파 보스 암살",
 		"delay_pre": 50.0,
 		"delay_post": 0.0,
@@ -96,6 +108,7 @@
 		"targets": [ 103 ]
 	},
 	"104": {
+		"action_id": 104,
 		"action_name": "스팸파 대장 암살",
 		"delay_pre": 40.0,
 		"delay_post": 0.0,
@@ -104,6 +117,7 @@
 		"targets": [ 104 ]
 	},
 	"105": {
+		"action_id": 105,
 		"action_name": "시장 암살",
 		"delay_pre": 90.0,
 		"delay_post": 0.0,
@@ -112,6 +126,7 @@
 		"targets": [ 105 ]
 	},
 	"111": {
+		"action_id": 111,
 		"action_name": "냉동파 보고서 훔치기",
 		"delay_pre": 90.0,
 		"delay_post": 0.0,
@@ -120,6 +135,7 @@
 		"targets": [ 111 ]
 	},
 	"112": {
+		"action_id": 112,
 		"action_name": "볶음파 보고서 훔치기",
 		"delay_pre": 90.0,
 		"delay_post": 0.0,
@@ -128,6 +144,7 @@
 		"targets": [ 112 ]
 	},
 	"113": {
+		"action_id": 113,
 		"action_name": "구내식당파 서류 훔치기",
 		"delay_pre": 80.0,
 		"delay_post": 0.0,
@@ -136,6 +153,7 @@
 		"targets": [ 113 ]
 	},
 	"125": {
+		"action_id": 125,
 		"action_name": "시설물 파괴하기",
 		"delay_pre": 80.0,
 		"delay_post": 0.0,
@@ -144,6 +162,7 @@
 		"targets": [ 125 ]
 	},
 	"126": {
+		"action_id": 126,
 		"action_name": "공장 시설 파괴하기",
 		"delay_pre": 60.0,
 		"delay_post": 0.0,
