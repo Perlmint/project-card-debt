@@ -205,27 +205,30 @@ game_wss.on('connection', (ws, req) => {
   // });
   ws.on('message', (data) => {
     parse_data = JSON.parse(data);
+    function checkCapture() {
+      if (other_user.data.pos === user_data.data.pos) {
+        const has_montage = every(values(game[2].montage), (v) => v !== null);
+        const last_target = last(game[2].targets);
+        let while_action = false;
+        if (last_target) {
+          if (parse_data.time > last_target.time - last_target.post_delay) {
+            while_action = true;
+          }
+        }
+
+        if (has_montage || while_action) {
+          const capture = JSON.stringify({
+            type: 'capture',
+          });
+          ws.send(capture);
+          other_user.ws.send(capture);
+        }
+      }
+    }
     switch (parse_data.type) {
       case 'arrival':
         user_data.data.pos = parse_data.pos;
-        if (other_user.data.pos === user_data.data.pos) {
-          const has_montage = every(values(game[2].montage), (v) => v !== null);
-          const last_target = last(game[2].targets);
-          let while_action = false;
-          if (last_target) {
-            if (parse_data.time > last_target.time - last_target.post_delay) {
-              while_action = true;
-            }
-          }
-
-          if (has_montage || while_action) {
-            const capture = JSON.stringify({
-              type: 'capture',
-            });
-            ws.send(capture);
-            other_user.ws.send(capture);
-          }
-        }
+        checkCapture();
         break;
       case 'depature':
         user_data.data.pos = null;
@@ -251,6 +254,7 @@ game_wss.on('connection', (ws, req) => {
       case 'target_noti':
         game[2].targets.push(parse_data);
         other_user.ws.send(data);
+        checkCapture();
         break;
     }
   });
