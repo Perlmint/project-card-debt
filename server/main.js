@@ -223,7 +223,7 @@ game_wss.on('connection', (ws, req) => {
             type: 'capture',
           });
           ws.send(capture);
-          other_user.ws.send(capture);
+          other_user.ws?.send(capture);
         }
       }
     }
@@ -255,16 +255,22 @@ game_wss.on('connection', (ws, req) => {
       }
       case 'target_noti':
         game[2].targets.push(parse_data);
-        other_user.ws.send(data);
+        other_user.ws?.send(data);
         checkCapture();
         break;
       case 'tick_resp':
-        other_user.ws.send(JSON.stringify({
+        other_user.ws?.send(JSON.stringify({
           type: 'tick_resp',
           time: parse_data.time,
         }));
     }
   });
+  ws.on('close', () => {
+    user_data.ws = null;
+    if (other_user.ws == null) {
+      games.remove(game_id);
+    }
+  })
 
   function init() {
     ws.send(JSON.stringify({
@@ -286,7 +292,7 @@ game_wss.on('connection', (ws, req) => {
         montage: game[2].montage,
       }));
     }
-    other_user.ws.send(JSON.stringify({
+    other_user.ws?.send(JSON.stringify({
       type: 'tick_req',
     }))
   }
