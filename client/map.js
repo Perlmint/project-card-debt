@@ -1,16 +1,19 @@
 const PIXI = require('pixi.js');
 const clamp = require('lodash/clamp');
-const random = require('lodash/random');
 const mapValues = require('lodash/mapValues');
 const Player = require('./player').default;
 const Dialog = require('./dialog').default;
+const pick = require('lodash/pick');
+const values = require('lodash/values');
 const eventemitter = require('eventemitter3');
 
 const buildings = mapValues(
   require('./res/building/*.png'),
   (v) => PIXI.Texture.from(v)
 );
-const building_data = require('./res/building/id.json');
+const building_ui_data = require('./res/building/id.json');
+const building_data = require('./building.json');
+const action_data = require('./action.json');
 
 const TileSize = 100;
 
@@ -53,7 +56,7 @@ export default class Map extends eventemitter {
 
     /** @member {PIXI.Graphics[]} */
     this.nodes = data.nodes.map((node_info, idx) => {
-      const data = building_data[node_info.building_id];
+      const data = building_ui_data[node_info.building_id];
       const node = new PIXI.projection.Sprite2d(buildings[data.name]);
       node.proj.affine = PIXI.projection.AFFINE.AXIS_X;
       node.rotation = Math.PI / 4;
@@ -164,13 +167,12 @@ export default class Map extends eventemitter {
     }
 
     const node = this.data.nodes[node_idx];
-    const actions = node.actions;
-    if (actions) {
-      this.dialog.init(node.name, actions);
-      const node_pos = this.nodes[node_idx].position;
-      this.dialog.position.set(node_pos.x, node_pos.y);
-      this.root.addChild(this.dialog);
-    }
+    const building = building_data[node.building_id];
+    const actions = values(pick(action_data, building.actions));
+    this.dialog.init(building.name, actions);
+    const node_pos = this.nodes[node_idx].position;
+    this.dialog.position.set(node_pos.x, node_pos.y);
+    this.root.addChild(this.dialog);
     this.emit('player_arrival', node_idx);
   }
 
