@@ -4,6 +4,7 @@ require('pixi-projection');
 require('pixi-layers');
 const Phone = require('./phone').default;
 const Map = require('./map').default;
+const CountDownTimer = require('./countdown').default;
 
 // TODO: fill window
 const app = new PIXI.Application({
@@ -14,16 +15,20 @@ const app = new PIXI.Application({
 document.body.appendChild(app.view);
 window.addEventListener('resize', (e) => {
   app.resizeTo = window;
+  timer.position.set(window.innerWidth, 0);
 });
 
 const container = new PIXI.Container();
 
+app.stage = new PIXI.display.Stage();
 app.stage.addChild(container);
-
-const ui_layer = PIXI.display.Layer();
 
 const phone = new Phone();
 container.addChild(phone);
+
+const timer = new CountDownTimer();
+timer.position.set(window.innerWidth, 0);
+container.addChild(timer.root);
 
 const ws = new WebSocket(`ws://${location.host}/game${location.search}`);
 ws.addEventListener('close', (event) => {
@@ -37,7 +42,7 @@ ws.addEventListener('message', (message) => {
     case 'init': {
       const map = new Map(data.map, data.user_data.pos);
       map.ui_root.position.x = phone.width;
-      container.addChild(map.ui_root);
+      container.addChildAt(map.ui_root, 0);
       map.on('player_arrival', (pos) => {
         ws.send(JSON.stringify({
           type: 'arrival',
@@ -49,6 +54,10 @@ ws.addEventListener('message', (message) => {
           type: 'depature',
         }));
       });
+      timer.once('end', () => ws.send(JSON.stringify({
+        type: 'end',
+      })));
+      timer.start();
       break;
     }
     case 'tick': {

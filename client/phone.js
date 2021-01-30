@@ -14,13 +14,6 @@ export default class Phone extends PIXI.Container {
       this.drawFrame(window.innerHeight);
     });
     this.drawFrame(window.innerHeight);
-
-    this.remain_time = new PIXI.Text("05:00 ", {
-      fontSize: 60
-    });
-    this.remain_time.position.set(PhoneWidth / 2 + PhoneMargin, PhoneMargin + 300 + 100);
-    this.remain_time.anchor.set(0.5, 0.5);
-    this.addChild(this.remain_time);
   }
 
   /**
