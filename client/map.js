@@ -18,6 +18,7 @@ const action_data = require('./action.json');
 const target = require('./target.json');
 
 const TileSize = 100;
+const MapMargin = TileSize * 2;
 
 /** @class */
 export default class Map extends eventemitter {
@@ -114,8 +115,13 @@ export default class Map extends eventemitter {
     this.wrap.scale.y = 0.58;
     this.ui_root.addChild(this.wrap);
 
-    this.virtual_size = new PIXI.Point(width * TileSize * Math.cos(Math.PI / 4), height * TileSize * Math.sin(Math.PI / 4) * 0.58);
-    this.wrap.position.set(0, this.virtual_size.y);
+    this.base_y = width * Math.sin(Math.PI / 4) * TileSize * this.wrap.scale.y + MapMargin;
+    this.virtual_size = new PIXI.Point(
+      (width * Math.cos(Math.PI / 4) + height * Math.cos(Math.PI / 4)) * TileSize + MapMargin * 2,
+      (width * Math.sin(Math.PI / 4) + height * Math.sin(Math.PI / 4)) * TileSize * this.wrap.scale.y + MapMargin * 2,
+    );
+    this.wrap.y = this.base_y;
+    console.log(this.virtual_size);
 
     const isometryPlane = new PIXI.Graphics();
     isometryPlane.rotation = -Math.PI / 4;
@@ -195,8 +201,8 @@ export default class Map extends eventemitter {
       const new_y = newPosition.y - this.drag_pos.y + this.wrap.y;
       this.drag_pos = newPosition;
       this.wrap.position.set(
-        clamp(new_x, -this.virtual_size.x * 0.5, 0),
-        clamp(new_y, -this.virtual_size.y * 0.5, 0) + this.virtual_size.y
+        clamp(new_x, -(this.virtual_size.x - window.innerWidth), 0),
+        clamp(new_y, -(this.virtual_size.y - window.innerHeight) + this.base_y, this.base_y),
       );
     }
   }
