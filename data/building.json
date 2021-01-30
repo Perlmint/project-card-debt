@@ -28,7 +28,7 @@
 		{
 			"building_id": 21, 
 			"building_name": "A 호텔", 
-			"actions": [ 1 ]
+			"actions": [ 1, 101 ]
 		},
 		{
 			"building_id": 22, 
