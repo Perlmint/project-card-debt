@@ -70,6 +70,9 @@ ws.addEventListener('message', (message) => {
     case 'target_noti':
       console.log(data.targets);
       break;
+    case 'capture':
+      alert('capture!');
+      break;
     case 'tick': {
       break;
     }

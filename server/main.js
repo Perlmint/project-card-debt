@@ -182,6 +182,13 @@ game_wss.on('connection', (ws, req) => {
     switch (parse_data.type) {
       case 'arrival':
         user_data.data.pos = parse_data.pos;
+        if (other_user.data.pos === user_data.data.pos) {
+          const capture = JSON.stringify({
+            type: 'capture',
+          });
+          ws.send(capture);
+          other_user.ws.send(capture);
+        }
         break;
       case 'depature':
         user_data.data.pos = null;
