@@ -1,0 +1,21 @@
+{
+    "hair_type": 4,
+    "body_type": 3,
+    "leg_type": 2,
+    "hair_color": [
+        "0x02006C",
+        "0x3E3E3E",
+        "0x00FF00",
+        "0x8B4A96",
+        "0xFF4141",
+        "0xC0FFEE"
+    ],
+    "body_color": [
+        "0x3E3E3E",
+        "0x02006C"
+    ],
+    "leg_color": [
+        "0x666666",
+        "0xFFD2A8"
+    ]
+}

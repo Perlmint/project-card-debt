@@ -23,7 +23,7 @@ export default class Map extends eventemitter {
    * @param {*} data
    * @param {number} initial_pos
    */
-  constructor(data, initial_pos, role) {
+  constructor(data, { montage, pos: initial_pos, role }) {
     super();
     this.data = data;
     this.ui_root = new PIXI.Container();
@@ -53,9 +53,9 @@ export default class Map extends eventemitter {
     //   this.root.addChild(edge);
     // });
 
-    const building_layer = new PIXI.display.Layer();
-    building_layer.sortableChildren = true;
-    this.wrap.addChild(building_layer);
+    // const building_layer = new PIXI.display.Layer();
+    // building_layer.sortableChildren = true;
+    // this.wrap.addChild(building_layer);
 
     /** @member {PIXI.Graphics[]} */
     this.nodes = data.nodes.map((node_info, idx) => {
@@ -65,8 +65,8 @@ export default class Map extends eventemitter {
       node.rotation = Math.PI / 4;
       node.anchor.set(0.5, 1);
       node.position.set(node_info.position[0] * TileSize, (node_info.position[1] + 1) * TileSize);
-      node.parentLayer = building_layer;
-      node.zOrder = this.data.width - node_info.position[0] + node_info.position[1];
+      // node.parentLayer = building_layer;
+      // node.zOrder = this.data.width - node_info.position[0] + node_info.position[1];
       this.root.addChild(node);
       // node.lineStyle(5, 0x000000, 1);
       // node.beginFill(0xffffff, 1);
@@ -101,7 +101,7 @@ export default class Map extends eventemitter {
     }
 
     /** @member */
-    this.player = new Player(this, initial_pos);
+    this.player = new Player(this, initial_pos, montage);
     this.root.addChild(this.player);
   }
 

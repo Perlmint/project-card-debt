@@ -1,19 +1,40 @@
 const PIXI = require('pixi.js');
-const sample = require('lodash/sample');
 const random = require('lodash/random');
+const mapValues = require('lodash/mapValues');
 const { SharedTweenManager, PUXI } = require('./tween');
 const head = PIXI.Texture.from(require('./res/player/head.png'));
-const body = [PIXI.Texture.from(require('./res/player/body1.png'))];
-const hair = [PIXI.Texture.from(require('./res/player/hair1.png'))];
-const leg = PIXI.Texture.from(require('./res/player/leg.png'));
+const body = mapValues(
+  require('./res/player/body*.png'),
+  (v) => PIXI.Texture.from(v)
+);
+const hair = mapValues(
+  require('./res/player/hair*.png'),
+  (v) => PIXI.Texture.from(v)
+);
+const leg = mapValues(
+  require('./res/player/leg*.png'),
+  (v) => PIXI.Texture.from(v)
+);
 const constants = require('./const.json');
 
-function randomColor() {
-  return random(0, 255, false) * 0x10000 + random(0, 255, false) * 0x100 + random(0, 255, false);
+export function createHead(montage) {
+  const wrap = new PIXI.Container();
+  head = PIXI.Sprite.from(head);
+  head.position.set(23.76, 45.02);
+  // left: 16.06px;
+  // top: 297px
+  wrap.addChild(head);
+  hair = PIXI.Sprite.from(hair[montage.hair_type]);
+  hair.tint = montage.hair_color;
+  // left: 0;
+  // top: 261.31px;
+  wrap.addChild(hair);
+
+  return wrap;
 }
 
 export default class Player extends PIXI.projection.Container2d {
-  constructor(map, start_node_idx) {
+  constructor(map, start_node_idx, montage) {
     super();
 
     this.wrap = new PIXI.Container();
@@ -28,28 +49,21 @@ export default class Player extends PIXI.projection.Container2d {
     ).target(this.wrap, "position").repeat(Number.POSITIVE_INFINITY, true);
 
     /** @member */
-    this.leg = PIXI.Sprite.from(leg);
-    this.leg.position.set(16.06, 222.69);
+    this.leg = PIXI.Sprite.from(leg[montage.leg_type]);
+    this.leg.tint = montage.leg_color;
+    this.leg.position.set(97 - 64, 209.23 + 72.79);
     // left: 16.06px;
     // top: 484px;
     this.wrap.addChild(this.leg);
-    this.body = PIXI.Sprite.from(sample(body));
-    this.body.position.set(7.56, 155.69);
-    this.body.tint = randomColor();
+    this.body = PIXI.Sprite.from(body[montage.body_type]);
+    this.body.position.set(8, 153);
+    this.body.tint = montage.body_color;
     // left: 7.56;
     // top: 417px;
     this.wrap.addChild(this.body);
-    this.head = PIXI.Sprite.from(head);
-    this.head.position.set(16.06, 35.69);
-    // left: 16.06px;
-    // top: 297px
-    this.wrap.addChild(this.head);
-    this.hair = PIXI.Sprite.from(sample(hair));
-    this.hair.tint = randomColor();
-    // left: 0;
-    // top: 261.31px;
-    this.wrap.addChild(this.hair);
-    this.pivot.set(89.64, 351.69 - 80);
+    const head = createHead(montage);
+    this.wrap.addChild(head);
+    this.pivot.set(97, 351.69 - 80);
     this.scale.set(0.2);
 
     this.proj.affine = PIXI.projection.AFFINE.AXIS_X;

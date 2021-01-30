@@ -165,13 +165,14 @@ lobby_wss.on('connection', async (ws, req) => {
           game_data[1].data.completed_targets = [];
         }
         function createMontage() {
+          const montage = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'data/montage.json')));
           return {
-            hair_color: 0,
-            hair_type: 0,
-            body_color: 0,
-            body_type: 0,
-            leg_color: 0,
-            leg_type: 0,
+            hair_color: Number.parseInt(sample(montage.hair_color)),
+            hair_type: random(montage.hair_type - 1, false) + 1,
+            body_color: Number.parseInt(sample(montage.body_color)),
+            body_type: random(montage.body_type - 1, false) + 1,
+            leg_color: Number.parseInt(sample(montage.leg_color)),
+            leg_type: random(montage.leg_type - 1, false) + 1,
           };
         }
         game_data[0].data.montage = createMontage();
