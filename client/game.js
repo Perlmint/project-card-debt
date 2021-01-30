@@ -54,6 +54,7 @@ ws.addEventListener('message', (message) => {
       map.on('player_arrival', (pos) => {
         ws.send(JSON.stringify({
           type: 'arrival',
+          time: timer.remain,
           pos,
         }));
       });
@@ -62,12 +63,13 @@ ws.addEventListener('message', (message) => {
           type: 'depature',
         }));
       });
-      map.on('target_noti', (targets, node, montage_init, montage_decay) => {
+      map.on('target_noti', (targets, node, montage_init, montage_decay, post_delay) => {
         ws.send(JSON.stringify({
           type: 'target_noti',
           targets,
           montage_init,
           montage_decay,
+          post_delay,
           node,
           time: timer.remain,
         }));

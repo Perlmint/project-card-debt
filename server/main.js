@@ -9,6 +9,9 @@ const random = require('lodash/random');
 const sampleSize = require('lodash/sampleSize');
 const pick = require('lodash/pick');
 const keys = require('lodash/keys');
+const values = require('lodash/values');
+const last = require('lodash/last');
+const every = require('lodash/every');
 const EventEmitter3 = require('eventemitter3');
 
 const pass_options = {
@@ -37,6 +40,14 @@ class Common extends EventEmitter3 {
     super();
     this.counter = 0;
     this.targets = [];
+    this.montage = {
+      hair_color: null,
+      hair_type: null,
+      body_color: null,
+      body_type: null,
+      leg_color: null,
+      leg_type: null,
+    };
   }
 
   join() {
@@ -198,34 +209,47 @@ game_wss.on('connection', (ws, req) => {
       case 'arrival':
         user_data.data.pos = parse_data.pos;
         if (other_user.data.pos === user_data.data.pos) {
-          const capture = JSON.stringify({
-            type: 'capture',
-          });
-          ws.send(capture);
-          other_user.ws.send(capture);
+          const has_montage = every(values(game[2].montage), (v) => v !== null);
+          const last_target = last(game[2].targets);
+          let while_action = false;
+          if (last_target) {
+            if (parse_data.time > last_target.time - last_target.post_delay) {
+              while_action = true;
+            }
+          }
+
+          if (has_montage || while_action) {
+            const capture = JSON.stringify({
+              type: 'capture',
+            });
+            ws.send(capture);
+            other_user.ws.send(capture);
+          }
         }
         break;
       case 'depature':
         user_data.data.pos = null;
         break;
       case 'ask': {
-        const {node, time} = parsed_data;
+        const {node, time} = parse_data;
         for (const target of game[2].targets) {
           if (target.node === node) {
             const dt = target.time - time;
             const parts = target.montage_init - Math.floor(dt / target.montage_decay)
             if (parts > 0) {
+              const montage = pick(other_user.data.montage, sampleSize(keys(other_user.data.montage), parts));
               ws.send(JSON.stringify({
                 type: 'montage',
-                montage: pick(other_user.data.montage, sampleSize(keys(other_user.data.montage), parts)),
+                montage,
               }));
+              break;
             }
           }
         }
         break;
       }
       case 'target_noti':
-        game[2].targets.push(parsed_data);
+        game[2].targets.push(parse_data);
         other_user.ws.send(data);
         break;
     }
