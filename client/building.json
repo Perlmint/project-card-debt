@@ -1,89 +1,111 @@
 {
 	"11": {
+		"building_id": 11,
 		"name": "냉동파 아지트", 
 		"actions": [ 1, 11 ]
 	},
 	"12": {
+		"building_id": 12,
 		"name": "볶음파 아지트", 
 		"actions": [ 2, 12, 112 ]
 	},
-	"13": { 
+	"13": {
+		"building_id": 13, 
 		"name": "구내식당파 아지트", 
 		"actions": [ 3, 13 ]
 	},
-	"14": { 
+	"14": {
+		"building_id": 14, 
 		"name": "스팸파 아지트", 
 		"actions": [ 4 ]
 	},
-	"15": { 
+	"15": {
+		"building_id": 15, 
 		"name": "공일구청", 
 		"actions": [ 15 ]
 	},
-	"21": { 
+	"21": {
+		"building_id": 21, 
 		"name": "제이 메리엇 호텔 부울", 
 		"actions": [ 1, 101 ]
 	},
-	"22": { 
+	"22": {
+		"building_id": 22, 
 		"name": "K-C 빌딩", 
 		"actions": [ 2, 112 ]
 	},
-	"23": { 
+	"23": {
+		"building_id": 23, 
 		"name": "베라포트 오피스 타워", 
 		"actions": [ 3, 113 ]
 	},
-	"24": { 
+	"24": {
+		"building_id": 24, 
 		"name": "솔티 나이트 클럽", 
 		"actions": [ 4, 104 ]
 	},
-	"25": { 
+	"25": {
+		"building_id": 25, 
 		"name": "부울 관광진흥청사", 
 		"actions": [ 15 ]
 	},
-	"26": { 
+	"26": {
+		"building_id": 26, 
 		"name": "마린보이 레지던스 호텔", 
 		"actions": [ 16 ]
 	},
-	"31": { 
+	"31": {
+		"building_id": 31, 
 		"name": "냉동파 항만 아지트", 
 		"actions": [ 111 ]
 	},
-	"32": { 
+	"32": {
+		"building_id": 32, 
 		"name": "볶음파 항만 아지트", 
 		"actions": [ 2, 12 ]
 	},
-	"33": { 
+	"33": {
+		"building_id": 33, 
 		"name": "구내식당파 항만 아지트", 
 		"actions": [ 3 ]
 	},
-	"35": { 
+	"35": {
+		"building_id": 35, 
 		"name": "부울 항만관리청사", 
 		"actions": [ 15, 125 ]
 	},
-	"43": { 
+	"43": {
+		"building_id": 43, 
 		"name": "구내식당파 중심 아지트", 
 		"actions": [ 13, 113 ]
 	},
-	"45": { 
+	"45": {
+		"building_id": 45, 
 		"name": "부울시청", 
 		"actions": [ 125 ]
 	},
-	"47": { 
+	"47": {
+		"building_id": 47, 
 		"name": "부울시장 관사", 
 		"actions": [ 105 ]
 	},
-	"54": { 
+	"54": {
+		"building_id": 54, 
 		"name": "스팸파 인력사무소", 
 		"actions": [ 4 ]
 	},
-	"56": { 
+	"56": {
+		"building_id": 56, 
 		"name": "부울공단 제2공장", 
 		"actions": [ 16, 126 ]
 	},
-	"62": { 
+	"62": {
+		"building_id": 62, 
 		"name": "볶음파 보스 저택", 
 		"actions": [ 102, 112 ]
 	},
-	"63": { 
+	"63": {
+		"building_id": 63, 
 		"name": "구내식당파 보스 요트", 
 		"actions": [ 13, 103 ]
 	}

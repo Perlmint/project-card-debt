@@ -46,17 +46,17 @@ export default class ActionDialog extends EventEmitter {
       if (this.action_labels[i]) {
         action_label = this.action_labels[i];
         action_label.text = action.action_name;
+        action_label.removeAllListeners();
       } else {
         action_label = new PIXI.Text(action.action_name);
         action_label.interactive = true;
         action_label.buttonMode = true;
         this.action_labels.push(action_label);
-        const action_id = action.action_id;
-        action_label.on('pointertap', () => {
-          this.emit('do', action_id);
-          this.root.parent.removeChild(this.root);
-        });
       }
+      const action_id = action.action_id;
+      action_label.on('pointertap', () => {
+        this.emit('do', action_id);
+      });
       action_label.updateText();
       action_label.position.set(20, height);
       this.root.addChild(action_label);

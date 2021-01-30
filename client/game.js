@@ -64,6 +64,9 @@ ws.addEventListener('message', (message) => {
         }));
       });
       map.on('target_noti', (targets, node, montage_init, montage_decay, post_delay) => {
+        for (const t of targets) {
+          phone.completeTarget(t);
+        }
         ws.send(JSON.stringify({
           type: 'target_noti',
           targets,
@@ -81,6 +84,14 @@ ws.addEventListener('message', (message) => {
           time: timer.remain,
         }));
       });
+      if (data.user_data.todo) {
+        phone.initTodo(data.user_data.todo);
+      }
+      if (data.user_data.completed_targets) {
+        for (const target of data.user_data.completed_targets) {
+          phone.completeTarget(target);
+        }
+      }
       timer.once('end', () => ws.send(JSON.stringify({
         type: 'end',
       })));

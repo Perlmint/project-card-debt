@@ -1,6 +1,5 @@
 const PIXI = require('pixi.js');
 const clamp = require('lodash/clamp');
-const mapValues = require('lodash/mapValues');
 const Player = require('./player').default;
 const MoveDialog = require('./move_dialog').default;
 const FoundActionDialog = require('./found_action_dialog').default;
@@ -8,13 +7,8 @@ const LostActionDialog = require('./lost_action_dialog').default;
 const pick = require('lodash/pick');
 const values = require('lodash/values');
 const eventemitter = require('eventemitter3');
+const { textures: building_textures, ui_data: building_ui_data, data: building_data } = require('./building');
 
-const buildings = mapValues(
-  require('./res/building/*.png'),
-  (v) => PIXI.Texture.from(v)
-);
-const building_ui_data = require('./res/building/id.json');
-const building_data = require('./building.json');
 const action_data = require('./action.json');
 const target = require('./target.json');
 
@@ -66,7 +60,7 @@ export default class Map extends eventemitter {
     /** @member {PIXI.Graphics[]} */
     this.nodes = data.nodes.map((node_info, idx) => {
       const data = building_ui_data[node_info.building_id];
-      const node = new PIXI.projection.Sprite2d(buildings[data.name]);
+      const node = new PIXI.projection.Sprite2d(building_textures[data.name]);
       node.proj.affine = PIXI.projection.AFFINE.AXIS_X;
       node.rotation = Math.PI / 4;
       node.anchor.set(0.5, 1);
@@ -180,7 +174,7 @@ export default class Map extends eventemitter {
     for (const node of this.nodes) {
       node.buttonMode = node.interactive = false;
     }
-    this.root.removeChild(this.action_dialog.root);
+    this.wrap.removeChild(this.action_dialog.root);
 
     setTimeout(() => {
       this.emit('target_noti', action.targets, this.player.current_node, action.montage_part_init, action.montage_part_decay * 1000, action.delay_post * 1000);

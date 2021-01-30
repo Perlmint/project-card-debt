@@ -6,12 +6,14 @@ const xkcdp = new require('xkcd-password')();
 const WebSocket = require('ws');
 const url = require('url');
 const random = require('lodash/random');
+const sample = require('lodash/sample');
 const sampleSize = require('lodash/sampleSize');
 const pick = require('lodash/pick');
 const keys = require('lodash/keys');
 const values = require('lodash/values');
 const last = require('lodash/last');
 const every = require('lodash/every');
+const flatten = require('lodash/flatten');
 const EventEmitter3 = require('eventemitter3');
 
 const pass_options = {
@@ -157,8 +159,10 @@ lobby_wss.on('connection', async (ws, req) => {
         const todo = sample(JSON.parse(fs.readFileSync(path.join(process.cwd(), 'data/todo.json'))));
         if (game_data[0].role === 'found') {
           game_data[0].data.todo = todo;
+          game_data[0].data.completed_targets = [];
         } else {
           game_data[1].data.todo = todo;
+          game_data[1].data.completed_targets = [];
         }
         function createMontage() {
           return {
@@ -182,7 +186,6 @@ lobby_wss.on('connection', async (ws, req) => {
 })
 
 const fs = require('fs');
-const { sample } = require('lodash');
 
 game_wss.on('connection', (ws, req) => {
   const { game_id, user_name } = url.parse(req.url, true).query;
@@ -255,6 +258,7 @@ game_wss.on('connection', (ws, req) => {
       }
       case 'target_noti':
         game[2].targets.push(parse_data);
+        user_data.data.completed_targets.push(...parse_data.targets);
         other_user.ws?.send(data);
         checkCapture();
         break;
@@ -267,9 +271,9 @@ game_wss.on('connection', (ws, req) => {
   });
   ws.on('close', () => {
     user_data.ws = null;
-    if (other_user.ws == null) {
-      games.remove(game_id);
-    }
+    // if (other_user.ws == null) {
+    //   games.delete(game_id);
+    // }
   })
 
   function init() {
@@ -294,7 +298,7 @@ game_wss.on('connection', (ws, req) => {
     }
     other_user.ws?.send(JSON.stringify({
       type: 'tick_req',
-    }))
+    }));
   }
 });
 
