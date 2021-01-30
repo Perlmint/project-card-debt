@@ -6,6 +6,7 @@ const head = PIXI.Texture.from(require('./res/player/head.png'));
 const body = [PIXI.Texture.from(require('./res/player/body1.png'))];
 const hair = [PIXI.Texture.from(require('./res/player/hair1.png'))];
 const leg = PIXI.Texture.from(require('./res/player/leg.png'));
+const constants = require('./const.json');
 
 function randomColor() {
   return random(0, 255, false) * 0x10000 + random(0, 255, false) * 0x100 + random(0, 255, false);
@@ -66,8 +67,9 @@ export default class Player extends PIXI.projection.Container2d {
   }
 
   moveTo(new_idx) {
-    const distance = this.map.connection.get(this.current_node).get(new_idx);
+    // const distance = this.map.connection.get(this.current_node).get(new_idx);
     const target_node = this.map.nodes[new_idx];
+    const distance = Math.sqrt(Math.pow(target_node.position.x - this.position.x, 2), Math.pow(target_node.position.y - this.position.y, 2));
     this.map.onPlayerDepature(this.current_node);
     if (this.x > target_node.x || this.y > target_node.y) {
       this.scale.x = Math.abs(this.scale.x);
@@ -77,7 +79,7 @@ export default class Player extends PIXI.projection.Container2d {
     SharedTweenManager.tween(
       new PIXI.Point(this.x, this.y),
       new PIXI.Point(target_node.x, target_node.y),
-      distance * 100,
+      distance * 1000 / constants.TIME_MULTIPLIER / constants.WALK_SPEED,
       PUXI.PointErp,
       PUXI.EaseLinear
     ).target(this, "position").on('complete', () => {

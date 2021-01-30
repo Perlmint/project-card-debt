@@ -57,7 +57,8 @@ export default class Map extends eventemitter {
       const node = new PIXI.projection.Sprite2d(buildings[data.name]);
       node.proj.affine = PIXI.projection.AFFINE.AXIS_X;
       node.rotation = Math.PI / 4;
-      node.position.set(node_info.position[0] * TileSize, node_info.position[1] * TileSize);
+      node.anchor.set(0.5, 1);
+      node.position.set(node_info.position[0] * TileSize, (node_info.position[1] + 1) * TileSize);
       this.root.addChild(node);
       // node.lineStyle(5, 0x000000, 1);
       // node.beginFill(0xffffff, 1);
@@ -65,9 +66,9 @@ export default class Map extends eventemitter {
       // node.position.set((node_info.x + 0.5) * TileSize, (node_info.y + 0.5) * TileSize);
       // this.root.addChild(node);
 
-      // node.on('pointertap', () => {
-      //   this.onNodeClick(idx);
-      // });
+      node.on('pointertap', () => {
+        this.onNodeClick(idx);
+      });
 
       return node;
     });
@@ -158,6 +159,9 @@ export default class Map extends eventemitter {
     //   node.interactive = true;
     //   node.buttonMode = true;
     // }
+    for (const node of this.nodes) {
+      node.buttonMode = node.interactive = true;
+    }
 
     const node = this.data.nodes[node_idx];
     const actions = node.actions;
@@ -176,6 +180,9 @@ export default class Map extends eventemitter {
     //   node.interactive = false;
     //   node.buttonMode = false;
     // }
+    for (const node of this.nodes) {
+      node.buttonMode = node.interactive = false;
+    }
 
     this.root.removeChild(this.dialog);
     this.emit('player_depature');
