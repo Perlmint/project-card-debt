@@ -55,6 +55,7 @@ export default class ActionDialog extends EventEmitter {
         const action_id = action.action_id;
         action_label.on('pointertap', () => {
           this.emit('do', action_id);
+          this.root.parent.removeChild(this.root);
         });
       }
       action_label.updateText();

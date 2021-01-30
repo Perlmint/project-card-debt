@@ -29,9 +29,9 @@ container.addChild(ui_container);
 const phone = new Phone();
 ui_container.addChild(phone);
 
-// const timer = new CountDownTimer();
-// timer.root.position.set(window.innerWidth, 0);
-// container.addChild(timer.root);
+const timer = new CountDownTimer();
+timer.root.position.set(window.innerWidth, 0);
+container.addChild(timer.root);
 
 window.addEventListener('resize', (e) => {
   app.resizeTo = window;
@@ -62,10 +62,14 @@ ws.addEventListener('message', (message) => {
           type: 'depature',
         }));
       });
-      map.on('target_noti', (targets) => {
+      map.on('target_noti', (targets, node, montage_init, montage_decay) => {
         ws.send(JSON.stringify({
           type: 'target_noti',
           targets,
+          montage_init,
+          montage_decay,
+          node,
+          time: timer.remain,
         }));
       })
       timer.once('end', () => ws.send(JSON.stringify({
@@ -78,6 +82,9 @@ ws.addEventListener('message', (message) => {
       for (const target of data.targets) {
         phone.addNews(target_data[target].target_name);
       }
+      break;
+    case 'montage':
+      phone.addMontage(data.montage);
       break;
     case 'capture':
       alert('capture!');

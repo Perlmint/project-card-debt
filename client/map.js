@@ -177,7 +177,7 @@ export default class Map extends eventemitter {
     this.root.removeChild(this.action_dialog.root);
 
     setTimeout(() => {
-      this.emit('target_noti', action.targets);
+      this.emit('target_noti', action.targets, this.player.current_node, action.montage_part_init, action.montage_part_decay);
     }, action.deplay_pre * 1000);
     setTimeout(() => {
       for (const node of this.nodes) {

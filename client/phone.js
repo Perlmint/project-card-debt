@@ -24,6 +24,14 @@ export default class Phone extends PIXI.Sprite {
 
     this.interactive = true;
     this.alarms = [];
+    this.montage = {
+      hair_color: null,
+      hair_type: null,
+      body_color: null,
+      body_type: null,
+      leg_color: null,
+      leg_type: null,
+    };
 
     this.innerView = new ScrollContainer(52, 308, 440, 702, 218);
     this.addChild(this.innerView.po);
@@ -32,5 +40,11 @@ export default class Phone extends PIXI.Sprite {
   addNews(title_text) {
     const alarm = new Alarm(title_text);
     this.innerView.addItem(alarm);
+    console.log(title_text);
+  }
+
+  addMontage(montage) {
+    Object.assign(this.montage, montage);
+    console.log(montage);
   }
 }

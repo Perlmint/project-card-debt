@@ -6,7 +6,9 @@ const xkcdp = new require('xkcd-password')();
 const WebSocket = require('ws');
 const url = require('url');
 const random = require('lodash/random');
+const sampleSize = require('lodash/sampleSize');
 const pick = require('lodash/pick');
+const keys = require('lodash/keys');
 const EventEmitter3 = require('eventemitter3');
 
 const pass_options = {
@@ -34,6 +36,7 @@ class Common extends EventEmitter3 {
   constructor() {
     super();
     this.counter = 0;
+    this.targets = [];
   }
 
   join() {
@@ -144,6 +147,18 @@ lobby_wss.on('connection', async (ws, req) => {
         } else {
           game_data[1].data.todo = todo;
         }
+        function createMontage() {
+          return {
+            hair_color: 0,
+            hair_type: 0,
+            body_color: 0,
+            body_type: 0,
+            leg_color: 0,
+            leg_type: 0,
+          };
+        }
+        game_data[0].data.montage = createMontage();
+        game_data[1].data.montage = createMontage();
 
         ws1.close(4100, game_id);
         ws2.close(4100, game_id);
@@ -193,7 +208,24 @@ game_wss.on('connection', (ws, req) => {
       case 'depature':
         user_data.data.pos = null;
         break;
+      case 'ask': {
+        const {node, time} = parsed_data;
+        for (const target of game[2].targets) {
+          if (target.node === node) {
+            const dt = target.time - time;
+            const parts = target.montage_init - Math.floor(dt / target.montage_decay)
+            if (parts > 0) {
+              ws.send(JSON.stringify({
+                type: 'montage',
+                montage: pick(other_user.data.montage, sampleSize(keys(other_user.data.montage), parts)),
+              }));
+            }
+          }
+        }
+        break;
+      }
       case 'target_noti':
+        game[2].targets.push(parsed_data);
         other_user.ws.send(data);
         break;
     }
