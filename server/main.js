@@ -147,10 +147,12 @@ lobby_wss.on('connection', async (ws, req) => {
           pos2 = random(0, map.nodes.length - 1, false);
         }
         game_data[0].data = {
-          pos: pos1
+          pos: pos1,
+          role: game_data[0].role,
         };
         game_data[1].data = {
-          pos: pos2
+          pos: pos2,
+          role: game_data[1].role,
         };
         const todo = sample(JSON.parse(fs.readFileSync(path.join(process.cwd(), 'data/todo.json'))));
         if (game_data[0].role === 'found') {
@@ -238,7 +240,7 @@ game_wss.on('connection', (ws, req) => {
         for (const target of game[2].targets) {
           if (target.node === node) {
             const dt = target.time - time;
-            const parts = target.montage_init - Math.floor(dt / target.montage_decay)
+            const parts = target.montage_init - Math.floor(dt / target.montage_decay * 1000)
             if (parts > 0) {
               const montage = pick(other_user.data.montage, sampleSize(keys(other_user.data.montage), parts));
               ws.send(JSON.stringify({

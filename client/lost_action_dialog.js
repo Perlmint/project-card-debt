@@ -31,7 +31,10 @@ export default class ActionDialog extends EventEmitter {
    * @param {string} name
    * @param {any[]} actions
    */
-  init(name, actions) {
+  init(name) {
+    const actions = [{
+      action_name: '몽타주 수집',
+    }];
     let height = 0;
     this.name_label.text = name;
     this.name_label.updateText();
@@ -54,7 +57,7 @@ export default class ActionDialog extends EventEmitter {
         this.action_labels.push(action_label);
         const action_id = action.action_id;
         action_label.on('pointertap', () => {
-          this.emit('do', action_id);
+          this.emit('do');
           this.root.parent.removeChild(this.root);
         });
       }

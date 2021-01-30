@@ -3,7 +3,8 @@ const clamp = require('lodash/clamp');
 const mapValues = require('lodash/mapValues');
 const Player = require('./player').default;
 const MoveDialog = require('./move_dialog').default;
-const ActionDialog = require('./found_action_dialog').default;
+const FoundActionDialog = require('./found_action_dialog').default;
+const LostActionDialog = require('./lost_action_dialog').default;
 const pick = require('lodash/pick');
 const values = require('lodash/values');
 const eventemitter = require('eventemitter3');
@@ -28,7 +29,7 @@ export default class Map extends eventemitter {
    * @param {*} data
    * @param {number} initial_pos
    */
-  constructor(data, initial_pos) {
+  constructor(data, initial_pos, role) {
     super();
     this.data = data;
     this.ui_root = new PIXI.Container();
@@ -97,8 +98,13 @@ export default class Map extends eventemitter {
     this.move_dialog.on('click', (idx) => {
       this.player.moveTo(idx);
     });
-    this.action_dialog = new ActionDialog();
-    this.action_dialog.on('do', (id) => this.onDoAction(id));
+    if (role === 'lost') {
+      this.action_dialog = new LostActionDialog();
+      this.action_dialog.on('do', () => this.emit('montage', this.player.current_node));
+    } else {
+      this.action_dialog = new FoundActionDialog();
+      this.action_dialog.on('do', (id) => this.onDoAction(id));
+    }
 
     /** @member */
     this.player = new Player(this, initial_pos);

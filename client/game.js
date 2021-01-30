@@ -48,7 +48,7 @@ ws.addEventListener('message', (message) => {
   const data = JSON.parse(message.data);
   switch (data.type) {
     case 'init': {
-      const map = new Map(data.map, data.user_data.pos);
+      const map = new Map(data.map, data.user_data.pos, data.user_data.role);
       map.ui_root.position.x = phone.width;
       container.addChildAt(map.ui_root, 0);
       map.on('player_arrival', (pos) => {
@@ -73,7 +73,14 @@ ws.addEventListener('message', (message) => {
           node,
           time: timer.remain,
         }));
-      })
+      });
+      map.on('montage', (node) => {
+        ws.send(JSON.stringify({
+          type: 'ask',
+          node,
+          time: timer.remain,
+        }));
+      });
       timer.once('end', () => ws.send(JSON.stringify({
         type: 'end',
       })));
