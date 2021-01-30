@@ -13,10 +13,6 @@ const app = new PIXI.Application({
   backgroundColor: 0x1099bb,
 });
 document.body.appendChild(app.view);
-window.addEventListener('resize', (e) => {
-  app.resizeTo = window;
-  timer.position.set(window.innerWidth, 0);
-});
 
 const container = new PIXI.Container();
 
@@ -27,8 +23,13 @@ const phone = new Phone();
 container.addChild(phone);
 
 const timer = new CountDownTimer();
-timer.position.set(window.innerWidth, 0);
+timer.root.position.set(window.innerWidth, 0);
 container.addChild(timer.root);
+
+window.addEventListener('resize', (e) => {
+  app.resizeTo = window;
+  timer.root.position.set(window.innerWidth, 0);
+});
 
 const ws = new WebSocket(`ws://${location.host}/game${location.search}`);
 ws.addEventListener('close', (event) => {
