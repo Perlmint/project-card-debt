@@ -31,16 +31,24 @@ export default class Dialog extends PIXI.projection.Container2d {
     this.name_label.text = name;
     this.name_label.updateText();
     height += this.name_label.height + 10;
-    // TODO: clean previout actions
-    this.action_labels = [];
+    for (const label of this.action_labels) {
+      this.removeChild(label);
+    }
     let width = this.name_label.width;
-    for (const action of actions) {
-      const action_label = new PIXI.Text(action.action_name);
+    for (let i = 0; i < actions.length; i++) {
+      const action = actions[i];
+      let action_label;
+      if (this.action_labels[i]) {
+        action_label = this.action_labels[i];
+        action_label.text = action.action_name;
+      } else {
+        action_label = new PIXI.Text(action.action_name);
+        this.action_labels.push(action_label);
+      }
       action_label.updateText();
       action_label.position.set(20, height);
       this.addChild(action_label);
       height += this.name_label.height + 10;
-      this.action_labels.push(action_label);
       width = Math.max(action_label.width, width);
     }
 
