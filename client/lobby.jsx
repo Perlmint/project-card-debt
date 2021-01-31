@@ -128,7 +128,7 @@ function Lobby() {
                 <div className="pure-u-1-5">
                     <font color="blue">Found man - 총 주운 사람</font> <br/><br/>
                     당신은 총을 습득했지만, 여전히 할 일은 많고 시간은 촉박하군요! <br/>
-                    <font color="blue">총 주인의 추적을 피해, 총의 도움이 필요한 목표 리스트를 모두 달성하세요.</font> <br/><br/>
+                    <font color="blue">추적을 피하며, 총을 사용해 목표 리스트를 모두 달성하세요.</font> <br/><br/>
                     <UserInfo data={found_user} username={nickname} />
                 </div>
                 <div className="pure-u-1-5"></div>
