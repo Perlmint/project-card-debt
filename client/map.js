@@ -116,7 +116,7 @@ export default class Map extends eventemitter {
       }
     }
 
-    objects = sortBy(objects, o => -(o.x / TileSize - o.y / TileSize + 1));
+    objects = sortBy(objects, o => -(o.x / TileSize - o.y / TileSize + 1), o => -o.x);
     this.root.addChild(...objects);
 
     // this.connection = new window.Map();
