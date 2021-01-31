@@ -76,7 +76,7 @@ export default class Player extends PIXI.projection.Container2d {
     map.onPlayerArrival(start_node_idx);
   }
 
-  moveTo(new_idx) {
+  moveTo(new_idx, by_car) {
     // const distance = this.map.connection.get(this.current_node).get(new_idx);
     const target_node = this.map.nodes[new_idx];
     const distance = Math.sqrt(Math.pow(target_node.position.x - this.position.x, 2) + Math.pow(target_node.position.y - this.position.y, 2));
@@ -89,7 +89,7 @@ export default class Player extends PIXI.projection.Container2d {
     SharedTweenManager.tween(
       new PIXI.Point(this.x, this.y),
       new PIXI.Point(target_node.x, target_node.y),
-      distance * 1000 / constants.TIME_MULTIPLIER / constants.WALK_SPEED,
+      distance * 1000 / constants.TIME_MULTIPLIER / (by_car ? constants.CAR_SPEED : constants.WALK_SPEED),
       PUXI.PointErp,
       PUXI.EaseLinear
     ).target(this, "position").on('complete', () => {

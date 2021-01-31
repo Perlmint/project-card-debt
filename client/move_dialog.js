@@ -26,13 +26,14 @@ export default class MoveDialog extends PIXI.NineSlicePlane {
       this.emit('go', this.node_idx, true);
       this.parent.removeChild(this);
     });
+    this.addChild(this.by_car_button);
 
     this.by_car_label = new PIXI.Text('', {
       fontSize: 14,
       fontWeight: 400
     });
     this.by_car_label.alpha = 0.5413;
-    this.by_car_label.position.set(45, 13);
+    this.by_car_label.position.set(49, 13);
     this.by_car_button.addChild(this.by_car_label);
 
     this.by_walk_button = new PIXI.Sprite(by_walk_button);
@@ -95,8 +96,14 @@ export default class MoveDialog extends PIXI.NineSlicePlane {
     }
 
     this.by_walk_label.text = `${Math.round(distance / constant.WALK_SPEED)} 분`;
-
     this.by_walk_button.y = this.by_car_button.y = height + 16;
+
+    if (distance >= constant.CAR_MIN_DIST) {
+      this.by_car_label.text = `${Math.round(distance / constant.CAR_SPEED)} 분`;
+      this.by_car_button.visible = true;
+    } else {
+      this.by_car_button.visible = false;
+    }
 
     this.height = height + this.by_walk_button.height + 37;
     this.pivot.set(-40, this.height + 90);

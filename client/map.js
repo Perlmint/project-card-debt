@@ -89,8 +89,8 @@ export default class Map extends eventemitter {
 
     /** @member */
     this.move_dialog = new MoveDialog();
-    this.move_dialog.on('go', (idx) => {
-      this.player.moveTo(idx);
+    this.move_dialog.on('go', (idx, by_car) => {
+      this.player.moveTo(idx, by_car);
     });
     this.move_dialog.scale.y = 1 / YScale;
     if (role === 'lost') {
