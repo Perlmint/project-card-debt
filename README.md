@@ -19,13 +19,11 @@
 
 <a href='https://kr.freepik.com/vectors/black'>Black 벡터는 macrovector - kr.freepik.com가 제작함</a>
 
-<a href="https://www.freepik.com/vectors/abstract">Abstract vector created by macrovector - www.freepik.com</a>
+<a href="https://www.freepik.com/vectors/abstract">Abstract 벡터는 macrovector - kr.freepik.com가 제작함</a>
 
-<a href="https://www.freepik.com/vectors/water">Water vector created by macrovector - www.freepik.com</a>
+<a href="https://www.freepik.com/vectors/water">Water vector 벡터는 macrovector - kr.freepik.com가 제작함</a>
 
-<a href="https://kr.freepik.com/vectors/city">City 벡터는 macrovector - kr.freepik.com가 제작함</a>
-
-<a href="https://www.freepik.com/vectors/building">Building vector created by macrovector - www.freepik.com</a>
+<a href="https://www.freepik.com/vectors/building">Building vector 벡터는 macrovector - kr.freepik.com가 제작함</a>
 
 
 
