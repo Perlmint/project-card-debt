@@ -97,7 +97,7 @@ class Alarm extends PIXI.NineSlicePlane {
   constructor(time, id, is_target) {
     super(news_background, 32, 32, 32, 32);
 
-    time = constants.TOTAL_TIME - time / 1000;
+    time = constants.TOTAL_TIME - time / 1000 / constants.TIME_MULTIPLIER;
 
     this.x = 11;
     this.title = new PIXI.Text(sprintf('%02d:%02d', time / 60, time % 60), {
