@@ -188,32 +188,74 @@ export default class Phone extends PIXI.Sprite {
       align: 'center',
       fill: '#FFFFFF',
     });
-    this.title.anchor.set(0.5, 0);
+    this.title.anchor.set(0.5, 0.5);
+    this.title.position.set(240, 67 + 12);
     this.addChild(this.title);
 
-    this.innerView = new ScrollContainer(20, 286, 440, 688, 218);
-    this.addChild(this.innerView.po);
-  }
-
-  initForLost() {
-    this.title.anchor.y = 0.5;
-    this.title.position.set(240, 67 + 12);
-
     this.triangle = new PIXI.Sprite(triangle);
-    this.triangle.pivot.set(0, triangle.height / 2);
+    this.triangle.anchor.set(0, 0.5);
     this.triangle.position.y = this.title.position.y;
     this.addChild(this.triangle);
 
     this.toggle_area = new PIXI.Container();
     this.toggle_area.buttonMode = this.toggle_area.interactive = true;
     this.toggle_area.hitArea = new PIXI.Rectangle(0, 0, 440, 42);
-    this.toggle_area.on('pointertap', () => this.toggle_screen());
     this.toggle_area.position.set(20, 58);
     this.addChild(this.toggle_area);
 
+    this.innerView = new ScrollContainer(20, 286, 440, 688, 218);
+    this.addChild(this.innerView.po);
+
+    this.todo_id = 1;
+    this.target_ui = new PIXI.Container();
+    this.target_ui.visible = false;
+    this.addChild(this.target_ui);
+
+    const createTodoButton = (todo) => {
+      const label = new PIXI.Text(todo.todo_name, {
+        fontWeight: 400,
+        fontSize: 16,
+      });
+      label.alpha = 0.87;
+      label.position.set(10, 11);
+
+      const bg = new PIXI.Graphics();
+      bg.beginFill(0xFFFFFF, 1);
+      bg.drawRoundedRect(0, 0, label.width + 10 + 10, label.height + 11 + 10, 10);
+      bg.addChild(label);
+      bg.interactive = bg.buttonMode = true;
+      bg.on('pointertap', () => {
+        this.showTodoList(todo.todo_id - 1);
+      });
+
+      return bg;
+    };
+
+    const todo_button_positions = {
+      1: new PIXI.Point(100, 108),
+      4: new PIXI.Point(248, 108),
+      7: new PIXI.Point(40,  164),
+      2: new PIXI.Point(171, 164),
+      5: new PIXI.Point(302, 164),
+      3: new PIXI.Point(87, 220),
+      6: new PIXI.Point(250, 220),
+    };
+    for (let idx = 0; idx < todo_data.length; idx++) {
+      const todo = todo_data[idx];
+      const todo_item = createTodoButton(todo);
+      todo_item.position = todo_button_positions[todo.todo_id];
+      this.target_ui.addChild(todo_item);
+    }
+    this.target_items = [];
+    this.completed_target_ids = new Set();
+  }
+
+  initForLost() {
     this.montage_ui = new PIXI.Container();
     this.montage_ui.visible = false;
     this.addChild(this.montage_ui);
+
+    this.toggle_area.on('pointertap', () => this.toggle_screen_lost());
 
     const montage_bg = new PIXI.Graphics();
     montage_bg.beginFill(0x7E7E7E, 1);
@@ -276,53 +318,10 @@ export default class Phone extends PIXI.Sprite {
     label.position.set(111 + 158 + 50, 120 + 100 + 11);
     this.montage_ui.addChild(label);
 
-    this.target_ui = new PIXI.Container();
-    this.target_ui.visible = false;
-    this.addChild(this.target_ui);
-
-    const createTodoButton = (todo) => {
-      const label = new PIXI.Text(todo.todo_name, {
-        fontWeight: 400,
-        fontSize: 16,
-      });
-      label.alpha = 0.87;
-      label.position.set(10, 11);
-
-      const bg = new PIXI.Graphics();
-      bg.beginFill(0xFFFFFF, 1);
-      bg.drawRoundedRect(0, 0, label.width + 10 + 10, label.height + 11 + 10, 10);
-      bg.addChild(label);
-      bg.interactive = bg.buttonMode = true;
-      bg.on('pointertap', () => {
-        this.showTodoList(todo.todo_id - 1);
-      });
-
-      return bg;
-    };
-
-    const todo_button_positions = {
-      1: new PIXI.Point(100, 108),
-      4: new PIXI.Point(248, 108),
-      7: new PIXI.Point(40,  164),
-      2: new PIXI.Point(171, 164),
-      5: new PIXI.Point(302, 164),
-      3: new PIXI.Point(87, 220),
-      6: new PIXI.Point(250, 220),
-    };
-    for (let idx = 0; idx < todo_data.length; idx++) {
-      const todo = todo_data[idx];
-      const todo_item = createTodoButton(todo);
-      todo_item.position = todo_button_positions[todo.todo_id];
-      this.target_ui.addChild(todo_item);
-    }
-
-    this.todo_id = 1;
     this.news_items = [];
-    this.target_items = [];
-    this.completed_target_ids = new Set();
 
     this.updateMontage();
-    this.toggle_screen();
+    this.toggle_screen_lost();
   }
 
   showTodoList(todo_id) {
@@ -340,7 +339,8 @@ export default class Phone extends PIXI.Sprite {
     }
   }
 
-  toggle_screen() {
+  toggle_screen_lost() {
+    this.triangle.position.y = this.title.position.y;
     if (this.montage_ui.visible) {
       this.montage_ui.visible = false;
       this.target_ui.visible = true;
@@ -358,6 +358,29 @@ export default class Phone extends PIXI.Sprite {
       this.innerView.itemHeight = 218;
       this.innerView.removeChildren();
       for (const item of this.news_items) {
+        this.innerView.addItem(item);
+      }
+    }
+  }
+
+  toggle_screen_found() {
+    if (this.todo_ui.visible) {
+      this.todo_ui.visible = false;
+      this.target_ui.visible = true;
+      this.title.text = '임무 리스트';
+      this.triangle.rotation = Math.PI;
+      this.triangle.x = this.title.position.x - this.title.width / 2 - 5;
+      this.innerView.itemHeight = 80;
+      this.showTodoList(this.todo_id);
+    } else {
+      this.todo_ui.visible = true;
+      this.target_ui.visible = false;
+      this.title.text = `${this.todo.todo_name} 임무 수행 가이드`;
+      this.triangle.rotation = 0;
+      this.triangle.x = this.title.position.x + this.title.width / 2 + 5;
+      this.innerView.itemHeight = 154;
+      this.innerView.removeChildren();
+      for (const item of this.todo_items) {
         this.innerView.addItem(item);
       }
     }
@@ -424,34 +447,43 @@ export default class Phone extends PIXI.Sprite {
   }
 
   initTodo(todo) {
-    this.innerView.itemHeight = 154;
+    this.todo = todo;
     this.targets = new Map();
-    this.title.text = `${todo.todo_name} 임무 수행 가이드`;
-    this.title.position.set(240, 95);
+
+    this.todo_ui = new PIXI.Container();
+    this.todo_ui.visible = false;
+    this.addChild(this.todo_ui);
+
     this.percentage = new PIXI.Text('0%', {
       fontWeight: 700,
       fontSize: 60,
     });
-
     this.completed = 0;
     this.percentage.position.set(160, 135);
-    this.addChild(this.percentage);
+    this.todo_ui.addChild(this.percentage);
 
     this.progress_bar = new ProgressBar();
     this.progress_bar.position.set(160, 208);
     this.progress_bar.resize(280, 27, 0xC4C4C4, 0x626262, 0x7E7E7E, 4);
 
-    this.addChild(this.progress_bar);
+    this.todo_ui.addChild(this.progress_bar);
 
+    this.todo_items = [];
     for (const target of todo.targets) {
       const target_item = new TargetItem(target);
+      this.todo_items.push(target_item);
       this.innerView.addItem(target_item);
       this.targets.set(target, target_item);
     }
+
+    this.toggle_area.on('pointertap', () => this.toggle_screen_found());
+
+    this.toggle_screen_found();
   }
 
   completeTarget(target_id) {
     const target = this.targets.get(target_id);
+    this.completed_target_ids.add(target_id);
     if (target) {
       if (target.setComplete()) {
         this.completed++;
