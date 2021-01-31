@@ -3,7 +3,7 @@
 		"action_id": 1,
 		"action_name": "냉동파 행동대원 정리",
 		"delay_pre": 0.0,
-		"delay_post": 5.0,
+		"delay_post": 20.0,
 		"montage_part_init": 3,
 		"montage_part_decay": 40.0,
 		"targets": [ 1 ]
@@ -12,7 +12,7 @@
 		"action_id": 2,
 		"action_name": "볶음파 조직원 정리",
 		"delay_pre": 0.0,
-		"delay_post": 5.0,
+		"delay_post": 20.0,
 		"montage_part_init": 3,
 		"montage_part_decay": 40.0,
 		"targets": [ 2 ]
