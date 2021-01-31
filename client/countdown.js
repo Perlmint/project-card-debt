@@ -1,4 +1,5 @@
 const PIXI = require('pixi.js');
+const background = PIXI.Texture.from(require('./res/timer.png'));
 const constants = require('./const.json');
 const sprintf = require('sprintf-js').sprintf;
 const EventEmitter = require('eventemitter3');
@@ -8,20 +9,23 @@ export default class CountDownTimer extends EventEmitter {
     super();
 
     this.root = new PIXI.Container();
-
-    this.root.pivot.set(200, 0);
+    const marginX = 27;
+    const marginY = 28;
+    this.root.pivot.set(200 - marginX, 0 - marginY);
 
     /** @member */
-    this.frame = new PIXI.Graphics();
-    this.frame.beginFill(0x0000ff, 1);
-    this.frame.drawRect(0, 0, 200, 100);
+    this.frame = new PIXI.Sprite(background);
+    this.frame.anchor.set(0, 0);
+    this.frame.position.set(0, 0);
     this.root.addChild(this.frame);
 
     this.remain_time = new PIXI.Text('00:00', {
-      fontSize: 50
+      fontSize: 40,
+      align: 'center',
+      fill: '0x414243', 
     });
-    this.remain_time.position.set(100, 50);
-    this.remain_time.anchor.set(0.5, 0.5);
+    this.remain_time.position.set(65, 70);
+    this.remain_time.anchor.set(0.5, 0.4);
     this.root.addChild(this.remain_time);
   }
 
