@@ -63,8 +63,14 @@ export default class Map extends eventemitter {
       const node = new PIXI.projection.Sprite2d(building_textures[data.name]);
       node.proj.affine = PIXI.projection.AFFINE.AXIS_X;
       node.rotation = Math.PI / 4;
-      node.anchor.set(0.5, 1);
+
+      // if [w,h] = [2,1] then anchor value must be (0, 1).
+      // only one building (id=25) is not square.
+      node.anchor.set((node_info.building_id === 25 ? 0 : 0.5), 1 );
+
       node.position.set(node_info.position[0] * TileSize, (node_info.position[1] + 1) * TileSize);
+      console.log(data);
+      console.log(node_info.position);
       // node.parentLayer = building_layer;
       // node.zOrder = this.data.width - node_info.position[0] + node_info.position[1];
       this.root.addChild(node);
