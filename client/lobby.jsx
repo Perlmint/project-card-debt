@@ -100,6 +100,20 @@ function Lobby() {
                         setConnectionState(1);
                     }}>시작하기</button>
                 </div>
+                <div className="pure-u-1-1" style={{ textAlign: "center", paddingTop: '2em' }}>
+                    Resource License
+                    <ul>
+                        <li><a href='https://kr.freepik.com/vectors/city'>City 벡터는 macrovector - kr.freepik.com가 제작함</a></li>
+                        <li><a href='https://kr.freepik.com/vectors/travel'>Travel 벡터는 macrovector - kr.freepik.com가 제작함</a></li>
+                        <li><a href="https://kr.freepik.com/vectors/business">Business 벡터는 macrovector - kr.freepik.com가 제작함</a></li>
+                        <li><a href="https://kr.freepik.com/vectors/school">School 벡터는 macrovector - kr.freepik.com가 제작함</a></li>
+                        <li><a href="https://kr.freepik.com/vectors/car">Car 벡터는 macrovector - kr.freepik.com가 제작함</a></li>
+                        <li><a href='https://kr.freepik.com/vectors/black'>Black 벡터는 macrovector - kr.freepik.com가 제작함</a></li>
+                        <li><a href="https://www.freepik.com/vectors/abstract">Abstract vector created by macrovector - www.freepik.com</a></li>
+                        <li><a href="https://www.freepik.com/vectors/water">Water vector created by macrovector - www.freepik.com</a></li>
+                        <li><a href="https://www.freepik.com/vectors/building">Building vector created by macrovector - www.freepik.com</a></li>
+                    </ul>
+                </div>
             </div>;
         case 1:
             return <div className="lds-ripple"><div></div><div></div></div>;
