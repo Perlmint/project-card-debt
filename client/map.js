@@ -216,7 +216,7 @@ export default class Map extends eventemitter {
     this.wrap.addChild(this.action_progress);
     setTimeout(() => {
       this.emit('target_noti', action.targets, this.player.current_node, action.montage_part_init, action.montage_part_decay * 1000, action.delay_post * 1000);
-    }, action.deplay_pre * 1000 / constant.TIME_MULTIPLIER);
+    }, action.delay_pre * 1000 * 60 / constant.TIME_MULTIPLIER);
   }
 
   onDragStart(event) {
