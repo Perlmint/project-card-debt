@@ -109,6 +109,9 @@ class Alarm extends PIXI.NineSlicePlane {
       const target = target_data[id];
       content_text = `[${target.target_name}] 사건 발생`;
       buildings = collectBuildingIdsFromTarget(id);
+    } else {
+      buildings = [id];
+      content_text = `차량 강도 제보\n범인은 [${building_data[id].name}]을 향해...`;
     }
     this.content = new PIXI.Text(content_text, {
       fontWeight: 400,
@@ -303,9 +306,15 @@ export default class Phone extends PIXI.Sprite {
     }
   }
 
-  addNews(target_id, time) {
+  addTargetNews(target_id, time) {
     this.completed_target_ids.add(target_id);
     const alarm = new Alarm(time, target_id, true);
+    this.news_items.push(alarm);
+    this.innerView.addItem(alarm);
+  }
+
+  addCarNews(building_id, time) {
+    const alarm = new Alarm(time, building_id, false);
     this.news_items.push(alarm);
     this.innerView.addItem(alarm);
   }

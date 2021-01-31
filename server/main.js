@@ -5,6 +5,7 @@ const server = require('http').createServer(app);
 const xkcdp = new require('xkcd-password')();
 const WebSocket = require('ws');
 const url = require('url');
+const fs = require('fs');
 const random = require('lodash/random');
 const sample = require('lodash/sample');
 const sampleSize = require('lodash/sampleSize');
@@ -14,6 +15,7 @@ const values = require('lodash/values');
 const last = require('lodash/last');
 const every = require('lodash/every');
 const flatten = require('lodash/flatten');
+const sortBy = require('lodash/sortBy');
 const EventEmitter3 = require('eventemitter3');
 
 const pass_options = {
@@ -50,6 +52,7 @@ class Common extends EventEmitter3 {
       leg_color: null,
       leg_type: null,
     };
+    this.car = [];
   }
 
   join() {
@@ -60,6 +63,14 @@ class Common extends EventEmitter3 {
       return true;
     }
     return false;
+  }
+
+  replayEvents(ws) {
+    const events = [...this.targets, ...this.car];
+    sortBy(events, v => -v.time);
+    for (const target of events) {
+      ws.send(JSON.stringify(target));
+    }
   }
 }
 
@@ -186,8 +197,6 @@ lobby_wss.on('connection', async (ws, req) => {
   });
 })
 
-const fs = require('fs');
-
 game_wss.on('connection', (ws, req) => {
   const { game_id, user_name } = url.parse(req.url, true).query;
   /** @var {Map} */
@@ -268,6 +277,11 @@ game_wss.on('connection', (ws, req) => {
           type: 'tick_resp',
           time: parse_data.time,
         }));
+        break;
+      case 'car':
+        game[2].car.push(parse_data);
+        other_user.ws?.send(data);
+        break;
     }
   });
   ws.on('close', () => {
@@ -289,9 +303,7 @@ game_wss.on('connection', (ws, req) => {
   if (game[2].join()) {
     init();
     if (user_data.data.role === 'lost') {
-      for (const target of game[2].targets) {
-        ws.send(JSON.stringify(target));
-      }
+      game[2].replayEvents(ws);
       ws.send(JSON.stringify({
         type: 'montage',
         montage: game[2].montage,

@@ -83,6 +83,13 @@ ws.addEventListener('message', (message) => {
           time: timer.remain,
         }));
       });
+      map.on('car', (building) => {
+        ws.send(JSON.stringify({
+          type: 'car',
+          building,
+          time: timer.remain,
+        }));
+      })
       if (data.user_data.todo) {
         phone.initTodo(data.user_data.todo);
         if (data.user_data.completed_targets) {
@@ -101,7 +108,7 @@ ws.addEventListener('message', (message) => {
     }
     case 'target_noti':
       for (const target of data.targets) {
-        phone.addNews(target, data.time);
+        phone.addTargetNews(target, data.time);
       }
       break;
     case 'montage':
@@ -118,6 +125,9 @@ ws.addEventListener('message', (message) => {
       break;
     case 'tick_resp':
       timer.remain = data.time;
+      break;
+    case 'car':
+      phone.addCarNews(data.building, data.time);
       break;
   }
 });
