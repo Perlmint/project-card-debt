@@ -23,7 +23,7 @@ export default class TimeBar extends ProgressBar {
 
   /**
    *
-   * @param {Number} duration microsecs
+   * @param {Number} duration game time
    */
   countdown(duration) {
     this.remain = duration;

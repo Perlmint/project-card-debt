@@ -3,6 +3,7 @@ const action_background = PIXI.Texture.from(require('./res/alarm.png'));
 const background = PIXI.Texture.from(require('./res/move_background.png'));
 const mission_box = PIXI.Texture.from(require('./res/mission_box.png'));
 const TimeBar = require('./time_bar').default;
+const constant = require('./const.json');
 
 class ActionItem extends PIXI.NineSlicePlane {
   constructor() {

@@ -170,7 +170,10 @@ export default class Map extends eventemitter {
   calcDistance(node1, node2) {
     node1 = this.data.nodes[node1];
     node2 = this.data.nodes[node2];
-    return Math.sqrt(Math.pow(node1.position[0] - node2.position[0], 2) + Math.pow(node1.position[1] - node2.position[1], 2)) * constant.MAP_DIST_SCALE;
+    return Math.sqrt(
+      Math.pow(node1.position[0] - node2.position[0], 2) +
+      Math.pow(node1.position[1] - node2.position[1], 2)
+    ) * constant.MAP_DIST_SCALE;
   }
 
   onNodeClick(node_idx) {
@@ -204,7 +207,7 @@ export default class Map extends eventemitter {
     this.wrap.addChild(this.action_progress);
     setTimeout(() => {
       this.emit('target_noti', action.targets, this.player.current_node, action.montage_part_init, action.montage_part_decay * 1000, action.delay_post * 1000);
-    }, action.deplay_pre * 1000);
+    }, action.deplay_pre * 1000 / constant.TIME_MULTIPLIER);
   }
 
   onDragStart(event) {

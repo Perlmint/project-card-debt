@@ -22,7 +22,7 @@ export default class CountDownTimer extends EventEmitter {
     this.remain_time = new PIXI.Text('00:00', {
       fontSize: 40,
       align: 'center',
-      fill: '0x414243', 
+      fill: '0x414243',
     });
     this.remain_time.position.set(65, 70);
     this.remain_time.anchor.set(0.5, 0.4);
@@ -30,13 +30,13 @@ export default class CountDownTimer extends EventEmitter {
   }
 
   start() {
-    // micro seconds
-    this.remain = 20 * 60 * 1000;
+    // milli seconds
+    this.remain = 20 * 60 * 1000 * constants.TIME_MULTIPLIER;
     PIXI.Ticker.shared.add(this.onTick, this);
   }
 
-  onTick(delta) {
-    this.remain -= delta * constants.TIME_MULTIPLIER;
+  onTick() {
+    this.remain -= PIXI.Ticker.shared.deltaMS * constants.TIME_MULTIPLIER;
     if (this.remain <= 0) {
       this.remain = 0;
       PIXI.Ticker.shared.remove(this.onTick, this);
@@ -44,8 +44,8 @@ export default class CountDownTimer extends EventEmitter {
     }
     this.remain_time.text = sprintf(
       '%02d:%02d',
-      this.remain / 60 / 1000,
-      this.remain / 1000 % 60
+      this.remain / 60 / 1000 / constants.TIME_MULTIPLIER,
+      this.remain / 1000 / constants.TIME_MULTIPLIER % 60
     );
   }
 }
