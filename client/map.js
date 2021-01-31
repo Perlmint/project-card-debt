@@ -171,15 +171,20 @@ export default class Map extends eventemitter {
   }
 
   onNodeClick(node_idx) {
-    const node = this.data.nodes[node_idx];
-    const building = building_data[node.building_id];
-    const actions = values(pick(action_data, building.actions));
+    if (this.player.current_node == node_idx) {
+      this.showActionDialog(node_idx);
+    } else {
+      this.wrap.removeChild(this.action_dialog);
 
-    this.move_dialog.init(building.name, actions, node_idx, this.calcDistance(this.player.current_node, node_idx));
-    const node_pos = this.data.nodes[node_idx].position;
-    this.move_dialog.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
-    // this.move_dialog.root.position.set(node_pos.x, node_pos.y);
-    this.wrap.addChild(this.move_dialog);
+      const node = this.data.nodes[node_idx];
+      const building = building_data[node.building_id];
+      const actions = values(pick(action_data, building.actions));
+
+      this.move_dialog.init(building.name, actions, node_idx, this.calcDistance(this.player.current_node, node_idx));
+      const node_pos = this.data.nodes[node_idx].position;
+      this.move_dialog.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
+      this.wrap.addChild(this.move_dialog);
+    }
   }
 
   onDoAction(action_id) {
@@ -246,6 +251,18 @@ export default class Map extends eventemitter {
     return ret;
   }
 
+  showActionDialog(node_idx) {
+    const node = this.data.nodes[node_idx];
+    const building = building_data[node.building_id];
+    const actions = values(pick(action_data, building.actions));
+
+    this.action_dialog.init(building.name, actions);
+    const node_pos = this.data.nodes[node_idx].position;
+    this.action_dialog.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
+    this.wrap.addChild(this.action_dialog);
+    this.wrap.removeChild(this.move_dialog);
+  }
+
   onPlayerArrival(node_idx) {
     // for (const [connected_idx,] of this.connection.get(node_idx)) {
     //   const node = this.nodes[connected_idx];
@@ -256,14 +273,7 @@ export default class Map extends eventemitter {
       node.buttonMode = node.interactive = true;
     }
 
-    const node = this.data.nodes[node_idx];
-    const building = building_data[node.building_id];
-    const actions = values(pick(action_data, building.actions));
-
-    this.action_dialog.init(building.name, actions);
-    const node_pos = this.data.nodes[node_idx].position;
-    this.action_dialog.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
-    this.wrap.addChild(this.action_dialog);
+    this.showActionDialog(node_idx);
     this.emit('player_arrival', node_idx);
   }
 
