@@ -62,8 +62,8 @@
     {
         "name":  "map-buildings2-3x1",
         "id":  11,
-        "w":  3,
-        "h":  1
+        "w":  1,
+        "h":  3
     },
     {
         "name":  "map-buildings3-2x1",
