@@ -34,6 +34,7 @@ container.addChild(timer.root);
 
 window.addEventListener('resize', (e) => {
   app.resizeTo = window;
+  timer.root.position.set(window.innerWidth, 0);
 });
 
 const ws = new WebSocket(`ws://${location.host}/game${location.search}`);
