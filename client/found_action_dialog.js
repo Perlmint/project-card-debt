@@ -119,6 +119,7 @@ export default class ActionDialog extends PIXI.NineSlicePlane {
       let action_item;
       if (this.action_buttons[i]) {
         action_item = this.action_buttons[i];
+        action_item.removeAllListeners();
       } else {
         action_item = new ActionItem();
         action_item.x = 32;
