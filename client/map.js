@@ -14,6 +14,7 @@ const tiles = (() => {
   const id = require('./res/map_obj/id.json');
   const textures = require('./res/map_obj/*.png');
   return id.map(d => {
+    console.log(d.name);
     return {
       texture: PIXI.Texture.from(textures[d.name]),
       ...d
@@ -104,10 +105,12 @@ export default class Map extends eventemitter {
         }
 
         const tile_data = tiles[tile_code - 1];
+        console.log(tile_code);
         const tile = new PIXI.projection.Sprite2d(tile_data.texture);
         tile.proj.affine = PIXI.projection.AFFINE.AXIS_X;
         tile.rotation = Math.PI / 4;
-        tile.anchor.set(tile_data.h / (tile_data.w + tile_data.h) ,1);
+        tile.anchor.set(tile_data.h / (tile_data.w + tile_data.h), 1);
+        console.log(tile.anchor, tile_data.h, tile_data.w);
         tile.position.set(x * TileSize, (y + 1) * TileSize);
         objects.push(tile);
       }
