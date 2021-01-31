@@ -126,80 +126,92 @@
         "h":  1
     },
     {
-        "name":  "map-factorys-7x7",
+        "name":  "map-factorys-3x4",
         "id":  22,
+        "w":  3,
+        "h":  4
+    },
+    {
+        "name":  "map-factorys-4x3",
+        "id":  23,
+        "w":  4,
+        "h":  3
+    },
+    {
+        "name":  "map-factorys-7x7",
+        "id":  24,
         "w":  7,
         "h":  7
     },
     {
         "name":  "map-green1",
-        "id":  23,
+        "id":  25,
         "w":  1,
         "h":  1
     },
     {
         "name":  "map-green2",
-        "id":  24,
+        "id":  26,
         "w":  1,
         "h":  1
     },
     {
         "name":  "map-harbor-7x4",
-        "id":  25,
+        "id":  27,
         "w":  7,
         "h":  4
     },
     {
         "name":  "map-house_w_pool-3x1",
-        "id":  26,
+        "id":  28,
         "w":  3,
         "h":  1
     },
     {
         "name":  "map-pool-2x2",
-        "id":  27,
+        "id":  29,
         "w":  2,
         "h":  2
     },
     {
         "name":  "map-road",
-        "id":  28,
-        "w":  1,
-        "h":  1
-    },
-    {
-        "name":  "map-road_w_truck",
-        "id":  29,
-        "w":  1,
-        "h":  1
-    },
-    {
-        "name":  "map-sea",
         "id":  30,
         "w":  1,
         "h":  1
     },
     {
-        "name":  "map-sea2",
+        "name":  "map-road_w_truck",
         "id":  31,
         "w":  1,
         "h":  1
     },
     {
-        "name":  "map-sea3",
+        "name":  "map-sea",
         "id":  32,
         "w":  1,
         "h":  1
     },
     {
-        "name":  "map-simple_road",
+        "name":  "map-sea2",
         "id":  33,
         "w":  1,
         "h":  1
     },
     {
-        "name":  "map_building6",
+        "name":  "map-sea3",
         "id":  34,
+        "w":  1,
+        "h":  1
+    },
+    {
+        "name":  "map-simple_road",
+        "id":  35,
+        "w":  1,
+        "h":  1
+    },
+    {
+        "name":  "map_building6",
+        "id":  36,
         "w":  1,
         "h":  1
     }
