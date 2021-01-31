@@ -251,11 +251,13 @@ game_wss.on('connection', (ws, req) => {
       case 'ask': {
         const {node, time} = parse_data;
         for (const target of game[2].targets) {
-          if (target.node === node) {
+          if (target.node === node && !target.got_montage) {
+            target.got_montage = true;
             const dt = target.time - time;
-            const parts = target.montage_init - Math.floor(dt / target.montage_decay * 1000)
+            const parts = target.montage_init - Math.floor(dt / target.montage_decay / 1000)
             if (parts > 0) {
               const montage = pick(other_user.data.montage, sampleSize(keys(other_user.data.montage), parts));
+              Object.assign(game[2].montage, montage);
               ws.send(JSON.stringify({
                 type: 'montage',
                 montage,
