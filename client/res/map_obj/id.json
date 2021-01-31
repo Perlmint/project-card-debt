@@ -158,8 +158,8 @@
     {
         "name":  "map-house_w_pool-3x1",
         "id":  27,
-        "w":  3,
-        "h":  1
+        "w":  1,
+        "h":  3
     },
     {
         "name":  "map-pool-2x2",
