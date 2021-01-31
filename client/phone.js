@@ -2,6 +2,9 @@ const background = PIXI.Texture.from(require('./res/phone.png'));
 const news_background = PIXI.Texture.from(require('./res/alarm.png'));
 const target_item = PIXI.Texture.from(require('./res/target_item.png'));
 const target_item_highlight = PIXI.Texture.from(require('./res/target_item_highlight.png'));
+const triangle = PIXI.Texture.from(require('./res/triangle.png'));
+const check = PIXI.Texture.from(require('./res/check.png'));
+const empty_check = PIXI.Texture.from(require('./res/empty_check.png'));
 const ScrollContainer = require('./scroll_container').default;
 const ProgressBar = require('./progress_bar').default;
 const each = require('lodash/each');
@@ -10,6 +13,7 @@ const filter = require('lodash/filter');
 const includes = require('lodash/includes');
 const target_data = require('./target.json');
 const action_data = require('./action.json');
+const todo_data = require('../data/todo.json');
 const constants = require('./const.json');
 const sprintf = require('sprintf-js').sprintf;
 const { data: building_data, textures: building_textures, ui_data: building_ui_data } = require('./building');
@@ -48,12 +52,49 @@ function collectBuildingIdsFromTarget(id) {
   return buildings;
 }
 
+class TargetPreviewItem extends PIXI.Graphics {
+  constructor() {
+    super();
+
+    this.beginFill(0xFFFFFF, 1);
+    this.lineStyle(1, 0xC4C4C4);
+    this.drawRect(0, 0, 440, 80);
+    this.endFill();
+    this.cacheAsBitmap = true;
+
+    this.checkbox = new PIXI.Sprite();
+    this.checkbox.position.set(20, 20);
+    this.addChild(this.checkbox);
+
+    this.title = new PIXI.Text('', {
+      fontSize: 16,
+    });
+    this.title.position.set(76, 31);
+    this.addChild(this.title);
+  }
+
+  init(target, completed) {
+    if (completed) {
+      this.checkbox.texture = check;
+      this.title.style.fill = '#4A9692';
+      this.title.style.fontWeight = 700;
+    } else {
+      this.checkbox.texture = empty_check;
+      this.title.style.fill = '#000000';
+      this.title.style.fontWeight = 400;
+    }
+
+    this.title.text = target.target_name;
+  }
+}
+
 class Alarm extends PIXI.NineSlicePlane {
   constructor(time, id, is_target) {
     super(news_background, 32, 32, 32, 32);
 
     time = constants.TOTAL_TIME - time / 1000;
 
+    this.x = 11;
     this.title = new PIXI.Text(sprintf('%02d:%02d', time / 60, time % 60), {
       fontWeight: 500,
       fontSize: 20,
@@ -137,17 +178,34 @@ export default class Phone extends PIXI.Sprite {
       fontWeight: 700,
       fontSize: 20,
       align: 'center',
+      fill: '#FFFFFF',
     });
     this.title.anchor.set(0.5, 0);
     this.addChild(this.title);
 
-    this.innerView = new ScrollContainer(31, 286, 440, 688, 218);
+    this.innerView = new ScrollContainer(20, 286, 440, 688, 218);
     this.addChild(this.innerView.po);
   }
 
   initForLost() {
-    this.title.text = "WANTED";
-    this.title.position.set(240, 67);
+    this.title.anchor.y = 0.5;
+    this.title.position.set(240, 67 + 12);
+
+    this.triangle = new PIXI.Sprite(triangle);
+    this.triangle.pivot.set(0, triangle.height / 2);
+    this.triangle.position.y = this.title.position.y;
+    this.addChild(this.triangle);
+
+    this.toggle_area = new PIXI.Container();
+    this.toggle_area.buttonMode = this.toggle_area.interactive = true;
+    this.toggle_area.hitArea = new PIXI.Rectangle(0, 0, 440, 42);
+    this.toggle_area.on('pointertap', () => this.toggle_screen());
+    this.toggle_area.position.set(20, 58);
+    this.addChild(this.toggle_area);
+
+    this.montage_ui = new PIXI.Container();
+    this.montage_ui.visible = false;
+    this.addChild(this.montage_ui);
 
     const montage_bg = new PIXI.Graphics();
     montage_bg.beginFill(0x7E7E7E, 1);
@@ -157,11 +215,98 @@ export default class Phone extends PIXI.Sprite {
     montage_bg.endFill();
     montage_bg.cacheAsBitmap = true;
     montage_bg.position.set(111, 120);
-    this.addChild(montage_bg);
+    this.montage_ui.addChild(montage_bg);
+
+    this.target_ui = new PIXI.Container();
+    this.target_ui.visible = false;
+    this.addChild(this.target_ui);
+
+    const createTodoButton = (todo) => {
+      const label = new PIXI.Text(todo.todo_name, {
+        fontWeight: 400,
+        fontSize: 16,
+      });
+      label.alpha = 0.87;
+      label.position.set(10, 11);
+
+      const bg = new PIXI.Graphics();
+      bg.beginFill(0xFFFFFF, 1);
+      bg.drawRoundedRect(0, 0, label.width + 10 + 10, label.height + 11 + 10, 10);
+      bg.addChild(label);
+      bg.interactive = bg.buttonMode = true;
+      bg.on('pointertap', () => {
+        this.showTodoList(todo.todo_id - 1);
+      });
+
+      return bg;
+    };
+
+    const todo_button_positions = {
+      1: new PIXI.Point(100, 108),
+      4: new PIXI.Point(248, 108),
+      7: new PIXI.Point(40,  164),
+      2: new PIXI.Point(171, 164),
+      5: new PIXI.Point(302, 164),
+      3: new PIXI.Point(87, 220),
+      6: new PIXI.Point(250, 220),
+    };
+    for (let idx = 0; idx < todo_data.length; idx++) {
+      const todo = todo_data[idx];
+      const todo_item = createTodoButton(todo);
+      todo_item.position = todo_button_positions[todo.todo_id];
+      this.target_ui.addChild(todo_item);
+    }
+
+    this.todo_id = 1;
+    this.news_items = [];
+    this.target_items = [];
+    this.completed_target_ids = new Set();
+
+    this.toggle_screen();
+  }
+
+  showTodoList(todo_id) {
+    this.innerView.removeChildren();
+    this.todo_id = todo_id;
+
+    const targets = todo_data[todo_id].targets;
+    for (let idx = 0; idx < targets.length; idx++) {
+      let target_item = this.target_items[idx];
+      if (!target_item) {
+        target_item = new TargetPreviewItem();
+      }
+      target_item.init(target_data[targets[idx]], this.completed_target_ids.has(targets[idx]));
+      this.innerView.addItem(target_item);
+    }
+  }
+
+  toggle_screen() {
+    if (this.montage_ui.visible) {
+      this.montage_ui.visible = false;
+      this.target_ui.visible = true;
+      this.title.text = '임무 리스트';
+      this.triangle.rotation = Math.PI;
+      this.triangle.x = this.title.position.x - this.title.width / 2 - 5;
+      this.innerView.itemHeight = 80;
+      this.showTodoList(this.todo_id);
+    } else {
+      this.montage_ui.visible = true;
+      this.target_ui.visible = false;
+      this.title.text = 'WANTED';
+      this.triangle.rotation = 0;
+      this.triangle.x = this.title.position.x + this.title.width / 2 + 5;
+      this.innerView.itemHeight = 218;
+      this.innerView.removeChildren();
+      for (const item of this.news_items) {
+        this.innerView.addItem(item);
+      }
+    }
   }
 
   addNews(target_id, time) {
+    this.completed_target_ids.add(target_id);
     const alarm = new Alarm(time, target_id, true);
+    this.news_items.push(alarm);
     this.innerView.addItem(alarm);
   }
 
