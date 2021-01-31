@@ -48,4 +48,8 @@ export default class CountDownTimer extends EventEmitter {
       this.remain / 1000 / constants.TIME_MULTIPLIER % 60
     );
   }
+
+  stop() {
+    PIXI.Ticker.shared.remove(this.onTick, this);
+  }
 }

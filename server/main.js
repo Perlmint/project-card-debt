@@ -221,22 +221,34 @@ game_wss.on('connection', (ws, req) => {
   ws.on('message', (data) => {
     parse_data = JSON.parse(data);
     function checkCapture() {
+      console.log(other_user.data.pos, user_data.data.pos);
       if (other_user.data.pos === user_data.data.pos) {
         const has_montage = every(values(game[2].montage), (v) => v !== null);
         const last_target = last(game[2].targets);
         let while_action = false;
         if (last_target) {
-          if (parse_data.time > last_target.time - last_target.post_delay) {
+          console.log(parse_data.time, last_target.time, last_target.post_delay * 1000 * 60);
+          if (parse_data.time > last_target.time - last_target.post_delay * 1000 * 60) {
             while_action = true;
           }
         }
 
         if (has_montage || while_action) {
-          const capture = JSON.stringify({
-            type: 'capture',
-          });
-          ws.send(capture);
-          other_user.ws?.send(capture);
+          if (user_data.role === 'found') {
+            ws.send(JSON.stringify({
+              type: 'win',
+            }));
+            other_user.ws?.send(JSON.stringify({
+              type: 'defeat',
+            }));
+          } else {
+            ws.send(JSON.stringify({
+              type: 'defeat',
+            }));
+            other_user.ws?.send(JSON.stringify({
+              type: 'win',
+            }));
+          }
         }
       }
     }
@@ -283,6 +295,23 @@ game_wss.on('connection', (ws, req) => {
       case 'car':
         game[2].car.push(parse_data);
         other_user.ws?.send(data);
+        break;
+      case 'end':
+        if (user_data.role === 'found') {
+          ws.send(JSON.stringify({
+            type: 'defeat',
+          }));
+          other_user.ws?.send(JSON.stringify({
+            type: 'win',
+          }));
+        } else {
+          ws.send(JSON.stringify({
+            type: 'win',
+          }));
+          other_user.ws?.send(JSON.stringify({
+            type: 'defeat',
+          }));
+        }
         break;
     }
   });

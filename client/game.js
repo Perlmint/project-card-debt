@@ -5,6 +5,8 @@ const PUXI = require('@puxi/core');
 const Phone = require('./phone').default;
 const Map = require('./map').default;
 const CountDownTimer = require('./countdown').default;
+const mapValues = require('lodash/mapValues');
+const result_scene = mapValues(require("./res/result/*.png"), p => PIXI.Texture.from(p));
 
 // TODO: fill window
 const app = new PIXI.Application({
@@ -42,6 +44,9 @@ ws.addEventListener('close', (event) => {
     location.href = '/';
   }
 });
+
+let role;
+
 ws.addEventListener('message', (message) => {
   const data = JSON.parse(message.data);
   switch (data.type) {
@@ -49,6 +54,7 @@ ws.addEventListener('message', (message) => {
       const map = new Map(data.map, data.user_data);
       map.ui_root.position.x = phone.width;
       container.addChildAt(map.ui_root, 0);
+      role = data.user_data.role;
       map.on('player_arrival', (pos) => {
         ws.send(JSON.stringify({
           type: 'arrival',
@@ -113,9 +119,19 @@ ws.addEventListener('message', (message) => {
     case 'montage':
       phone.addMontage(data.montage);
       break;
-    case 'capture':
-      alert('capture!');
+    case 'win':
+    case 'defeat': {
+      timer.stop();
+      const scene = new PIXI.Sprite(result_scene[`${role}_${data.type}`]);
+      scene.anchor.set(0.5, 0.5);
+      scene.position.set(window.innerWidth / 2, window.innerHeight / 2);
+      container.interactive = container.buttonMode = true;
+      container.on('pointertap', () => {
+        location.href = '/';
+      });
+      container.addChild(scene);
       break;
+    }
     case 'tick_req':
       ws.send(JSON.stringify({
         type: 'tick_resp',
