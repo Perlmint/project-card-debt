@@ -66,7 +66,10 @@ export default class Map extends eventemitter {
 
       // if [w,h] = [2,1] then anchor value must be (0, 1).
       // only one building (id=25) is not square.
-      node.anchor.set((node_info.building_id === 25 ? 0 : 0.5), 1 );
+      if (node_info.building_id === 25)
+        node.anchor.set( 1 / 1.5 ,1);
+      else
+        node.anchor.set(0.5, 1);
 
       node.position.set(node_info.position[0] * TileSize, (node_info.position[1] + 1) * TileSize);
       console.log(data);
