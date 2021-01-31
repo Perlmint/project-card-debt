@@ -8,6 +8,16 @@ const pick = require('lodash/pick');
 const values = require('lodash/values');
 const eventemitter = require('eventemitter3');
 const { textures: building_textures, ui_data: building_ui_data, data: building_data } = require('./building');
+const tiles = (() => {
+  const id = require('./res/map_obj/id.json');
+  const textures = require('./res/map_obj/*.png');
+  return id.map(d => {
+    return {
+      texture: PIXI.Texture.from(textures[d.name]),
+      ...d
+    };
+  });
+})();
 
 const action_data = require('./action.json');
 const constant = require('./const.json');
@@ -89,6 +99,23 @@ export default class Map extends eventemitter {
 
       return node;
     });
+
+    for (let x = 0; x < data.width; x++) {
+      for (let y = 0; y < data.height; y++) {
+        const tile_code = data.tiles[y][x];
+        if (tile_code === 0) {
+          continue;
+        }
+
+        const tile_data = tiles[tile_code - 1];
+        const tile = new PIXI.projection.Sprite2d(tile_data.texture);
+        tile.proj.affine = PIXI.projection.AFFINE.AXIS_X;
+        tile.rotation = Math.PI / 4;
+        tile.anchor.set(0.5, 1);
+        tile.position.set(x * TileSize, (y + 1) * TileSize);
+        this.root.addChild(tile);
+      }
+    }
 
     // this.connection = new window.Map();
     // for (const [node1, node2, distance] of data.edges) {
