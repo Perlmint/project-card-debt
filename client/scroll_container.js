@@ -116,9 +116,16 @@ export default class ScrollContainer {
     }
   }
 
-  addItem(item) {
-    this.scrollContainer.addChild(item);
-    this.items.push(item);
-    item.y = (this.items.length - 1) * this.itemHeight;
+  addItem(...items) {
+    for (const item of items) {
+      this.scrollContainer.addChild(item);
+      this.items.push(item);
+      item.y = (this.items.length - 1) * this.itemHeight;
+    }
+  }
+
+  removeChildren() {
+    this.scrollContainer.removeChildren();
+    this.items = [];
   }
 }
