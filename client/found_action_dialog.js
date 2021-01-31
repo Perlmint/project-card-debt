@@ -2,6 +2,7 @@ const PIXI = require('pixi.js');
 const action_background = PIXI.Texture.from(require('./res/alarm.png'));
 const background = PIXI.Texture.from(require('./res/move_background.png'));
 const mission_box = PIXI.Texture.from(require('./res/mission_box.png'));
+const TimeBar = require('./time_bar').default;
 
 class ActionItem extends PIXI.NineSlicePlane {
   constructor() {
@@ -47,8 +48,36 @@ class ActionItem extends PIXI.NineSlicePlane {
   }
 }
 
-export class ActionProgressDialog extends PIXI.NineSlicePlane {
+export class ActionProgressDialog extends PIXI.Container {
+  constructor(targets) {
+    super();
 
+    this.item = new ActionItem();
+    this.addChild(this.item);
+
+    const time_bar_bg = new PIXI.NineSlicePlane(action_background, 17, 11, 17, 23);
+    time_bar_bg.width = 266 + 12 * 2;
+    time_bar_bg.height = 23 + 17 + 7;
+    time_bar_bg.position.set(0, 103 - 7);
+    this.addChild(time_bar_bg);
+
+    this.time_bar = new TimeBar();
+    this.time_bar.position.set(12, 103);
+    this.time_bar.resize(266, 23, null, null, 0xCFDDF2, 4);
+    this.time_bar.on('complete', () => {
+      this.emit('complete');
+    })
+    this.addChild(this.time_bar);
+
+    this.targets = targets;
+
+    this.pivot.set(-40, this.height);
+  }
+
+  init(action) {
+    this.item.init(action, this.targets);
+    this.time_bar.countdown((action.delay_pre + action.delay_post) * 60 * 1000);
+  }
 }
 
 export default class ActionDialog extends PIXI.NineSlicePlane {

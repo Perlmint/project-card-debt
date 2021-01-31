@@ -94,12 +94,11 @@ export default class MoveDialog extends PIXI.NineSlicePlane {
       width = Math.max(action_label.width, width);
     }
 
-    console.log(distance, constant.WALK_SPEED);
     this.by_walk_label.text = `${Math.round(distance / constant.WALK_SPEED)} 분`;
 
     this.by_walk_button.y = this.by_car_button.y = height + 16;
 
-    // this.width = width;
     this.height = height + this.by_walk_button.height + 37;
+    this.pivot.set(-40, this.height + 90);
   }
 }

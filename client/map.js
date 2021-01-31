@@ -2,7 +2,7 @@ const PIXI = require('pixi.js');
 const clamp = require('lodash/clamp');
 const Player = require('./player').default;
 const MoveDialog = require('./move_dialog').default;
-const FoundActionDialog = require('./found_action_dialog').default;
+const { default: FoundActionDialog, ActionProgressDialog } = require('./found_action_dialog');
 const LostActionDialog = require('./lost_action_dialog').default;
 const pick = require('lodash/pick');
 const values = require('lodash/values');
@@ -100,8 +100,17 @@ export default class Map extends eventemitter {
         this.wrap.removeChild(this.action_dialog);
       });
     } else {
+      this.targets = todo.targets;
       this.action_dialog = new FoundActionDialog(todo.targets);
       this.action_dialog.on('do', (id) => this.onDoAction(id));
+      this.action_progress = new ActionProgressDialog(todo.targets);
+      this.action_progress.on('complete', () => {
+        for (const node of this.nodes) {
+          node.buttonMode = node.interactive = true;
+        }
+        this.wrap.removeChild(this.action_progress);
+      });
+      this.action_progress.scale.y = 1 / YScale;
     }
     this.action_dialog.scale.y = 1 / YScale;
 
@@ -181,14 +190,13 @@ export default class Map extends eventemitter {
     }
     this.wrap.removeChild(this.action_dialog);
 
+    const node_pos = this.data.nodes[this.player.current_node].position;
+    this.action_progress.init(action);
+    this.action_progress.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
+    this.wrap.addChild(this.action_progress);
     setTimeout(() => {
       this.emit('target_noti', action.targets, this.player.current_node, action.montage_part_init, action.montage_part_decay * 1000, action.delay_post * 1000);
     }, action.deplay_pre * 1000);
-    setTimeout(() => {
-      for (const node of this.nodes) {
-        node.buttonMode = node.interactive = true;
-      }
-    }, (action.deplay_pre + action.delay_post) * 1000);
   }
 
   onDragStart(event) {

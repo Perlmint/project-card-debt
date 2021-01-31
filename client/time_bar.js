@@ -1,4 +1,7 @@
-const ProgressBar = require('./progress_bar');
+const ProgressBar = require('./progress_bar').default;
+const { SharedTweenManager, PUXI } = require('./tween');
+const constants = require('./const.json');
+const sprintf = require('sprintf-js').sprintf;
 
 export default class TimeBar extends ProgressBar {
   constructor() {
@@ -6,7 +9,7 @@ export default class TimeBar extends ProgressBar {
 
     /** @member */
     this.remain_time = new PIXI.Text('00:00', {
-      fontSize: 20,
+      fontSize: 14,
     });
     this.remain_time.anchor.set(0.5, 0.5);
     this.addChild(this.remain_time);
@@ -23,9 +26,6 @@ export default class TimeBar extends ProgressBar {
    * @param {Number} duration microsecs
    */
   countdown(duration) {
-    this.remain_time.position.set(100 / 2.0, 50 / 2.0);
-    this.remain_time.anchor.set(0.5, 0.5);
-
     this.remain = duration;
 
     SharedTweenManager.tween(
@@ -40,7 +40,7 @@ export default class TimeBar extends ProgressBar {
         this.remain / 60 / 1000,
         this.remain / 1000 % 60
       );
-      this.setProgress(duration / this.remain);
+      this.setProgress(this.remain / duration);
     }).on('complete', () => {
       this.emit('complete');
     });
