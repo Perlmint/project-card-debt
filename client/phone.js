@@ -108,8 +108,13 @@ class TargetItem extends PIXI.Sprite {
   }
 
   setComplete() {
+    if (this.texture === target_item_highlight) {
+      return false;
+    }
+
     this.texture = target_item_highlight;
     this.title.style.fill = '#4A9692';
+    return true;
   }
 }
 
@@ -195,11 +200,12 @@ export default class Phone extends PIXI.Sprite {
   completeTarget(target_id) {
     const target = this.targets.get(target_id);
     if (target) {
-      this.completed++;
-      target.setComplete();
-      const progress = this.completed / this.targets.size;
-      this.percentage.text = `${Math.round(progress * 100)}%`
-      this.progress_bar.setProgress(progress);
+      if (target.setComplete()) {
+        this.completed++;
+        const progress = this.completed / this.targets.size;
+        this.percentage.text = `${Math.round(progress * 100)}%`
+        this.progress_bar.setProgress(progress);
+      }
     }
   }
 }
