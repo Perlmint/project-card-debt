@@ -374,4 +374,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use('/data', express.static('./data'));
 
-server.listen(1234, '0.0.0.0');
+server.listen(1234, '0.0.0.0', () => {
+  console.log('Open http://127.0.0.1:1234 on web browser');
+});
