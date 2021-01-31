@@ -1,3 +1,5 @@
+import { createHeadTexture } from './player';
+
 const background = PIXI.Texture.from(require('./res/phone.png'));
 const news_background = PIXI.Texture.from(require('./res/alarm.png'));
 const target_item = PIXI.Texture.from(require('./res/target_item.png'));
@@ -9,6 +11,7 @@ const ScrollContainer = require('./scroll_container').default;
 const ProgressBar = require('./progress_bar').default;
 const each = require('lodash/each');
 const map = require('lodash/map');
+const mapValues = require('lodash/mapValues');
 const filter = require('lodash/filter');
 const includes = require('lodash/includes');
 const target_data = require('./target.json');
@@ -17,6 +20,8 @@ const todo_data = require('../data/todo.json');
 const constants = require('./const.json');
 const sprintf = require('sprintf-js').sprintf;
 const { data: building_data, textures: building_textures, ui_data: building_ui_data } = require('./building');
+const montage_textures = mapValues(require('./res/montage/*.png'), o => PIXI.Texture.from(o));
+const { body: body_textures, leg: leg_textures } = require('./player');
 
 function createBuildingIcon(building_id) {
   const cont = new PIXI.Container();
@@ -220,6 +225,57 @@ export default class Phone extends PIXI.Sprite {
     montage_bg.position.set(111, 120);
     this.montage_ui.addChild(montage_bg);
 
+    this.montage_components = {
+      hair: new PIXI.Sprite(),
+      hair_empty: new PIXI.Sprite(montage_textures.hair_empty),
+      body: new PIXI.Sprite(),
+      body_empty: new PIXI.Sprite(montage_textures.body_empty),
+      leg: new PIXI.Sprite(),
+      leg_empty: new PIXI.Sprite(montage_textures.leg_empty),
+    };
+    this.montage_components.hair.anchor.set(0.5, 0.5);
+    this.montage_components.hair.position.set(111 + 50, 120 + 50);
+    this.montage_ui.addChild(this.montage_components.hair);
+    this.montage_components.hair_empty.anchor.set(0.5, 0.5);
+    this.montage_components.hair_empty.position.set(111 + 50, 120 + 50);
+    this.montage_ui.addChild(this.montage_components.hair_empty);
+
+    this.montage_components.body.anchor.set(0.5, 0.5);
+    this.montage_components.body.position.set(111 + 82 + 50, 120 + 50);
+    this.montage_ui.addChild(this.montage_components.body);
+    this.montage_components.body_empty.anchor.set(0.5, 0.5);
+    this.montage_components.body_empty.position.set(111 + 82 + 50, 120 + 50);
+    this.montage_ui.addChild(this.montage_components.body_empty);
+
+    this.montage_components.leg.anchor.set(0.5, 0.5);
+    this.montage_components.leg.position.set(111 + 158 + 50, 120 + 50);
+    this.montage_ui.addChild(this.montage_components.leg);
+    this.montage_components.leg_empty.anchor.set(0.5, 0.5);
+    this.montage_components.leg_empty.position.set(111 + 158 + 50, 120 + 50);
+    this.montage_ui.addChild(this.montage_components.leg_empty);
+
+    let label = new PIXI.Text('Head', {
+      fontWeight: 400,
+      fontSize: 16,
+    });
+    label.anchor.x = 0.5;
+    label.position.set(111 + 50, 120 + 100 + 11);
+    this.montage_ui.addChild(label);
+    label = new PIXI.Text('Body', {
+      fontWeight: 400,
+      fontSize: 16,
+    });
+    label.anchor.x = 0.5;
+    label.position.set(111 + 82 + 50, 120 + 100 + 11);
+    this.montage_ui.addChild(label);
+    label = new PIXI.Text('Leg', {
+      fontWeight: 400,
+      fontSize: 16,
+    });
+    label.anchor.x = 0.5;
+    label.position.set(111 + 158 + 50, 120 + 100 + 11);
+    this.montage_ui.addChild(label);
+
     this.target_ui = new PIXI.Container();
     this.target_ui.visible = false;
     this.addChild(this.target_ui);
@@ -265,6 +321,7 @@ export default class Phone extends PIXI.Sprite {
     this.target_items = [];
     this.completed_target_ids = new Set();
 
+    this.updateMontage();
     this.toggle_screen();
   }
 
@@ -321,7 +378,49 @@ export default class Phone extends PIXI.Sprite {
 
   addMontage(montage) {
     Object.assign(this.montage, montage);
-    console.log(montage);
+    this.updateMontage();
+  }
+
+  updateMontage() {
+    for (const part of ['hair', 'body', 'leg']) {
+      const color = this.montage[`${part}_color`];
+      const shape = this.montage[`${part}_type`];
+      const component = this.montage_components[part];
+      const empty_component = this.montage_components[`${part}_empty`];
+      if (color === null && shape === null) {
+        component.visible = false;
+        empty_component.visible = true;
+      } else if (shape === null) {
+        component.visible = true;
+        component.texture = montage_textures[`${part}_color`];
+        component.tint = color;
+        component.scale.set(1, 1);
+        empty_component.visible = true;
+      } else if (color === null) {
+        component.visible = true;
+        component.texture = montage_textures[`${part}_shape_${shape}`];
+        component.scale.set(1, 1);
+        empty_component.visible = false;
+      } else {
+        component.visible = true;
+        switch (part) {
+          case 'hair':
+            component.texture = createHeadTexture(this.montage, 0.34);
+            break;
+          case 'body':
+            component.texture = body_textures[shape];
+            component.tint = color;
+            component.scale.set(0.3, 0.3);
+            break;
+          case 'leg':
+            component.texture = leg_textures[shape];
+            component.tint = color;
+            component.scale.set(0.3, 0.3);
+            break;
+        }
+        empty_component.visible = false;
+      }
+    }
   }
 
   initTodo(todo) {

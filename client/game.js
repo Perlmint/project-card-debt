@@ -19,6 +19,7 @@ const container = new PIXI.Container();
 
 app.stage = new PIXI.display.Stage();
 app.stage.addChild(container);
+window.app = app;
 
 const ui_container = new PIXI.Container();
 ui_container.interactive = false;

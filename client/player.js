@@ -3,15 +3,15 @@ const random = require('lodash/random');
 const mapValues = require('lodash/mapValues');
 const { SharedTweenManager, PUXI } = require('./tween');
 const head = PIXI.Texture.from(require('./res/player/head.png'));
-const body = mapValues(
+export const body = mapValues(
   require('./res/player/body*.png'),
   (v) => PIXI.Texture.from(v)
 );
-const hair = mapValues(
+export const hair = mapValues(
   require('./res/player/hair*.png'),
   (v) => PIXI.Texture.from(v)
 );
-const leg = mapValues(
+export const leg = mapValues(
   require('./res/player/leg*.png'),
   (v) => PIXI.Texture.from(v)
 );
@@ -27,6 +27,15 @@ export function createHead(montage) {
   wrap.addChild(hair_);
 
   return wrap;
+}
+
+export function createHeadTexture(montage, scale) {
+  const head = createHead(montage);
+  head.scale.set(scale, scale);
+  const texture = PIXI.RenderTexture.create({ width: head.width, height: head.height });
+  app.renderer.render(head, texture);
+
+  return texture;
 }
 
 export default class Player extends PIXI.projection.Container2d {
