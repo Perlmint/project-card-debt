@@ -1,7 +1,6 @@
 const PIXI = require('pixi.js');
 window.PIXI = PIXI;
 require('pixi-projection');
-require('pixi-layers');
 const PUXI = require('@puxi/core');
 const Phone = require('./phone').default;
 const Map = require('./map').default;
@@ -17,7 +16,6 @@ document.body.appendChild(app.view);
 
 const container = new PIXI.Container();
 
-app.stage = new PIXI.display.Stage();
 app.stage.addChild(container);
 window.app = app;
 

@@ -1,3 +1,5 @@
+import { sortBy } from 'lodash';
+
 const PIXI = require('pixi.js');
 const clamp = require('lodash/clamp');
 const Player = require('./player').default;
@@ -67,6 +69,7 @@ export default class Map extends eventemitter {
     // building_layer.sortableChildren = true;
     // this.wrap.addChild(building_layer);
 
+
     /** @member {PIXI.Graphics[]} */
     this.nodes = data.nodes.map((node_info, idx) => {
       const data = building_ui_data[node_info.building_id];
@@ -74,19 +77,11 @@ export default class Map extends eventemitter {
       node.proj.affine = PIXI.projection.AFFINE.AXIS_X;
       node.rotation = Math.PI / 4;
 
-      // if [w,h] = [2,1] then anchor value must be (0, 1).
-      // only one building (id=25) is not square.
-      if (node_info.building_id === 25)
-        node.anchor.set( 1 / 1.5 ,1);
-      else
-        node.anchor.set(0.5, 1);
+      node.anchor.set(data.h / (data.w + data.h) ,1);
 
       node.position.set(node_info.position[0] * TileSize, (node_info.position[1] + 1) * TileSize);
-      console.log(data);
-      console.log(node_info.position);
       // node.parentLayer = building_layer;
       // node.zOrder = this.data.width - node_info.position[0] + node_info.position[1];
-      this.root.addChild(node);
       // node.lineStyle(5, 0x000000, 1);
       // node.beginFill(0xffffff, 1);
       // node.drawRect(-TileSize * 0.5, -TileSize * 0.5, TileSize, TileSize);
@@ -100,6 +95,7 @@ export default class Map extends eventemitter {
       return node;
     });
 
+    let objects = [...this.nodes];
     for (let x = 0; x < data.width; x++) {
       for (let y = 0; y < data.height; y++) {
         const tile_code = data.tiles[y][x];
@@ -111,11 +107,14 @@ export default class Map extends eventemitter {
         const tile = new PIXI.projection.Sprite2d(tile_data.texture);
         tile.proj.affine = PIXI.projection.AFFINE.AXIS_X;
         tile.rotation = Math.PI / 4;
-        tile.anchor.set(0.5, 1);
+        tile.anchor.set(tile_data.h / (tile_data.w + tile_data.h) ,1);
         tile.position.set(x * TileSize, (y + 1) * TileSize);
-        this.root.addChild(tile);
+        objects.push(tile);
       }
     }
+
+    objects = sortBy(objects, o => -(o.x / TileSize - o.y / TileSize + 1));
+    this.root.addChild(...objects);
 
     // this.connection = new window.Map();
     // for (const [node1, node2, distance] of data.edges) {
