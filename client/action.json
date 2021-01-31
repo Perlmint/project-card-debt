@@ -3,7 +3,7 @@
 		"action_id": 1,
 		"action_name": "냉동파 행동대원 정리",
 		"delay_pre": 0.0,
-		"delay_post": 30.0,
+		"delay_post": 5.0,
 		"montage_part_init": 3,
 		"montage_part_decay": 40.0,
 		"targets": [ 1 ]
@@ -12,7 +12,7 @@
 		"action_id": 2,
 		"action_name": "볶음파 조직원 정리",
 		"delay_pre": 0.0,
-		"delay_post": 30.0,
+		"delay_post": 5.0,
 		"montage_part_init": 3,
 		"montage_part_decay": 40.0,
 		"targets": [ 2 ]
@@ -21,7 +21,7 @@
 		"action_id": 3,
 		"action_name": "구내식당파 투입직원 정리",
 		"delay_pre": 0.0,
-		"delay_post": 30.0,
+		"delay_post": 5.0,
 		"montage_part_init": 4,
 		"montage_part_decay": 30.0,
 		"targets": [ 3 ]
@@ -30,7 +30,7 @@
 		"action_id": 4,
 		"action_name": "스팸파 현장직원 정리",
 		"delay_pre": 0.0,
-		"delay_post": 20.0,
+		"delay_post": 4.0,
 		"montage_part_init": 4,
 		"montage_part_decay": 40.0,
 		"targets": [ 4 ]
@@ -39,7 +39,7 @@
 		"action_id": 11,
 		"action_name": "냉동파 사무실 헤집기",
 		"delay_pre": 0.0,
-		"delay_post": 15.0,
+		"delay_post": 4.0,
 		"montage_part_init": 2,
 		"montage_part_decay": 50.0,
 		"targets": [ 11 ]
@@ -48,7 +48,7 @@
 		"action_id": 12,
 		"action_name": "볶음파 사무실 헤집기",
 		"delay_pre": 0.0,
-		"delay_post": 15.0,
+		"delay_post": 4.0,
 		"montage_part_init": 2,
 		"montage_part_decay": 50.0,
 		"targets": [ 12 ]
@@ -57,7 +57,7 @@
 		"action_id": 13,
 		"action_name": "구내식당파 사무실 헤집기",
 		"delay_pre": 0.0,
-		"delay_post": 15.0,
+		"delay_post": 4.0,
 		"montage_part_init": 3,
 		"montage_part_decay": 60.0,
 		"targets": [ 13 ]
@@ -66,7 +66,7 @@
 		"action_id": 15,
 		"action_name": "공무원 비품 강탈",
 		"delay_pre": 0.0,
-		"delay_post": 20.0,
+		"delay_post": 3.0,
 		"montage_part_init": 3,
 		"montage_part_decay": 60.0,
 		"targets": [ 15 ]
@@ -75,7 +75,7 @@
 		"action_id": 16,
 		"action_name": "자릿세 상납 받기",
 		"delay_pre": 0.0,
-		"delay_post": 10.0,
+		"delay_post": 3.0,
 		"montage_part_init": 3,
 		"montage_part_decay": 80.0,
 		"targets": [ 16 ]
