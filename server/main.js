@@ -79,7 +79,7 @@ lobby_wss.on('connection', async (ws, req) => {
   let { game_id, user_name } = req_url.query;
   let game_data;
   if (!game_id) {
-    game_id = 'aaa'; // TODO: (await xkcdp.generate(pass_options)).join('-');
+    game_id = (await xkcdp.generate(pass_options)).join('-');
     games.set(game_id, [{
       user_name,
       ws,
