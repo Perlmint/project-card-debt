@@ -227,8 +227,12 @@ game_wss.on('connection', (ws, req) => {
         const last_target = last(game[2].targets);
         let while_action = false;
         if (last_target) {
-          console.log(parse_data.time, last_target.time, last_target.post_delay * 1000 * 60);
-          if (parse_data.time > last_target.time - last_target.post_delay * 1000 * 60) {
+          console.log(parse_data.time, last_target.time, last_target.post_delay);
+          if (
+            last_target.node == user_data.data.pos &&
+            last_target.post_delay !== 0 &&
+            parse_data.time > (last_target.time - last_target.post_delay)
+          ) {
             while_action = true;
           }
         }

@@ -244,7 +244,7 @@ export default class Map extends eventemitter {
     this.action_progress.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
     this.wrap.addChild(this.action_progress);
     setTimeout(() => {
-      this.emit('target_noti', action.targets, this.player.current_node, action.montage_part_init, action.montage_part_decay * 1000, action.delay_post * 1000);
+      this.emit('target_noti', action.targets, this.player.current_node, action.montage_part_init, action.montage_part_decay * 1000 * 60, action.delay_post * 1000 * 60);
     }, action.delay_pre * 1000 * 60 / constant.TIME_MULTIPLIER);
   }
 
