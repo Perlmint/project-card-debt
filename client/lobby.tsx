@@ -28,7 +28,7 @@ function Lobby() {
             if (!createNewGame) {
                 query += `&game_id=${gamename}`;
             }
-            const ws = new WebSocket(`ws://${location.host}/lobby${query}`);
+            const ws = new WebSocket(`${location.protocol.replace('http', 'ws')}//${location.host}/lobby${query}`);
             ws.addEventListener('open', () => setConnectionState(2));
             ws.addEventListener('message', (e) => {
                 const data = JSON.parse(e.data);

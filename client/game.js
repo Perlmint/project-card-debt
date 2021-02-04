@@ -38,7 +38,7 @@ window.addEventListener('resize', (e) => {
   timer.root.position.set(window.innerWidth, 0);
 });
 
-const ws = new WebSocket(`ws://${location.host}/game${location.search}`);
+const ws = new WebSocket(`${location.protocol.replace('http', 'ws')}//${location.host}/game${location.search}`);
 ws.addEventListener('close', (event) => {
   if (event.reason === 'not_found') {
     location.href = '/';
