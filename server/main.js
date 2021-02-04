@@ -170,9 +170,11 @@ lobby_wss.on('connection', async (ws, req) => {
         const todo = sample(JSON.parse(fs.readFileSync(path.join(process.cwd(), 'data/todo.json'))));
         if (game_data[0].role === 'found') {
           game_data[0].data.todo = todo;
+          game_data[0].data.remain_targets = new Set(todo.targets);
           game_data[0].data.completed_targets = [];
         } else {
           game_data[1].data.todo = todo;
+          game_data[1].data.remain_targets = new Set(todo.targets);
           game_data[1].data.completed_targets = [];
         }
         function createMontage() {
@@ -253,7 +255,11 @@ game_wss.on('connection', (ws, req) => {
               type: 'defeat',
             }));
           }
+
+          return true;
         }
+
+        return false;
       }
     }
     switch (parse_data.type) {
@@ -286,9 +292,23 @@ game_wss.on('connection', (ws, req) => {
       }
       case 'target_noti':
         game[2].targets.push(parse_data);
-        user_data.data.completed_targets.push(...parse_data.targets);
+        for (const target of parse_data.targets) {
+          if (user_data.data.completed_targets.indexOf(target) == -1) {
+            user_data.data.completed_targets.push(target);
+          }
+          user_data.data.remain_targets.delete(target);
+        }
         other_user.ws?.send(data);
-        checkCapture();
+        if (!checkCapture()) {
+          if (user_data.data.remain_targets.size === 0) {
+            ws.send(JSON.stringify({
+              type: 'win',
+            }));
+            other_user.ws?.send(JSON.stringify({
+              type: 'defeat',
+            }));
+          }
+        }
         break;
       case 'tick_resp':
         other_user.ws?.send(JSON.stringify({
