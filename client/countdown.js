@@ -31,7 +31,7 @@ export default class CountDownTimer extends EventEmitter {
 
   start() {
     // milli seconds
-    this.remain = 20 * 60 * 1000 * constants.TIME_MULTIPLIER;
+    this.remain = 20 * 60 * 60 * 1000;
     PIXI.Ticker.shared.add(this.onTick, this);
   }
 
