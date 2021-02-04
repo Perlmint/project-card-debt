@@ -240,17 +240,17 @@ game_wss.on('connection', (ws, req) => {
         if (has_montage || while_action) {
           if (user_data.role === 'found') {
             ws.send(JSON.stringify({
-              type: 'win',
+              type: 'defeat',
             }));
             other_user.ws?.send(JSON.stringify({
-              type: 'defeat',
+              type: 'win',
             }));
           } else {
             ws.send(JSON.stringify({
-              type: 'defeat',
+              type: 'win',
             }));
             other_user.ws?.send(JSON.stringify({
-              type: 'win',
+              type: 'defeat',
             }));
           }
         }
