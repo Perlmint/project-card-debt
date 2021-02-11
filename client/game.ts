@@ -1,12 +1,11 @@
-const PIXI = require('pixi.js');
-window.PIXI = PIXI;
-require('pixi-projection');
-const PUXI = require('@puxi/core');
-const Phone = require('./phone').default;
-const Map = require('./map').default;
-const CountDownTimer = require('./countdown').default;
-const mapValues = require('lodash/mapValues');
-const result_scene = mapValues(require("./res/result/*.png"), p => PIXI.Texture.from(p));
+import './init_pixi';
+import * as PIXI from 'pixi.js';
+import Phone from './phone';
+import Map from './map';
+import CountDownTimer from './timer';
+import { mapValues } from 'lodash';
+import TWEEN from '@tweenjs/tween.js';
+const result_scene = mapValues(require("./res/result/*.png") as {[name: string]: string}, (p) => PIXI.Texture.from(p));
 
 // TODO: fill window
 const app = new PIXI.Application({
@@ -15,11 +14,16 @@ const app = new PIXI.Application({
   backgroundColor: 0x1099bb,
 });
 document.body.appendChild(app.view);
+window.app = app;
 
 const container = new PIXI.Container();
-
 app.stage.addChild(container);
-window.app = app;
+
+let timestamp = 0;
+app.ticker.add(() => {
+  timestamp += app.ticker.deltaMS;
+  TWEEN.update(timestamp);
+});
 
 const ui_container = new PIXI.Container();
 ui_container.interactive = false;
@@ -30,12 +34,12 @@ const phone = new Phone();
 ui_container.addChild(phone);
 
 const timer = new CountDownTimer();
-timer.root.position.set(window.innerWidth, 0);
-container.addChild(timer.root);
+timer.position.set(window.innerWidth, 0);
+container.addChild(timer);
 
 window.addEventListener('resize', (e) => {
   app.resizeTo = window;
-  timer.root.position.set(window.innerWidth, 0);
+  timer.position.set(window.innerWidth, 0);
 });
 
 const ws = new WebSocket(`${location.protocol.replace('http', 'ws')}//${location.host}/game${location.search}`);
@@ -45,17 +49,17 @@ ws.addEventListener('close', (event) => {
   }
 });
 
-let role;
+let role: 'found' | 'lost';
 
 ws.addEventListener('message', (message) => {
   const data = JSON.parse(message.data);
   switch (data.type) {
     case 'init': {
       const map = new Map(data.map, data.user_data);
-      map.ui_root.position.x = phone.width;
-      container.addChildAt(map.ui_root, 0);
+      map.position.x = phone.width;
+      container.addChildAt(map, 0);
       role = data.user_data.role;
-      map.on('player_arrival', (pos) => {
+      map.on('player_arrival', (pos: number) => {
         ws.send(JSON.stringify({
           type: 'arrival',
           time: timer.remain,
@@ -67,7 +71,7 @@ ws.addEventListener('message', (message) => {
           type: 'depature',
         }));
       });
-      map.on('target_noti', (targets, node, montage_init, montage_decay, post_delay) => {
+      map.on('target_noti', (targets: number[], node: number, montage_init: number, montage_decay: number, post_delay: number) => {
         for (const t of targets) {
           phone.completeTarget(t);
         }
@@ -81,14 +85,14 @@ ws.addEventListener('message', (message) => {
           time: timer.remain,
         }));
       });
-      map.on('montage', (node) => {
+      map.on('montage', (node: number) => {
         ws.send(JSON.stringify({
           type: 'ask',
           node,
           time: timer.remain,
         }));
       });
-      map.on('car', (building) => {
+      map.on('car', (building: number) => {
         ws.send(JSON.stringify({
           type: 'car',
           building,

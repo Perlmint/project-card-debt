@@ -1,8 +1,11 @@
-const EventEmitter = require('eventemitter3');
+import * as PIXI from 'pixi.js';
+import { ActionType } from "../data/action";
+
 const background = PIXI.Texture.from(require('./res/move_background.png'));
 const action_background = PIXI.Texture.from(require('./res/alarm.png'));
 
 class ActionItem extends PIXI.NineSlicePlane {
+  title: PIXI.Text;
   constructor() {
     super(action_background, 32, 32, 32, 32);
 
@@ -18,19 +21,19 @@ class ActionItem extends PIXI.NineSlicePlane {
     this.addChild(this.title);
   }
 
-  init(action) {
+  init(action: Pick<ActionType, 'action_name'>) {
     this.title.text = action.action_name;
   }
 }
 
 export default class ActionDialog extends PIXI.NineSlicePlane {
+  name_label: PIXI.Text;
+  action_buttons: ActionItem[];
   constructor() {
     super(background, 32, 32, 32, 32);
 
-    /** @memeber */
     this.width = 330 + 12 * 2;
 
-    /** @member */
     this.name_label = new PIXI.Text("", {
       fontWeight: 700,
       fontSize: 20,
@@ -39,22 +42,16 @@ export default class ActionDialog extends PIXI.NineSlicePlane {
     this.name_label.anchor.x = 0.5;
     this.addChild(this.name_label);
 
-    /** @member {ActionItem[]}*/
     this.action_buttons = [];
   }
 
-  /**
-   *
-   * @param {string} name
-   * @param {any[]} actions
-   */
-  init(name) {
+  init(name: string) {
     const actions = [{
       action_name: '몽타주 수집',
     }];
     let height = 0;
     this.name_label.text = name;
-    this.name_label.updateText();
+    this.name_label.updateText(true);
     height += this.name_label.height + 20 + this.name_label.y;
     for (const label of this.action_buttons) {
       this.removeChild(label);
@@ -65,7 +62,7 @@ export default class ActionDialog extends PIXI.NineSlicePlane {
       let action_item;
       if (this.action_buttons[i]) {
         action_item = this.action_buttons[i];
-        action_item.text = action.action_name;
+        action_item.title.text = action.action_name;
       } else {
         action_item = new ActionItem();
         action_item.x = 32;

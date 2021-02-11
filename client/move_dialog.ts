@@ -1,13 +1,20 @@
-const PIXI = require('pixi.js');
+import * as PIXI from 'pixi.js';
+import { ActionType } from '../data/action';
 const background = PIXI.Texture.from(require('./res/move_background.png'));
 const by_car_button = PIXI.Texture.from(require('./res/by_car_button.png'));
 const by_walk_button = PIXI.Texture.from(require('./res/by_walk_button.png'));
-const constant = require('./const.json');
+import constant from '../data/const.json';
 
 export default class MoveDialog extends PIXI.NineSlicePlane {
+  name_label: PIXI.Text;
+  action_labels: PIXI.Text[];
+  by_car_button: PIXI.Sprite;
+  node_idx?: number;
+  by_car_label: PIXI.Text;
+  by_walk_button: PIXI.Sprite;
+  by_walk_label: PIXI.Text;
   constructor() {
     super(background, 32, 32, 32, 32);
-    /** @member */
     this.name_label = new PIXI.Text("", {
       fontWeight: 700,
       fontSize: 20,
@@ -15,7 +22,6 @@ export default class MoveDialog extends PIXI.NineSlicePlane {
     this.name_label.position.set(32, 27);
     this.addChild(this.name_label);
 
-    /** @member {PIXI.Text[]}*/
     this.action_labels = [];
 
     this.by_car_button = new PIXI.Sprite(by_car_button);
@@ -57,16 +63,11 @@ export default class MoveDialog extends PIXI.NineSlicePlane {
     this.width = 324;
   }
 
-  /**
-   *
-   * @param {string} name
-   * @param {any[]} actions
-   */
-  init(name, actions, node_idx, distance) {
+  init(name: string, actions: ActionType[], node_idx: number, distance: number) {
     this.node_idx = node_idx;
     let height = 0;
     this.name_label.text = name;
-    this.name_label.updateText();
+    this.name_label.updateText(true);
     height += this.name_label.height + 16 + this.name_label.y;
     for (const label of this.action_labels) {
       this.removeChild(label);
@@ -87,7 +88,7 @@ export default class MoveDialog extends PIXI.NineSlicePlane {
         action_label.x = 36;
         this.action_labels.push(action_label);
       }
-      action_label.updateText();
+      action_label.updateText(true);
       action_label.y = height;
       this.addChild(action_label);
 

@@ -1,20 +1,15 @@
-import { sortBy } from 'lodash';
+import { sortBy, clamp, pick, values } from 'lodash';
 
-const PIXI = require('pixi.js');
-const clamp = require('lodash/clamp');
-const Player = require('./player').default;
-const MoveDialog = require('./move_dialog').default;
-const { default: FoundActionDialog, ActionProgressDialog } = require('./found_action_dialog');
-const LostActionDialog = require('./lost_action_dialog').default;
-const pick = require('lodash/pick');
-const values = require('lodash/values');
-const eventemitter = require('eventemitter3');
-const { textures: building_textures, ui_data: building_ui_data, data: building_data } = require('./building');
+import * as PIXI from 'pixi.js';
+import Player from './player';
+import MoveDialog from './move_dialog';
+import FoundActionDialog, { ActionProgressDialog } from './found_action_dialog';
+import LostActionDialog from'./lost_action_dialog';
+import { textures as building_textures, ui_data as building_ui_data, data as building_data, BuildingId } from './building';
 const tiles = (() => {
-  const id = require('./res/map_obj/id.json');
+  const id = require('./res/map_obj/id.json') as typeof import('./res/map_obj/id.json');
   const textures = require('./res/map_obj/*.png');
   return id.map(d => {
-    console.log(d.name);
     return {
       texture: PIXI.Texture.from(textures[d.name]),
       ...d
@@ -22,56 +17,54 @@ const tiles = (() => {
   });
 })();
 
-const action_data = require('./action.json');
-const constant = require('./const.json');
+import action_data, { ActionId, ActionType } from '../data/action';
+import constant from '../data/const.json';
+import { Montage } from './montage';
+import { TodoType } from '../data/todo';
 
 const TileSize = 100;
 const YScale = 0.58;
 const MapMargin = TileSize * 2;
 
-/** @class */
-export default class Map extends eventemitter {
-  /**
-   *
-   * @param {*} data
-   * @param {number} initial_pos
-   */
-  constructor(data, { montage, pos: initial_pos, role, todo }) {
-    super();
-    this.data = data;
-    this.ui_root = new PIXI.Container();
-    this.ui_root.dragging = false;
-    this.ui_root.drag_pos = null;
+interface MapData {
+  width: number,
+  height: number,
+  nodes: {
+    building_id: BuildingId,
+    position: [number, number]
+  }[],
+  tiles: number[][],
+}
 
-    this.ui_root.interactive = true;
-    this.ui_root
-      .on('pointerdown', (e) => this.onDragStart(e))
-      .on('pointerup', (e) => this.onDragEnd(e))
-      .on('pointerupoutside', (e) => this.onDragEnd(e))
-      .on('pointermove', (e) => this.onDragMove(e));;
+export default class Map extends PIXI.Container {
+  dragging: boolean;
+  drag_pos: null | PIXI.Point;
+  virtual_size!: PIXI.Point;
+  nodes: PIXI.DisplayObject[];
+  root!: PIXI.Container;
+  move_dialog: MoveDialog;
+  player: Player;
+  action_dialog: FoundActionDialog | LostActionDialog;
+  targets?: number[];
+  wrap!: PIXI.Container;
+  action_progress!: ActionProgressDialog;
+  base_y!: number;
+  constructor(private data: MapData, { montage, pos: initial_pos, role, todo }: { montage: Montage, pos: number, role: 'lost' | 'found', todo: TodoType}) {
+    super();
+    
+    this.dragging = false;
+    this.drag_pos = null;
+
+    this.interactive = true;
+    this
+      .on('pointerdown', (e: PIXI.InteractionEvent) => this.onDragStart(e))
+      .on('pointerup', () => this.onDragEnd())
+      .on('pointerupoutside', () => this.onDragEnd())
+      .on('pointermove', (e: PIXI.InteractionEvent) => this.onDragMove(e));
 
     this.initIsometryTile(data.width, data.height);
-    this.ui_root.hitArea = new PIXI.Rectangle(0, 0, this.virtual_size.x * 2, this.virtual_size.y * 2);
+    this.hitArea = new PIXI.Rectangle(0, 0, this.virtual_size.x * 2, this.virtual_size.y * 2);
 
-    // this.edges = data.edges.map(([node1, node2, time]) => {
-    //   const edge = new PIXI.Graphics();
-    //   edge.lineStyle(6, 0x000000, 1);
-    //   const begin_node = data.nodes[node1];
-    //   const end_node = data.nodes[node2];
-    //   const width = end_node.x - begin_node.x;
-    //   const height = end_node.y - begin_node.y;
-    //   edge.moveTo(0, 0);
-    //   edge.lineTo(width * TileSize, height * TileSize);
-    //   edge.position.set((begin_node.x + 0.5) * TileSize, (begin_node.y + 0.5) * TileSize);
-    //   this.root.addChild(edge);
-    // });
-
-    // const building_layer = new PIXI.display.Layer();
-    // building_layer.sortableChildren = true;
-    // this.wrap.addChild(building_layer);
-
-
-    /** @member {PIXI.Graphics[]} */
     this.nodes = data.nodes.map((node_info, idx) => {
       const data = building_ui_data[node_info.building_id];
       const node = new PIXI.projection.Sprite2d(building_textures[data.name]);
@@ -81,13 +74,6 @@ export default class Map extends eventemitter {
       node.anchor.set(data.h / (data.w + data.h) ,1);
 
       node.position.set(node_info.position[0] * TileSize, (node_info.position[1] + 1) * TileSize);
-      // node.parentLayer = building_layer;
-      // node.zOrder = this.data.width - node_info.position[0] + node_info.position[1];
-      // node.lineStyle(5, 0x000000, 1);
-      // node.beginFill(0xffffff, 1);
-      // node.drawRect(-TileSize * 0.5, -TileSize * 0.5, TileSize, TileSize);
-      // node.position.set((node_info.x + 0.5) * TileSize, (node_info.y + 0.5) * TileSize);
-      // this.root.addChild(node);
 
       node.on('pointertap', () => {
         this.onNodeClick(idx);
@@ -105,12 +91,10 @@ export default class Map extends eventemitter {
         }
 
         const tile_data = tiles[tile_code - 1];
-        console.log(tile_code);
         const tile = new PIXI.projection.Sprite2d(tile_data.texture);
         tile.proj.affine = PIXI.projection.AFFINE.AXIS_X;
         tile.rotation = Math.PI / 4;
         tile.anchor.set(tile_data.h / (tile_data.w + tile_data.h), 1);
-        console.log(tile.anchor, tile_data.h, tile_data.w);
         tile.position.set(x * TileSize, (y + 1) * TileSize);
         objects.push(tile);
       }
@@ -119,15 +103,9 @@ export default class Map extends eventemitter {
     objects = sortBy(objects, o => -o.x, o => o.y);
     this.root.addChild(...objects);
 
-    // this.connection = new window.Map();
-    // for (const [node1, node2, distance] of data.edges) {
-    //   this.addConnection(node1, node2, distance);
-    //   this.addConnection(node2, node1, distance);
-    // }
-
     /** @member */
     this.move_dialog = new MoveDialog();
-    this.move_dialog.on('go', (idx, by_car) => {
+    this.move_dialog.on('go', (idx: number, by_car: boolean) => {
       this.player.moveTo(idx, by_car);
       if (by_car && role === 'found') {
         this.emit('car', data.nodes[idx].building_id);
@@ -143,7 +121,7 @@ export default class Map extends eventemitter {
     } else {
       this.targets = todo.targets;
       this.action_dialog = new FoundActionDialog(todo.targets);
-      this.action_dialog.on('do', (id) => this.onDoAction(id));
+      this.action_dialog.on('do', (id: number) => this.onDoAction(id));
       this.action_progress = new ActionProgressDialog(todo.targets);
       this.action_progress.on('complete', () => {
         for (const node of this.nodes) {
@@ -160,16 +138,11 @@ export default class Map extends eventemitter {
     this.root.addChild(this.player);
   }
 
-  /**
-   *
-   * @param {number} width
-   * @param {number} height
-   */
-  initIsometryTile(width, height) {
+  initIsometryTile(width: number, height: number) {
     this.wrap = new PIXI.Container();
     this.wrap.sortableChildren = true;
     this.wrap.scale.y = YScale;
-    this.ui_root.addChild(this.wrap);
+    this.addChild(this.wrap);
 
     this.base_y = width * Math.sin(Math.PI / 4) * TileSize * this.wrap.scale.y + MapMargin;
     this.virtual_size = new PIXI.Point(
@@ -177,7 +150,6 @@ export default class Map extends eventemitter {
       ((width * Math.sin(Math.PI / 4) + height * Math.sin(Math.PI / 4)) * TileSize + MapMargin * 2) * YScale,
     );
     this.wrap.y = this.base_y;
-    console.log(this.virtual_size);
 
     const isometryPlane = new PIXI.Graphics();
     isometryPlane.rotation = -Math.PI / 4;
@@ -195,44 +167,34 @@ export default class Map extends eventemitter {
     }
   }
 
-  addConnection(node1, node2, distance) {
-    let connection = this.connection.get(node1);
-    if (!connection) {
-      connection = new window.Map();
-      this.connection.set(node1, connection);
-    }
-
-    connection.set(node2, distance);
-  }
-
-  calcDistance(node1, node2) {
-    node1 = this.data.nodes[node1];
-    node2 = this.data.nodes[node2];
+  calcDistance(node1_idx: number, node2_idx: number) {
+    const node1 = this.data.nodes[node1_idx];
+    const node2 = this.data.nodes[node2_idx];
     return Math.sqrt(
       Math.pow(node1.position[0] - node2.position[0], 2) +
       Math.pow(node1.position[1] - node2.position[1], 2)
     ) * constant.MAP_DIST_SCALE;
   }
 
-  onNodeClick(node_idx) {
+  onNodeClick(node_idx: number) {
     if (this.player.current_node == node_idx) {
       this.showActionDialog(node_idx);
     } else {
       this.wrap.removeChild(this.action_dialog);
 
       const node = this.data.nodes[node_idx];
-      const building = building_data[node.building_id];
-      const actions = values(pick(action_data, building.actions));
+      const building = building_data[node.building_id as unknown as BuildingId];
+      const actions = values(pick(action_data, building.actions)) as ActionType[];
 
       this.move_dialog.init(building.name, actions, node_idx, this.calcDistance(this.player.current_node, node_idx));
       const node_pos = this.data.nodes[node_idx].position;
-      this.move_dialog.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
+      this.move_dialog.position.copyFrom(this.calcCellInternalPosition(node_pos[0], node_pos[1]));
       this.wrap.addChild(this.move_dialog);
     }
   }
 
-  onDoAction(action_id) {
-    const action = action_data[action_id];
+  onDoAction(action_id: number) {
+    const action = action_data[action_id as unknown as ActionId];
 
     for (const node of this.nodes) {
       node.buttonMode = node.interactive = false;
@@ -241,15 +203,15 @@ export default class Map extends eventemitter {
 
     const node_pos = this.data.nodes[this.player.current_node].position;
     this.action_progress.init(action);
-    this.action_progress.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
+    this.action_progress.position.copyFrom(this.calcCellInternalPosition(node_pos[0], node_pos[1]));
     this.wrap.addChild(this.action_progress);
     setTimeout(() => {
       this.emit('target_noti', action.targets, this.player.current_node, action.montage_part_init, action.montage_part_decay * 1000 * 60, action.delay_post * 1000 * 60);
     }, action.delay_pre * 1000 * 60 / constant.TIME_MULTIPLIER);
   }
 
-  onDragStart(event) {
-    this.drag_pos = event.data.getLocalPosition(this.ui_root.parent);
+  onDragStart(event: PIXI.InteractionEvent) {
+    this.drag_pos = event.data.getLocalPosition(this.parent);
     this.dragging = true;
   }
 
@@ -258,11 +220,11 @@ export default class Map extends eventemitter {
     this.drag_pos = null;
   }
 
-  onDragMove(event) {
+  onDragMove(event: PIXI.InteractionEvent) {
     if (this.dragging) {
-      const newPosition = event.data.getLocalPosition(this.ui_root.parent);
-      let new_x = newPosition.x - this.drag_pos.x + this.wrap.x;
-      let new_y = newPosition.y - this.drag_pos.y + this.wrap.y;
+      const newPosition = event.data.getLocalPosition(this.parent);
+      let new_x = newPosition.x - this.drag_pos!.x + this.wrap.x;
+      let new_y = newPosition.y - this.drag_pos!.y + this.wrap.y;
       new_x = clamp(new_x, -(this.virtual_size.x - window.innerWidth), 0);
       new_y = clamp(new_y, -(this.virtual_size.y - window.innerHeight) + this.base_y, this.base_y);
       this.drag_pos = newPosition;
@@ -274,7 +236,7 @@ export default class Map extends eventemitter {
     }
   }
 
-  calcCellInternalPosition(x, y) {
+  calcCellInternalPosition(x: number, y: number) {
     return new PIXI.Point(
        x * TileSize * Math.cos(Math.PI / 4) +
       (y + 1) * TileSize * Math.cos(Math.PI / 4),
@@ -287,7 +249,7 @@ export default class Map extends eventemitter {
     );
   }
 
-  calcCellGlobalPosition(x, y) {
+  calcCellGlobalPosition(x: number, y: number) {
     const ret = this.calcCellInternalPosition(x, y);
     ret.x += this.wrap.x;
     ret.y += this.wrap.y;
@@ -295,24 +257,19 @@ export default class Map extends eventemitter {
     return ret;
   }
 
-  showActionDialog(node_idx) {
+  showActionDialog(node_idx: number) {
     const node = this.data.nodes[node_idx];
-    const building = building_data[node.building_id];
-    const actions = values(pick(action_data, building.actions));
+    const building = building_data[node.building_id as unknown as BuildingId];
+    const actions = values(pick(action_data, building.actions)) as ActionType[];
 
     this.action_dialog.init(building.name, actions);
     const node_pos = this.data.nodes[node_idx].position;
-    this.action_dialog.position = this.calcCellInternalPosition(node_pos[0], node_pos[1]);
+    this.action_dialog.position.copyFrom(this.calcCellInternalPosition(node_pos[0], node_pos[1]));
     this.wrap.addChild(this.action_dialog);
     this.wrap.removeChild(this.move_dialog);
   }
 
-  onPlayerArrival(node_idx) {
-    // for (const [connected_idx,] of this.connection.get(node_idx)) {
-    //   const node = this.nodes[connected_idx];
-    //   node.interactive = true;
-    //   node.buttonMode = true;
-    // }
+  onPlayerArrival(node_idx: number) {
     for (const node of this.nodes) {
       node.buttonMode = node.interactive = true;
     }
@@ -321,17 +278,12 @@ export default class Map extends eventemitter {
     this.emit('player_arrival', node_idx);
   }
 
-  onPlayerDepature(node_idx) {
-    // for (const [connected_idx,] of this.connection.get(node_idx)) {
-    //   const node = this.nodes[connected_idx];
-    //   node.interactive = false;
-    //   node.buttonMode = false;
-    // }
+  onPlayerDepature() {
     for (const node of this.nodes) {
       node.buttonMode = node.interactive = false;
     }
 
-    this.root.removeChild(this.move_dialog, this.action);
+    this.root.removeChild(this.move_dialog, this.action_dialog);
     this.emit('player_depature');
   }
 }

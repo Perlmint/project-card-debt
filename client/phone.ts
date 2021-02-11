@@ -1,4 +1,17 @@
+import * as PIXI from 'pixi.js';
+
+import { each, map, mapValues, filter, includes } from 'lodash';
+import { sprintf } from 'sprintf-js';
+
 import { createHeadTexture } from './player';
+import ScrollContainer from './scroll_container';
+import ProgressBar from './progress_bar';
+import { body as body_textures, leg as leg_textures } from './player';
+
+import target_data, { TargetId, TargetType } from '../data/target';
+import action_data from '../data/action';
+import todo_data, { TodoType } from '../data/todo';
+import constants from '../data/const.json';
 
 const background = PIXI.Texture.from(require('./res/phone.png'));
 const news_background = PIXI.Texture.from(require('./res/alarm.png'));
@@ -7,29 +20,19 @@ const target_item_highlight = PIXI.Texture.from(require('./res/target_item_highl
 const triangle = PIXI.Texture.from(require('./res/triangle.png'));
 const check = PIXI.Texture.from(require('./res/check.png'));
 const empty_check = PIXI.Texture.from(require('./res/empty_check.png'));
-const ScrollContainer = require('./scroll_container').default;
-const ProgressBar = require('./progress_bar').default;
-const each = require('lodash/each');
-const map = require('lodash/map');
-const mapValues = require('lodash/mapValues');
-const filter = require('lodash/filter');
-const includes = require('lodash/includes');
-const target_data = require('./target.json');
-const action_data = require('./action.json');
-const todo_data = require('../data/todo.json');
-const constants = require('./const.json');
-const sprintf = require('sprintf-js').sprintf;
-const { data: building_data, textures: building_textures, ui_data: building_ui_data } = require('./building');
+import { BuildingId, data as building_data, textures as building_textures, ui_data as building_ui_data } from './building';
+import { Montage } from './montage';
 const montage_textures = mapValues(require('./res/montage/*.png'), o => PIXI.Texture.from(o));
-const { body: body_textures, leg: leg_textures } = require('./player');
 
-function createBuildingIcon(building_id) {
+function createBuildingIcon(building_id: number) {
   const cont = new PIXI.Container();
   const bg = new PIXI.Graphics();
   bg.beginFill(0xECECEC, 1);
   bg.drawRect(0, 0, 50, 50);
   cont.addChild(bg);
-  const sprt = new PIXI.Sprite(building_textures[building_ui_data[building_id].name]);
+  const sprt = new PIXI.Sprite(
+    building_textures[building_ui_data[building_id as unknown as BuildingId].name]
+  );
   sprt.anchor.set(0.5, 0.5);
   sprt.position.set(25, 25);
   const scale = 48 / Math.max(sprt.width, sprt.height);
@@ -40,7 +43,7 @@ function createBuildingIcon(building_id) {
   return cont;
 }
 
-function collectBuildingIdsFromTarget(id) {
+function collectBuildingIdsFromTarget(id: number): number[] {
   const actions = map(filter(action_data, (o) => includes(o.targets, id)), o => o.action_id);
   const buildings = filter(building_data, o => {
     for (const action of actions) {
@@ -58,6 +61,8 @@ function collectBuildingIdsFromTarget(id) {
 }
 
 class TargetPreviewItem extends PIXI.Graphics {
+  checkbox: PIXI.Sprite;
+  title: PIXI.Text;
   constructor() {
     super();
 
@@ -78,7 +83,7 @@ class TargetPreviewItem extends PIXI.Graphics {
     this.addChild(this.title);
   }
 
-  init(target, completed) {
+  init(target: TargetType, completed: boolean) {
     if (completed) {
       this.checkbox.texture = check;
       this.title.style.fill = '#4A9692';
@@ -94,7 +99,9 @@ class TargetPreviewItem extends PIXI.Graphics {
 }
 
 class Alarm extends PIXI.NineSlicePlane {
-  constructor(time, id, is_target) {
+  title: PIXI.Text;
+  content: PIXI.Text;
+  constructor(time: number, id: number, is_target: boolean) {
     super(news_background, 32, 32, 32, 32);
 
     time = constants.TOTAL_TIME - time / 1000 / constants.TIME_MULTIPLIER;
@@ -111,12 +118,12 @@ class Alarm extends PIXI.NineSlicePlane {
     let content_text;
     let buildings;
     if (is_target) {
-      const target = target_data[id];
+      const target = target_data[id as unknown as TargetId];
       content_text = `[${target.target_name}] 사건 발생`;
       buildings = collectBuildingIdsFromTarget(id);
     } else {
       buildings = [id];
-      content_text = `차량 강도 제보\n범인은 [${building_data[id].name}]을 향해...`;
+      content_text = `차량 강도 제보\n범인은 [${building_data[id as unknown as BuildingId].name}]을 향해...`;
     }
     this.content = new PIXI.Text(content_text, {
       fontWeight: 400,
@@ -137,10 +144,11 @@ class Alarm extends PIXI.NineSlicePlane {
 }
 
 class TargetItem extends PIXI.Sprite {
-  constructor(id) {
+  title: PIXI.Text;
+  constructor(id: number) {
     super(target_item);
 
-    const data = target_data[id];
+    const data = target_data[id as unknown as TargetId];
 
     this.title = new PIXI.Text(data.target_name, {
       fontSize: 20,
@@ -168,6 +176,29 @@ class TargetItem extends PIXI.Sprite {
 }
 
 export default class Phone extends PIXI.Sprite {
+  alarms: Alarm[];
+  montage: { [key in keyof Montage]: Montage[key] | null };
+  title: PIXI.Text;
+  triangle: PIXI.Sprite;
+  toggle_area: PIXI.Container;
+  innerView: ScrollContainer;
+  todo_id: number;
+  target_ui: PIXI.Container;
+  target_items: TargetPreviewItem[];
+  completed_target_ids: Set<unknown>;
+
+  montage_ui?: PIXI.Container;
+  montage_components?: { hair: PIXI.Sprite; hair_empty: PIXI.Sprite; body: PIXI.Sprite; body_empty: PIXI.Sprite; leg: PIXI.Sprite; leg_empty: PIXI.Sprite; };
+  news_items?: Alarm[];
+
+  targets?: Map<any, any>;
+  todo_ui?: PIXI.Container;
+  percentage?: PIXI.Text;
+  completed?: number;
+  progress_bar?: ProgressBar;
+  todo_items?: TargetItem[];
+  todo?: TodoType;
+
   constructor() {
     super(background);
 
@@ -203,15 +234,16 @@ export default class Phone extends PIXI.Sprite {
     this.toggle_area.position.set(20, 58);
     this.addChild(this.toggle_area);
 
-    this.innerView = new ScrollContainer(20, 286, 440, 688, 218);
-    this.addChild(this.innerView.po);
+    this.innerView = new ScrollContainer(440, 688, 218);
+    this.innerView.position.set(20, 286);
+    this.addChild(this.innerView);
 
     this.todo_id = 1;
     this.target_ui = new PIXI.Container();
     this.target_ui.visible = false;
     this.addChild(this.target_ui);
 
-    const createTodoButton = (todo) => {
+    const createTodoButton = (todo: TodoType) => {
       const label = new PIXI.Text(todo.todo_name, {
         fontWeight: 400,
         fontSize: 16,
@@ -231,7 +263,7 @@ export default class Phone extends PIXI.Sprite {
       return bg;
     };
 
-    const todo_button_positions = {
+    const todo_button_positions: Record<number, PIXI.Point> = {
       1: new PIXI.Point(100, 108),
       4: new PIXI.Point(248, 108),
       7: new PIXI.Point(40,  164),
@@ -243,7 +275,7 @@ export default class Phone extends PIXI.Sprite {
     for (let idx = 0; idx < todo_data.length; idx++) {
       const todo = todo_data[idx];
       const todo_item = createTodoButton(todo);
-      todo_item.position = todo_button_positions[todo.todo_id];
+      todo_item.position.copyFrom(todo_button_positions[todo.todo_id]);
       this.target_ui.addChild(todo_item);
     }
     this.target_items = [];
@@ -324,7 +356,7 @@ export default class Phone extends PIXI.Sprite {
     this.toggle_screen_lost();
   }
 
-  showTodoList(todo_id) {
+  showTodoList(todo_id: number) {
     this.innerView.removeChildren();
     this.todo_id = todo_id;
 
@@ -334,12 +366,16 @@ export default class Phone extends PIXI.Sprite {
       if (!target_item) {
         target_item = new TargetPreviewItem();
       }
-      target_item.init(target_data[targets[idx]], this.completed_target_ids.has(targets[idx]));
+      target_item.init(target_data[targets[idx] as unknown as TargetId], this.completed_target_ids.has(targets[idx]));
       this.innerView.addItem(target_item);
     }
   }
 
   toggle_screen_lost() {
+    if (this.montage_ui == null || this.news_items == null) {
+      return;
+    }
+
     this.triangle.position.y = this.title.position.y;
     if (this.montage_ui.visible) {
       this.montage_ui.visible = false;
@@ -356,7 +392,7 @@ export default class Phone extends PIXI.Sprite {
       this.triangle.rotation = 0;
       this.triangle.x = this.title.position.x + this.title.width / 2 + 5;
       this.innerView.itemHeight = 218;
-      this.innerView.removeChildren();
+      this.innerView.removeItems();
       for (const item of this.news_items) {
         this.innerView.addItem(item);
       }
@@ -364,6 +400,10 @@ export default class Phone extends PIXI.Sprite {
   }
 
   toggle_screen_found() {
+    if (this.todo_ui == null || this.todo_items == null || this.todo == null) {
+      return;
+    }
+
     if (this.todo_ui.visible) {
       this.todo_ui.visible = false;
       this.target_ui.visible = true;
@@ -379,44 +419,44 @@ export default class Phone extends PIXI.Sprite {
       this.triangle.rotation = 0;
       this.triangle.x = this.title.position.x + this.title.width / 2 + 5;
       this.innerView.itemHeight = 154;
-      this.innerView.removeChildren();
+      this.innerView.removeItems();
       for (const item of this.todo_items) {
         this.innerView.addItem(item);
       }
     }
   }
 
-  addTargetNews(target_id, time) {
+  addTargetNews(target_id: number, time: number) {
     this.completed_target_ids.add(target_id);
     const alarm = new Alarm(time, target_id, true);
-    this.news_items.push(alarm);
+    this.news_items!.push(alarm);
     this.innerView.addItem(alarm);
   }
 
-  addCarNews(building_id, time) {
+  addCarNews(building_id: number, time: number) {
     const alarm = new Alarm(time, building_id, false);
-    this.news_items.push(alarm);
+    this.news_items!.push(alarm);
     this.innerView.addItem(alarm);
   }
 
-  addMontage(montage) {
+  addMontage(montage: Partial<Phone['montage']>) {
     Object.assign(this.montage, montage);
     this.updateMontage();
   }
 
   updateMontage() {
-    for (const part of ['hair', 'body', 'leg']) {
-      const color = this.montage[`${part}_color`];
-      const shape = this.montage[`${part}_type`];
-      const component = this.montage_components[part];
-      const empty_component = this.montage_components[`${part}_empty`];
+    for (const part of ['hair', 'body', 'leg'] as const) {
+      const color = this.montage[`${part}_color` as const];
+      const shape = this.montage[`${part}_type` as const];
+      const component = this.montage_components![part];
+      const empty_component = this.montage_components![`${part}_empty` as const];
       if (color === null && shape === null) {
         component.visible = false;
         empty_component.visible = true;
       } else if (shape === null) {
         component.visible = true;
         component.texture = montage_textures[`${part}_color`];
-        component.tint = color;
+        component.tint = color!;
         component.scale.set(1, 1);
         empty_component.visible = true;
       } else if (color === null) {
@@ -428,7 +468,10 @@ export default class Phone extends PIXI.Sprite {
         component.visible = true;
         switch (part) {
           case 'hair':
-            component.texture = createHeadTexture(this.montage, 0.34);
+            component.texture = createHeadTexture({
+              hair_color: color,
+              hair_type: shape,
+            }, 0.34);
             break;
           case 'body':
             component.texture = body_textures[shape];
@@ -446,7 +489,7 @@ export default class Phone extends PIXI.Sprite {
     }
   }
 
-  initTodo(todo) {
+  initTodo(todo: TodoType) {
     this.todo = todo;
     this.targets = new Map();
 
@@ -481,15 +524,15 @@ export default class Phone extends PIXI.Sprite {
     this.toggle_screen_found();
   }
 
-  completeTarget(target_id) {
-    const target = this.targets.get(target_id);
+  completeTarget(target_id: number) {
+    const target = this.targets!.get(target_id);
     this.completed_target_ids.add(target_id);
     if (target) {
       if (target.setComplete()) {
-        this.completed++;
-        const progress = this.completed / this.targets.size;
-        this.percentage.text = `${Math.round(progress * 100)}%`
-        this.progress_bar.setProgress(progress);
+        this.completed!++;
+        const progress = this.completed! / this.targets!.size;
+        this.percentage!.text = `${Math.round(progress * 100)}%`
+        this.progress_bar!.setProgress(progress);
       }
     }
   }

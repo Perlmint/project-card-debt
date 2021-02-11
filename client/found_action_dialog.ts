@@ -1,11 +1,16 @@
-const PIXI = require('pixi.js');
+import * as PIXI from 'pixi.js';
 const action_background = PIXI.Texture.from(require('./res/alarm.png'));
 const background = PIXI.Texture.from(require('./res/move_background.png'));
 const mission_box = PIXI.Texture.from(require('./res/mission_box.png'));
-const TimeBar = require('./time_bar').default;
-const constant = require('./const.json');
+import TimeBar from './time_bar';
+import constant from '../data/const.json';
+import { ActionType } from '../data/action';
+import { TargetType } from '../data/target';
 
 class ActionItem extends PIXI.NineSlicePlane {
+  title: PIXI.Text;
+  detail: PIXI.Text;
+  mission: PIXI.Sprite;
   constructor() {
     super(action_background, 32, 32, 32, 32);
 
@@ -32,7 +37,7 @@ class ActionItem extends PIXI.NineSlicePlane {
     this.mission.position.set(206 + 12, 20 + 7);
   }
 
-  init(action, targets) {
+  init(action: ActionType, targets: number[]) {
     this.title.text = action.action_name;
     if (action.delay_pre != 0) {
       this.detail.text = `조용함,  ${action.delay_pre}분`;
@@ -50,7 +55,10 @@ class ActionItem extends PIXI.NineSlicePlane {
 }
 
 export class ActionProgressDialog extends PIXI.Container {
-  constructor(targets) {
+  item: ActionItem;
+  time_bar: any;
+
+  constructor(private targets: number[]) {
     super();
 
     this.item = new ActionItem();
@@ -70,22 +78,21 @@ export class ActionProgressDialog extends PIXI.Container {
     })
     this.addChild(this.time_bar);
 
-    this.targets = targets;
-
     this.pivot.set(-40, this.height);
   }
 
-  init(action) {
+  init(action: ActionType) {
     this.item.init(action, this.targets);
     this.time_bar.countdown((action.delay_pre + action.delay_post) * 60 * 1000);
   }
 }
 
 export default class ActionDialog extends PIXI.NineSlicePlane {
-  constructor(targets) {
+  name_label: PIXI.Text;
+  action_buttons: ActionItem[];
+  constructor(private targets: number[]) {
     super(background, 32, 32, 32, 32);
 
-    this.targets = targets;
     this.width = 330 + 12 * 2;
 
     /** @member */
@@ -97,7 +104,6 @@ export default class ActionDialog extends PIXI.NineSlicePlane {
     this.name_label.anchor.x = 0.5;
     this.addChild(this.name_label);
 
-    /** @member {ActionItem[]}*/
     this.action_buttons = [];
   }
 
@@ -106,10 +112,10 @@ export default class ActionDialog extends PIXI.NineSlicePlane {
    * @param {string} name
    * @param {any[]} actions
    */
-  init(name, actions) {
+  init(name: string, actions: ActionType[]) {
     let height = 0;
     this.name_label.text = name;
-    this.name_label.updateText();
+    this.name_label.updateText(true);
     height += this.name_label.height + 20 + this.name_label.y;
     for (const label of this.action_buttons) {
       this.removeChild(label);

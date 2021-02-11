@@ -1,6 +1,9 @@
-const PIXI = require('pixi.js');
+import * as PIXI from 'pixi.js';
 
 export default class ProgressBar extends PIXI.Container {
+  background: PIXI.Graphics;
+  bar: PIXI.Graphics;
+  bar_mask: PIXI.Graphics;
   constructor() {
     super();
 
@@ -18,7 +21,7 @@ export default class ProgressBar extends PIXI.Container {
     this.addChild(this.bar_mask);
   }
 
-  resize(width, height, bg_color, bg_line, color, radius = 0) {
+  resize(width: number, height: number, bg_color?: number, bg_line?: number, color?: number, radius = 0) {
     this.background.clear();
     if (bg_color != null) {
       this.background.beginFill(bg_color, 1);
@@ -43,7 +46,7 @@ export default class ProgressBar extends PIXI.Container {
    *
    * @param {Number} progress 0~1
    */
-  setProgress(progress) {
+  setProgress(progress: number) {
     this.bar.x = -this.bar.width * (1 - progress);
   }
 }

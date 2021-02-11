@@ -1,0 +1,1 @@
+export type Montage = Record<'hair_color' | 'hair_type' | 'body_color' | 'body_type' | 'leg_color' | 'leg_type', number>;
