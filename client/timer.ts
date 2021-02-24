@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { sprintf } from 'sprintf-js';
-const background = PIXI.Texture.from(require('./res/timer.png'));
+import background from 'game-asset!./res/timer.png';
 import constants from '../data/const.json';
 
 export default class CountDownTimer extends PIXI.Container {
@@ -15,7 +15,7 @@ export default class CountDownTimer extends PIXI.Container {
     const marginY = 28;
     this.pivot.set(200 - marginX, 0 - marginY);
 
-    this.frame = new PIXI.Sprite(background);
+    this.frame = PIXI.Sprite.from(background);
     this.frame.anchor.set(0, 0);
     this.frame.position.set(0, 0);
     this.addChild(this.frame);

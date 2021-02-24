@@ -5,13 +5,13 @@ import Player from './player';
 import MoveDialog from './move_dialog';
 import FoundActionDialog, { ActionProgressDialog } from './found_action_dialog';
 import LostActionDialog from'./lost_action_dialog';
-import { textures as building_textures, ui_data as building_ui_data, data as building_data, BuildingId } from './building';
+import { TEXTURES as building_textures, ui_data as building_ui_data, data as building_data, BuildingId } from './building';
+import TILES from 'game-asset-glob!./res/map_obj/*.png';
+import map_obj_id from './res/map_obj/id.json';
 const tiles = (() => {
-  const id = require('./res/map_obj/id.json') as typeof import('./res/map_obj/id.json');
-  const textures = require('./res/map_obj/*.png');
-  return id.map(d => {
+  return map_obj_id.map(d => {
     return {
-      texture: PIXI.Texture.from(textures[d.name]),
+      texture: TILES[d.name],
       ...d
     };
   });
@@ -67,7 +67,7 @@ export default class Map extends PIXI.Container {
 
     this.nodes = data.nodes.map((node_info, idx) => {
       const data = building_ui_data[node_info.building_id];
-      const node = new PIXI.projection.Sprite2d(building_textures[data.name]);
+      const node = new PIXI.projection.Sprite2d(PIXI.Texture.from(building_textures[`${data.name}`]));
       node.proj.affine = PIXI.projection.AFFINE.AXIS_X;
       node.rotation = Math.PI / 4;
 
@@ -91,7 +91,7 @@ export default class Map extends PIXI.Container {
         }
 
         const tile_data = tiles[tile_code - 1];
-        const tile = new PIXI.projection.Sprite2d(tile_data.texture);
+        const tile = new PIXI.projection.Sprite2d(PIXI.Texture.from(tile_data.texture));
         tile.proj.affine = PIXI.projection.AFFINE.AXIS_X;
         tile.rotation = Math.PI / 4;
         tile.anchor.set(tile_data.h / (tile_data.w + tile_data.h), 1);

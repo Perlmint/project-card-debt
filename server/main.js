@@ -387,11 +387,13 @@ server.on('upgrade', (req, socket, head) => {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-  const parcel = require('parcel-bundler');
-  const bundler = new parcel(
-    ['client/lobby.html', 'client/game.html'].map(p => path.join(process.cwd(), p)),
-  );
-  app.use(bundler.middleware());
+  const webpack = require('webpack');
+  const middleware = require('webpack-dev-middleware');
+  const option = require('../webpack.config');
+  const compiler = webpack(option);
+  app.use(middleware(compiler, {
+    stats: true,
+  }));
 } else {
   app.use(express.static('./dist'));
 }

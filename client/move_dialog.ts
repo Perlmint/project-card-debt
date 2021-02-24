@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
 import { ActionType } from '../data/action';
-const background = PIXI.Texture.from(require('./res/move_background.png'));
-const by_car_button = PIXI.Texture.from(require('./res/by_car_button.png'));
-const by_walk_button = PIXI.Texture.from(require('./res/by_walk_button.png'));
+import background from 'game-asset!./res/move_background.png';
+import by_car_button from 'game-asset!./res/by_car_button.png';
+import by_walk_button from 'game-asset!./res/by_walk_button.png';
 import constant from '../data/const.json';
 
 export default class MoveDialog extends PIXI.NineSlicePlane {
@@ -14,7 +14,7 @@ export default class MoveDialog extends PIXI.NineSlicePlane {
   by_walk_button: PIXI.Sprite;
   by_walk_label: PIXI.Text;
   constructor() {
-    super(background, 32, 32, 32, 32);
+    super(PIXI.Texture.from(background), 32, 32, 32, 32);
     this.name_label = new PIXI.Text("", {
       fontWeight: 700,
       fontSize: 20,
@@ -24,7 +24,7 @@ export default class MoveDialog extends PIXI.NineSlicePlane {
 
     this.action_labels = [];
 
-    this.by_car_button = new PIXI.Sprite(by_car_button);
+    this.by_car_button = PIXI.Sprite.from(by_car_button);
     this.by_car_button.interactive = true;
     this.by_car_button.buttonMode = true;
     this.by_car_button.x = 32;
@@ -42,7 +42,7 @@ export default class MoveDialog extends PIXI.NineSlicePlane {
     this.by_car_label.position.set(49, 13);
     this.by_car_button.addChild(this.by_car_label);
 
-    this.by_walk_button = new PIXI.Sprite(by_walk_button);
+    this.by_walk_button = PIXI.Sprite.from(by_walk_button);
     this.by_walk_button.interactive = true;
     this.by_walk_button.buttonMode = true;
     this.by_walk_button.x = 175;

@@ -1,13 +1,13 @@
 import * as PIXI from 'pixi.js';
 import { ActionType } from "../data/action";
 
-const background = PIXI.Texture.from(require('./res/move_background.png'));
-const action_background = PIXI.Texture.from(require('./res/alarm.png'));
+import background from 'game-asset!./res/move_background.png';
+import action_background from 'game-asset!./res/alarm.png';
 
 class ActionItem extends PIXI.NineSlicePlane {
   title: PIXI.Text;
   constructor() {
-    super(action_background, 32, 32, 32, 32);
+    super(PIXI.Texture.from(action_background), 32, 32, 32, 32);
 
     this.width = 266 + 12 * 2;
     this.height = 87;
@@ -30,7 +30,7 @@ export default class ActionDialog extends PIXI.NineSlicePlane {
   name_label: PIXI.Text;
   action_buttons: ActionItem[];
   constructor() {
-    super(background, 32, 32, 32, 32);
+    super(PIXI.Texture.from(background), 32, 32, 32, 32);
 
     this.width = 330 + 12 * 2;
 

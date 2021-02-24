@@ -6,23 +6,23 @@ import { sprintf } from 'sprintf-js';
 import { createHeadTexture } from './player';
 import ScrollContainer from './scroll_container';
 import ProgressBar from './progress_bar';
-import { body as body_textures, leg as leg_textures } from './player';
+import { BODY as body_textures, LEG as leg_textures } from './player';
 
 import target_data, { TargetId, TargetType } from '../data/target';
 import action_data from '../data/action';
 import todo_data, { TodoType } from '../data/todo';
 import constants from '../data/const.json';
 
-const background = PIXI.Texture.from(require('./res/phone.png'));
-const news_background = PIXI.Texture.from(require('./res/alarm.png'));
-const target_item = PIXI.Texture.from(require('./res/target_item.png'));
-const target_item_highlight = PIXI.Texture.from(require('./res/target_item_highlight.png'));
-const triangle = PIXI.Texture.from(require('./res/triangle.png'));
-const check = PIXI.Texture.from(require('./res/check.png'));
-const empty_check = PIXI.Texture.from(require('./res/empty_check.png'));
-import { BuildingId, data as building_data, textures as building_textures, ui_data as building_ui_data } from './building';
+import background from 'game-asset!./res/phone.png';
+import news_background from 'game-asset!./res/alarm.png';
+import target_item from 'game-asset!./res/target_item.png';
+import target_item_highlight from 'game-asset!./res/target_item_highlight.png';
+import triangle from 'game-asset!./res/triangle.png';
+import check from 'game-asset!./res/check.png';
+import empty_check from 'game-asset!./res/empty_check.png';
+import { BuildingId, data as building_data, TEXTURES as building_textures, ui_data as building_ui_data } from './building';
 import { Montage } from './montage';
-const montage_textures = mapValues(require('./res/montage/*.png'), o => PIXI.Texture.from(o));
+import montage_textures from 'game-asset-glob!./res/montage/*.png';
 
 function createBuildingIcon(building_id: number) {
   const cont = new PIXI.Container();
@@ -30,7 +30,7 @@ function createBuildingIcon(building_id: number) {
   bg.beginFill(0xECECEC, 1);
   bg.drawRect(0, 0, 50, 50);
   cont.addChild(bg);
-  const sprt = new PIXI.Sprite(
+  const sprt = PIXI.Sprite.from(
     building_textures[building_ui_data[building_id as unknown as BuildingId].name]
   );
   sprt.anchor.set(0.5, 0.5);
@@ -85,11 +85,11 @@ class TargetPreviewItem extends PIXI.Graphics {
 
   init(target: TargetType, completed: boolean) {
     if (completed) {
-      this.checkbox.texture = check;
+      this.checkbox.texture = PIXI.Texture.from(check);
       this.title.style.fill = '#4A9692';
       this.title.style.fontWeight = 700;
     } else {
-      this.checkbox.texture = empty_check;
+      this.checkbox.texture = PIXI.Texture.from(empty_check);
       this.title.style.fill = '#000000';
       this.title.style.fontWeight = 400;
     }
@@ -102,7 +102,7 @@ class Alarm extends PIXI.NineSlicePlane {
   title: PIXI.Text;
   content: PIXI.Text;
   constructor(time: number, id: number, is_target: boolean) {
-    super(news_background, 32, 32, 32, 32);
+    super(PIXI.Texture.from(news_background), 32, 32, 32, 32);
 
     time = constants.TOTAL_TIME - time / 1000 / constants.TIME_MULTIPLIER;
 
@@ -146,7 +146,7 @@ class Alarm extends PIXI.NineSlicePlane {
 class TargetItem extends PIXI.Sprite {
   title: PIXI.Text;
   constructor(id: number) {
-    super(target_item);
+    super(PIXI.Texture.from(target_item));
 
     const data = target_data[id as unknown as TargetId];
 
@@ -165,11 +165,11 @@ class TargetItem extends PIXI.Sprite {
   }
 
   setComplete() {
-    if (this.texture === target_item_highlight) {
+    if (this.texture.textureCacheIds.indexOf(target_item_highlight) != -1) {
       return false;
     }
 
-    this.texture = target_item_highlight;
+    this.texture = PIXI.Texture.from(target_item_highlight);
     this.title.style.fill = '#4A9692';
     return true;
   }
@@ -200,7 +200,7 @@ export default class Phone extends PIXI.Sprite {
   todo?: TodoType;
 
   constructor() {
-    super(background);
+    super(PIXI.Texture.from(background));
 
     this.interactive = true;
     this.alarms = [];
@@ -223,7 +223,7 @@ export default class Phone extends PIXI.Sprite {
     this.title.position.set(240, 67 + 12);
     this.addChild(this.title);
 
-    this.triangle = new PIXI.Sprite(triangle);
+    this.triangle = PIXI.Sprite.from(PIXI.Texture.from(triangle));
     this.triangle.anchor.set(0, 0.5);
     this.triangle.position.y = this.title.position.y;
     this.addChild(this.triangle);
@@ -301,11 +301,11 @@ export default class Phone extends PIXI.Sprite {
 
     this.montage_components = {
       hair: new PIXI.Sprite(),
-      hair_empty: new PIXI.Sprite(montage_textures.hair_empty),
+      hair_empty: PIXI.Sprite.from(montage_textures['hair_empty']),
       body: new PIXI.Sprite(),
-      body_empty: new PIXI.Sprite(montage_textures.body_empty),
+      body_empty: PIXI.Sprite.from(montage_textures['body_empty']),
       leg: new PIXI.Sprite(),
-      leg_empty: new PIXI.Sprite(montage_textures.leg_empty),
+      leg_empty: PIXI.Sprite.from(montage_textures['leg_empty']),
     };
     this.montage_components.hair.anchor.set(0.5, 0.5);
     this.montage_components.hair.position.set(111 + 50, 120 + 50);
@@ -455,13 +455,13 @@ export default class Phone extends PIXI.Sprite {
         empty_component.visible = true;
       } else if (shape === null) {
         component.visible = true;
-        component.texture = montage_textures[`${part}_color`];
+        component.texture = PIXI.Texture.from(montage_textures[`${part}_color`]);
         component.tint = color!;
         component.scale.set(1, 1);
         empty_component.visible = true;
       } else if (color === null) {
         component.visible = true;
-        component.texture = montage_textures[`${part}_shape_${shape}`];
+        component.texture = PIXI.Texture.from(montage_textures[`${part}_shape_${shape}`]);
         component.scale.set(1, 1);
         empty_component.visible = false;
       } else {
@@ -474,12 +474,12 @@ export default class Phone extends PIXI.Sprite {
             }, 0.34);
             break;
           case 'body':
-            component.texture = body_textures[shape];
+            component.texture = PIXI.Texture.from(body_textures[shape]);
             component.tint = color;
             component.scale.set(0.3, 0.3);
             break;
           case 'leg':
-            component.texture = leg_textures[shape];
+            component.texture = PIXI.Texture.from(leg_textures[shape]);
             component.tint = color;
             component.scale.set(0.3, 0.3);
             break;

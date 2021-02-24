@@ -1,18 +1,16 @@
 import * as PIXI from 'pixi.js';
-const action_background = PIXI.Texture.from(require('./res/alarm.png'));
-const background = PIXI.Texture.from(require('./res/move_background.png'));
-const mission_box = PIXI.Texture.from(require('./res/mission_box.png'));
+import action_background from 'game-asset!./res/alarm.png';
+import background from 'game-asset!./res/move_background.png';
+import mission_box from 'game-asset!./res/mission_box.png';
 import TimeBar from './time_bar';
-import constant from '../data/const.json';
 import { ActionType } from '../data/action';
-import { TargetType } from '../data/target';
 
 class ActionItem extends PIXI.NineSlicePlane {
   title: PIXI.Text;
   detail: PIXI.Text;
   mission: PIXI.Sprite;
   constructor() {
-    super(action_background, 32, 32, 32, 32);
+    super(PIXI.Texture.from(action_background), 32, 32, 32, 32);
 
     this.width = 266 + 12 * 2;
     this.height = 87 + 7 + 17;
@@ -33,7 +31,7 @@ class ActionItem extends PIXI.NineSlicePlane {
     this.detail.position.set(20 + 12, 53 + 7);
     this.addChild(this.detail);
 
-    this.mission = new PIXI.Sprite(mission_box);
+    this.mission = PIXI.Sprite.from(mission_box);
     this.mission.position.set(206 + 12, 20 + 7);
   }
 
@@ -64,7 +62,7 @@ export class ActionProgressDialog extends PIXI.Container {
     this.item = new ActionItem();
     this.addChild(this.item);
 
-    const time_bar_bg = new PIXI.NineSlicePlane(action_background, 17, 11, 17, 23);
+    const time_bar_bg = new PIXI.NineSlicePlane(PIXI.Texture.from(action_background), 17, 11, 17, 23);
     time_bar_bg.width = 266 + 12 * 2;
     time_bar_bg.height = 23 + 17 + 7;
     time_bar_bg.position.set(0, 103 - 7);
@@ -91,7 +89,7 @@ export default class ActionDialog extends PIXI.NineSlicePlane {
   name_label: PIXI.Text;
   action_buttons: ActionItem[];
   constructor(private targets: number[]) {
-    super(background, 32, 32, 32, 32);
+    super(PIXI.Texture.from(background), 32, 32, 32, 32);
 
     this.width = 330 + 12 * 2;
 

@@ -1,30 +1,27 @@
 import * as PIXI from 'pixi.js';
 import mapValues from 'lodash/mapValues';
 import { Tween } from '@tweenjs/tween.js';
-
-const head = PIXI.Texture.from(require('./res/player/head.png'));
-export const body = mapValues(
-  require('./res/player/body*.png'),
-  (v) => PIXI.Texture.from(v)
-);
-export const hair = mapValues(
-  require('./res/player/hair*.png'),
-  (v) => PIXI.Texture.from(v)
-);
-export const leg = mapValues(
-  require('./res/player/leg*.png'),
-  (v) => PIXI.Texture.from(v)
-);
+import HEAD from 'game-asset!./res/player/head.png';
+import BODY from 'game-asset-glob!./res/player/body*.png';
+import HAIR from 'game-asset-glob!./res/player/hair*.png';
+import LEG from 'game-asset-glob!./res/player/leg*.png';
 import constants from '../data/const.json';
 import { Montage } from './montage';
 import Map from './map';
 
+export {
+  HEAD,
+  BODY,
+  HAIR,
+  LEG
+};
+
 export function createHead(montage: Pick<Montage, 'hair_color' | 'hair_type'>) {
   const wrap = new PIXI.Container();
-  const head_ = PIXI.Sprite.from(head);
+  const head_ = PIXI.Sprite.from(HEAD);
   head_.position.set(23.76, 45.02);
   wrap.addChild(head_);
-  const hair_ = PIXI.Sprite.from(hair[montage.hair_type]);
+  const hair_ = PIXI.Sprite.from(HAIR[`hair${montage.hair_type}`]);
   hair_.tint = montage.hair_color;
   wrap.addChild(hair_);
 
@@ -60,13 +57,13 @@ export default class Player extends PIXI.projection.Container2d {
       .start();
 
     /** @member */
-    this.leg = PIXI.Sprite.from(leg[montage.leg_type]);
+    this.leg = PIXI.Sprite.from(LEG[`leg${montage.leg_type}`]);
     this.leg.tint = montage.leg_color;
     this.leg.position.set(97 - 64, 209.23 + 72.79);
     // left: 16.06px;
     // top: 484px;
     this.wrap.addChild(this.leg);
-    this.body = PIXI.Sprite.from(body[montage.body_type]);
+    this.body = PIXI.Sprite.from(BODY[`body${montage.body_type}`]);
     this.body.position.set(8, 153);
     this.body.tint = montage.body_color;
     // left: 7.56;
