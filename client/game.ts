@@ -8,6 +8,7 @@ import { values } from 'lodash';
 import TWEEN from '@tweenjs/tween.js';
 import { RESOURCE_CONFIG_URL } from 'webpack-game-asset-plugin/helper';
 import result_scene from "game-asset-glob!./res/result/*.png";
+import { ResultView } from './result';
 
 // TODO: fill window
 const app = new PIXI.Application({
@@ -129,13 +130,8 @@ function gameEntry() {
       case 'win':
       case 'defeat': {
         timer.stop();
-        const scene = PIXI.Sprite.from(result_scene[`${role}_${data.type}`]);
-        scene.anchor.set(0.5, 0.5);
-        scene.position.set(window.innerWidth / 2, window.innerHeight / 2);
-        container.interactive = container.buttonMode = true;
-        container.on('pointertap', () => {
-          location.href = '/';
-        });
+        const scene = new ResultView(data.type, role);
+        scene.position.set(window.innerWidth / 2 - scene.width / 2, window.innerHeight / 2 - scene.height / 2);
         container.addChild(scene);
         break;
       }
